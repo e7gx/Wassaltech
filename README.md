@@ -16,6 +16,7 @@ Wassaltech (وصّلْتِك) is a proposed platform that aims to connect custom
 2. Run `pip install -r requirements.txt`
 3. Run `npm install`
 4. Run `npm run watch`
+   In other terminal
 5. Run `python manage.py runserver`
 
 ## Group Members
