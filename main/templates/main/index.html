@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+
+<div class="hero-content text-center">
+    <div class="max-w-md">
+        <h1 class="text-5xl font-bold">المصلحاتي</h1>
+        <p class="py-6">
+            المنصة السعودية الوحيدة لعرض خدمات الأجهزة المختلفة وطلب تصليحها
+        </p>
+        <button class="btn btn-primary">Get Started</button>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.12/build/spline-viewer.js"></script>
+<script>
+    const splineViewer = document.querySelector("spline-viewer");
+    const removeSplineLogo = () => {
+        if (splineViewer && splineViewer.shadowRoot) {
+            const logo = splineViewer.shadowRoot.querySelector("#logo");
+            if (logo) {
+                logo.remove();
+            }
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", removeSplineLogo);
+</script>
+{% endblock %}
