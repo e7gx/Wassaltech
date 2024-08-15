@@ -5,18 +5,9 @@ from django.db import transaction
 from django.contrib.auth.forms import AuthenticationForm
 
 class CustomerLoginForm(AuthenticationForm):
-    username = forms.CharField(
-        max_length=254,
-        widget=forms.TextInput(attrs={'placeholder': 'Username'}),
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
-    )
-
     class Meta:
         model = User
-        fields = "__all__"
-
+        fields = ['username', 'password']
 
 class FreelancerLoginForm(AuthenticationForm):
     username = forms.CharField(
@@ -39,55 +30,59 @@ class CustomerSignUpForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone_number', 'address']
 
+    @transaction.atomic
     def save(self, commit=True):
-        with transaction.atomic():
-            user = super().save(commit=False)
-            user.set_password(self.cleaned_data['password'])
-            if commit:
-                user.save()
-
-            account = Account.objects.create(
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+            Account.objects.create(
                 user=user,
                 phone_number=self.cleaned_data['phone_number'],
                 address=self.cleaned_data['address'],
-                user_type='Customer', 
+                user_type='Customer',
             )
-            return user
+        return user
 
 
-
-from django import forms
-from django.contrib.auth.models import User
-from django.db import transaction
-from .models import Freelancer
 
 class FreelancerSignUpForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-    phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Phone Number'}))
-    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'Address'}))
-    certificate_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Certificate ID'}))
-    certificate_expiration = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    certificate_image = forms.ImageField(required=True) 
-    avatar = forms.ImageField(required=True) 
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'أدخل كلمة المرور'}))
+    phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'أدخل رقم الهاتف'}))
+    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'أدخل العنوان'}))
+    certificate_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'أدخل رقم الشهادة'}))
+    certificate_image = forms.ImageField(required=True, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
+    avatar = forms.ImageField(required=True, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone_number', 'address', 'certificate_id', 'certificate_expiration', 'certificate_image', 'avatar']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone_number', 'address', 'certificate_id', 'certificate_image', 'avatar']
+        widgets = {
+            'username': forms.TextInput(attrs={'placeholder': 'أدخل اسم المستخدم'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'أدخل الاسم الأول'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'أدخل اسم العائلة'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'أدخل البريد الإلكتروني'}),
+        }
 
+
+    @transaction.atomic
     def save(self, commit=True):
-        with transaction.atomic():
-            user = super().save(commit=False)
-            user.set_password(self.cleaned_data['password'])
-            if commit:
-                user.save()
-
-            freelancer = Freelancer.objects.create(
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+            Account.objects.create(
+                user=user,
+                phone_number=self.cleaned_data['phone_number'],
+                address=self.cleaned_data['address'],
+                user_type='Freelancer'
+            )
+            Freelancer.objects.create(
                 user=user,
                 certificate_id=self.cleaned_data['certificate_id'],
-                certificate_expiration=self.cleaned_data['certificate_expiration'],
                 certificate_image=self.cleaned_data['certificate_image'],
-                avatar=self.cleaned_data['avatar'],
+                avatar=self.cleaned_data['avatar']
             )
-            return user
+        return user

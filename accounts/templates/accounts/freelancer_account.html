@@ -1,0 +1,227 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<h1 class="text-center text-2xl font-bold">
+    تسجيل الدخول كموفر خدمة
+</h1>
+<div role="tablist" class="tabs tabs-boxed mt-6">
+    <a role="tab" class="tab tab-active" onclick="openTab(event, 'login')">تسجيل الدخول</a>
+    <a role="tab" class="tab" onclick="openTab(event, 'signup')">حساب جديد</a>
+</div>
+
+<div id="messages" class="mt-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} shadow-lg mb-4">
+                <div>
+                    {% if message.tags == 'success' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {% elif message.tags == 'error' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div id="login" class="tab-content">
+    <form id="loginForm" action="{% url 'accounts:freelancer_account' %}" method="post"
+        class="form-control w-full max-w-xs mx-auto mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="login" value="login">
+        {{ form.username.errors }}
+        <label class="label">
+            <span class="label-text">اسم المستخدم</span>
+        </label>
+        <input name="username" type="text" placeholder="أدخل اسم المستخدم"
+            class="input input-bordered w-full max-w-xs" />
+
+        {{ form.password.errors }}
+        <label class="label mt-2">
+            <span class="label-text">كلمة المرور</span>
+        </label>
+        <input name="password" type="password" placeholder="أدخل كلمة المرور"
+            class="input input-bordered w-full max-w-xs" />
+
+        <button type="submit" class="btn btn-primary mt-4">تسجيل الدخول</button>
+    </form>
+</div>
+
+<div id="signup" class="tab-content" style="display:none;">
+    <form id="signupForm" action="{% url 'accounts:freelancer_account' %}" method="post" enctype="multipart/form-data"
+        class="form-control w-full max-w-2xl mx-auto mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="signup" value="signup" />
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+                <label class="label">
+                    <span class="label-text">اسم المستخدم</span>
+                </label>
+                <input name="username" type="text" placeholder="أدخل اسم المستخدم" class="input input-bordered w-full"
+                    required />
+            </div>
+
+            <div class="col-span-2">
+                <label class="label">
+                    <span class="label-text">البريد الإلكتروني</span>
+                </label>
+                <input name="email" type="email" placeholder="أدخل البريد الإلكتروني"
+                    class="input input-bordered w-full" required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">الإسم الأول</span>
+                </label>
+                <input name="first_name" placeholder="أدخل الإسم الأول" class="input input-bordered w-full" required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">الإسم الثاني</span>
+                </label>
+                <input name="last_name" placeholder="أدخل اسم العائلة" class="input input-bordered w-full" required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">كلمة المرور</span>
+                </label>
+                <input id="pass" name="password" type="password" placeholder="أدخل كلمة المرور"
+                    class="input input-bordered w-full" required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">تأكيد كلمة المرور</span>
+                </label>
+                <input id="confirmpass" type="password" placeholder="أعد إدخال كلمة المرور"
+                    class="input input-bordered w-full" required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">رقم الهاتف</span>
+                </label>
+                <input name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" class="input input-bordered w-full"
+                    required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">العنوان</span>
+                </label>
+                <input name="address" type="text" placeholder="أدخل العنوان" class="input input-bordered w-full"
+                    required />
+            </div>
+
+            <div class="col-span-2">
+                <label class="label">
+                    <span class="label-text">رقم الشهادة</span>
+                </label>
+                <input name="certificate_id" type="text" placeholder="أدخل رقم الشهادة" class="input input-bordered w-full"
+                    required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">صورة الشهادة</span>
+                </label>
+                <input name="certificate_image" type="file" class="file-input file-input-bordered w-full max-w-xs" required />
+            </div>
+
+            <div>
+                <label class="label">
+                    <span class="label-text">الصورة الشخصية</span>
+                </label>
+                <input name="avatar" type="file" class="file-input file-input-bordered w-full max-w-xs" required />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4 w-full">إنشاء حساب</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function openTab(evt, tabName) {
+        let i, tabContent, tabLinks;
+        tabContent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabContent.length; i++) {
+            tabContent[i].style.display = "none";
+        }
+        tabLinks = document.getElementsByClassName("tab");
+        for (i = 0; i < tabLinks.length; i++) {
+            tabLinks[i].className = tabLinks[i].className.replace(" tab-active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " tab-active";
+    }
+
+    document.getElementById("login").style.display = "block";
+
+    function validateForm() {
+        var password = document.getElementById("pass").value;
+        var confirmPassword = document.getElementById("confirmpass").value;
+        if (password != confirmPassword) {
+            showMessage("كلمات المرور غير متطابقة", "error");
+            return false;
+        }
+        return true;
+    }
+
+    function showMessage(message, type) {
+        const messagesDiv = document.getElementById('messages');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} shadow-lg mb-4`;
+        alertDiv.innerHTML = `
+            <div>
+                ${type === 'success'
+                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                    : '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                }
+                <span>${message}</span>
+            </div>
+        `;
+        messagesDiv.appendChild(alertDiv);
+
+        // Remove the message after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = this.querySelector('input[name="username"]').value;
+        const password = this.querySelector('input[name="password"]').value;
+
+        if (!username || !password) {
+            showMessage('الرجاء إدخال اسم المستخدم وكلمة المرور', 'error');
+            return;
+        }
+
+        this.submit();
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const password = this.querySelector('#pass').value;
+        const confirmPassword = this.querySelector('#confirmpass').value;
+
+        if (password !== confirmPassword) {
+            showMessage('كلمات المرور غير متطابقة', 'error');
+            return;
+        }
+        this.submit();
+    });
+</script>
+{% endblock %}
