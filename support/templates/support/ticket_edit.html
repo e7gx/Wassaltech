@@ -1,0 +1,70 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+    تعديل التذكرة
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-start min-h-screen">
+    <div class="bg-white shadow-xl rounded-lg text-center p-10 max-w-lg w-full">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <h1 class="text-center text-4xl font-bold text-gray-900 mb-8">تعديل التذكرة</h1>
+
+        <form method="POST" action="{% url 'support:ticket_edit' ticket.id %}" class="text-right">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="ticket_title" class="block text-lg font-semibold text-gray-700 pb-2">عنوان التذكرة:</label>
+                <input type="text" name="ticket_title" id="ticket_title" value="{{ ticket.ticket_title }}" class="w-full p-2 border border-gray-300 rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label for="ticket_category" class="block text-lg font-semibold text-gray-700 pb-2">فئة التذكرة:</label>
+                <select name="ticket_category" id="ticket_category" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    {% for value, label in ticket_categorys %}
+                    <option value="{{ value }}" {% if ticket.ticket_category == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="ticket_status" class="block text-lg font-semibold text-gray-700 pb-2">حالة التذكرة:</label>
+                <select name="ticket_status" id="ticket_status" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    {% for value, label in ticket_status %}
+                    <option value="{{ value }}" {% if ticket.ticket_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="ticket_description" class="block text-lg font-semibold text-gray-700 pb-2">وصف التذكرة:</label>
+                <textarea name="ticket_description" id="ticket_description" class="w-full p-2 border border-gray-300 rounded-lg" required>{{ ticket.ticket_description }}</textarea>
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">تحديث التذكرة</button>
+        </form>
+
+        <div class="mt-8 text-right">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">الرد الحالي على التذكرة</h2>
+            {% for comment in comments %}
+                <div class="p-4 mb-4 bg-gray-100 rounded-lg shadow">
+                    <p class="text-left text-gray-800 mb-4">{{ comment.comment_text }}</p>
+                    <p class="text-left text-sm text-gray-600">{{ comment.comment_creator.user.first_name }} {{ comment.comment_creator.user.last_name }} - {{ comment.created_at }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-600">لا توجد تعليقات حتى الآن.</p>
+            {% endfor %}
+        </div>
+
+        <form method="POST" action="{% url 'support:ticket_edit' ticket.id %}" class="mt-4 text-right">
+            {% csrf_token %}
+            <textarea name="comment_text" id="comment_text" class="w-full p-4 border border-gray-300 rounded-lg" rows="4" placeholder="أضف تعليقك هنا" required></textarea>
+            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-4">إضافة تعليق</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

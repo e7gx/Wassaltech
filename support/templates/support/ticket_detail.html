@@ -1,0 +1,97 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+    تعديل التذكرة
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-start min-h-screen py-8 px-4">
+    <div class="bg-white shadow-xl rounded-lg p-10 max-w-4xl w-full">
+
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">تفاصيل التذكرة</h1>
+
+        <table class="w-full mb-8 text-right border-separate border-spacing-y-4">
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">منشئ التذكرة:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.user.first_name }} {{ ticket.ticket_creator.user.last_name }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">البريد الإلكتروني:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.user.email }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">رقم الهاتف:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.phone_number }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">فئة المستخدم:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.user_type }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">عنوان المستخدم:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.address }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">عنوان التذكرة:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_title }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">فئة التذكرة:</td>
+                <td class="text-lg text-gray-900">{{ ticket.get_ticket_category_display }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">حالة التذكرة:</td>
+                <td class="text-lg p-3 rounded-full text-center
+                    {% if ticket.ticket_status == 'open' %} 
+                        bg-green-100 text-green-600 
+                    {% elif ticket.ticket_status == 'closed' %} 
+                        bg-red-100 text-red-600 
+                    {% elif ticket.ticket_status == 'in_progress' %} 
+                        bg-yellow-100 text-yellow-600 
+                    {% else %} 
+                        bg-gray-100 text-gray-600 
+                    {% endif %}">
+                    {{ ticket.get_ticket_status_display }}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">وصف التذكرة:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_description }}</td>
+            </tr>
+            <tr>
+                <td class="text-lg font-semibold text-gray-700">تاريخ إنشاء التذكرة:</td>
+                <td class="text-lg text-gray-900">{{ ticket.ticket_created_at }}</td>
+            </tr>
+        </table>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">الرد الحالي على التذكرة</h2>
+            {% for comment in ticket_comments %}
+            <div class="p-4 mb-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                <p class="text-gray-800 mb-2">{{ comment.comment_text }}</p>
+                <p class="text-sm text-gray-600">{{ comment.comment_creator.user.first_name }} {{ comment.comment_creator.user.last_name }} - {{ comment.created_at }}</p>
+            </div>
+            {% empty %}
+            <p class="text-gray-600">لا توجد تعليقات حتى الآن.</p>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-8 ">
+            {% if request.user.is_superuser %}
+            <a href="{% url 'support:ticket_edit' ticket.pk %} " 
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-32 rounded-lg transition duration-300 shadow-md mx-4">
+                تعديل
+            </a>
+            {% endif %}
+            
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'support:add_comment' ticket.pk %}" 
+                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-32 rounded-lg transition duration-300 shadow-md mx-4">
+                أضافة رد 
+            </a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

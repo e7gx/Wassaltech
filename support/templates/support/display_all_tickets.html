@@ -13,9 +13,7 @@
                 <th style="border: 1px solid #ddd; padding: 0.5rem;" class="text-center">Category</th>
                 <th style="border: 1px solid #ddd; padding: 0.5rem;" class="text-center">Status</th>
                 <th style="border: 1px solid #ddd; padding: 0.5rem;" class="text-center">Created</th>
-                {% if request.user.is_superuser %}
                 <th style="border: 1px solid #ddd; padding: 0.5rem;" class="text-center">Actions</th>
-                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -28,20 +26,19 @@
                         <div class="border border-gray-300 p-2 {% if ticket.ticket_status == 'open' %}bg-green-400 text-black rounded-full text-center {% elif ticket.ticket_status == 'closed' %}bg-green-400 text-black rounded-full{% elif ticket.ticket_status == 'in_progress' %}bg-red-400  text-black rounded-full text-center{% else %} bg-yellow-400 text-black rounded-full text-center {% endif %}">
                             {{ ticket.get_ticket_status_display }}
                         <!--get_ _display to display the value not the key , readable status for the user \ abdullah -->
-
                         </div>
                     </td>
                     
 
                     <td style="border: 1px solid #ddd; padding: 0.5rem;" class="text-center">{{ ticket.ticket_created_at }}</td>
-                    {% if request.user.is_superuser %}
                     <td style="border: 1px solid #ddd; padding: 0.5rem;" class="text-center">
-                        <a href="" style="color: blue; text-decoration: none; margin-right: 0.5rem;" class="text-cener">View</a>
+                        <a href="{% url 'support:ticket_detail' ticket.pk %}" style="color: green; text-decoration: none; margin-right: 0.5rem;" class="text-cener">View</a>
+                        {% if request.user.is_superuser %}
                         <a href="" style="color: red; text-decoration: none; margin-right: 0.5rem;" class="text-cener">
                             Delete
                         </a>
+                        {% endif %}
                     </td>
-                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
