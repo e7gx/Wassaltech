@@ -48,24 +48,23 @@ def display_tickets(request: HttpRequest):
     return render(request, 'support/display_all_tickets.html', {'tickets': tickets})
 
 
-
 @login_required
 def ticket_detail(request: HttpRequest, ticket_id: int):
-    '''
-    هذي تعرض كامل التفاصيل الخاصة بالتذاكرة ،وطبعا فيه داخلها التعليقات الخاصة بالمستخدم و ردود المشرفين على التذكرة  
-    طبعا اذا احد حاول يدخل الصفحة وهو يعني مو صاحب التذكرة يمنعه ،
-    سوي اعادة توجيه للصفحة الي تبغاها بدال مايطلع له رسالة
-'''
-    if request.user.is_authenticated:
-        ticket = Ticket.objects.get(pk=ticket_id)
-        ticket_comments = Comment.objects.filter(ticket=ticket)
-        if ticket.ticket_creator == request.user.account:
-            return render(request, 'support/ticket_detail.html', {'ticket': ticket,'ticket_comments': ticket_comments})
+        '''
+        هذي تعرض كامل التفاصيل الخاصة بالتذاكرة ،وطبعا فيه داخلها التعليقات الخاصة بالمستخدم و ردود المشرفين على التذكرة  
+        طبعا اذا احد حاول يدخل الصفحة وهو يعني مو صاحب التذكرة يمنعه ،
+        سوي اعادة توجيه للصفحة الي تبغاها بدال مايطلع له رسالة
+        '''
+        if request.user.is_authenticated:
+            ticket = Ticket.objects.get(pk=ticket_id)
+            ticket_comments = Comment.objects.filter(ticket=ticket)
+            if ticket.ticket_creator == request.user.account or request.user.is_superuser:
+                return render(request, 'support/ticket_detail.html', {'ticket': ticket,'ticket_comments': ticket_comments})
+            else:
+                return HttpResponse('You are not authorized to view this ticket')
         else:
-            return HttpResponse('You are not authorized to view this ticket')#! هنا اقصد
-            #! redirect('main:index')
-    else:
-        return redirect('main:index')
+            return redirect('main:index')
+
 
 
 @login_required
