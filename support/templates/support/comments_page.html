@@ -1,0 +1,38 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+    تعليقات التذاكر
+{% endblock %}
+
+{% block content %}
+<div class="mt-8 text-right">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">تفاصيل التذكرة</h1>
+    <p>عنوان التذكرة</p>
+    <p class=" text-right text-gray-800 mb-4">{{ ticket.ticket_title }}</p>
+    <p>وصف التذكرة</p>
+    <p class=" text-right text-gray-800 mb-4">{{ ticket.ticket_description}}</p>
+    <p>فئة التذكرة</p>
+    <p class=" text-right text-gray-800 mb-4">{{ ticket.get_ticket_category_display }}</p>
+    <p>حالة التذكرة</p>
+    <div class="mt-4 mb-4" >
+        <span class="px-32 py-2  {% if ticket.ticket_status == 'open' %}bg-red-300 text-black font-bold rounded-full text-center {% elif ticket.ticket_status == 'closed' %}bg-green-400 text-black font-bold rounded-full{% elif ticket.ticket_status == 'in_progress' %}bg-yellow-400 font-bold  text-black rounded-full text-center{% else %} bg-yellow-400 text-black rounded-full font-bold text-center {% endif %}">
+            {{ ticket.get_ticket_status_display }}
+        </span>
+    </div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">الرد الحالي على التذكرة</h2>
+    {% for comment in comments %}
+        <div class="p-4 mb-4 bg-gray-100 rounded-lg shadow">
+            <p class="text-left text-gray-800 mb-4">{{ comment.comment_text }}</p>
+            <p class="text-left text-sm text-gray-600">{{ comment.comment_creator.user.first_name }} {{ comment.comment_creator.user.last_name }} - {{ comment.created_at }}</p>
+        </div>
+    {% empty %}
+        <p class="text-gray-600">لا توجد تعليقات حتى الآن.</p>
+    {% endfor %}
+</div>
+
+<form method="POST" action="{% url 'support:add_comment' ticket.id %}" class="mt-4 text-right">
+    {% csrf_token %}
+    <textarea name="comment_text" id="comment_text" class="w-full p-4 border border-gray-300 rounded-lg" rows="4" placeholder="أضف تعليقك هنا" required></textarea>
+    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-4">إضافة تعليق</button>
+</form>
+{% endblock %}

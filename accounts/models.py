@@ -11,7 +11,7 @@ class Account(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.username} | {self.first_name} {self.last_name} | {self.is_verified}"
+        return f"{self.user.username} | {self.user.first_name} {self.user.last_name}"
 
 def user_avatar_path(instance, filename):
     return f'avatars/{instance.user.username}/{filename}'
