@@ -57,8 +57,6 @@ def freelancer_account(request):
     if request.user.is_authenticated:
         return redirect('main:index')
 
-    form = FreelancerSignUpForm()
-
     if request.method == 'POST':
         if 'login' in request.POST:
             username = request.POST.get('username')
@@ -88,6 +86,8 @@ def freelancer_account(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, f"{field}: {error}")
+    else:
+        form = FreelancerSignUpForm()
 
     return render(request, 'accounts/freelancer_account.html', {'form': form})
 
