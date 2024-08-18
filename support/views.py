@@ -49,6 +49,7 @@ def ticket_detail(request: HttpRequest, ticket_id: int):
         ticket = Ticket.objects.get(pk=ticket_id)
         ticket_comments = Comment.objects.filter(ticket=ticket)
 
+
         # Check if the user has an associated account
         user_account = getattr(request.user, 'account', None)
 
@@ -64,8 +65,12 @@ def ticket_detail(request: HttpRequest, ticket_id: int):
 def ticket_edit(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
+
     if not request.user.is_superuser and not request.user.is_staff:
         return redirect('main:index')
+
+    
+
 
     if request.method == 'POST':
         if 'ticket_title' in request.POST:

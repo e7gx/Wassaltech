@@ -27,3 +27,4 @@ Wassaltech (وصّلْتِك) is a proposed platform that aims to connect custom
 | Abdullah Al-ghamdi      |
 | Abdulrahman Al-wagdani  |
 | Naif Al-harbi           |
+# WassaltechBeta

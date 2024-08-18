@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Available Orders</h1>
+
+    {% if orders %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for order in orders %}
+                {% if order.status == 'Open' %}
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <h2 class="card-title">Order #{{ order.id }}</h2>
+                            <p><strong>Category:</strong> {{ order.category }}</p>
+                            <p><strong>Description:</strong> {{ order.issue_description|truncatewords:20 }}</p>
+                            <p><strong>Status:</strong>
+                                <span class="badge badge-warning">{{ order.status }}</span>
+                            </p>
+                            <p><strong>Date Created:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="{% url 'orders:create_offer' order.id %}" class="btn btn-primary">Create Offer</a>
+                                <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <div class="flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <label>There are no available orders at the moment.</label>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
