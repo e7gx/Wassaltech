@@ -1,0 +1,78 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Create New Order</h1>
+
+    <form method="post" enctype="multipart/form-data" class="card bg-base-100 shadow-xl">
+        {% csrf_token %}
+        <div class="card-body">
+            <div class="form-control">
+                <label class="label" for="id_category">
+                    <span class="label-text">Category</span>
+                </label>
+                <select name="category" id="id_category" class="select select-bordered w-full">
+                    <option value="" selected>Select a category</option>
+                    {% for value, label in form.fields.category.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.category.errors %}
+                    {% for error in form.category.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </label>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-control">
+                <label class="label" for="id_issue_description">
+                    <span class="label-text">Issue Description</span>
+                </label>
+                <textarea name="issue_description" id="id_issue_description" class="textarea textarea-bordered h-24" placeholder="Describe your issue here..."></textarea>
+                {% if form.issue_description.errors %}
+                    {% for error in form.issue_description.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </label>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-control mt-4">
+                <label class="label" for="id_image">
+                    <span class="label-text">Image (optional)</span>
+                </label>
+                <input type="file" name="image" id="id_image" class="file-input file-input-bordered w-full" accept="image/*">
+                {% if form.image.errors %}
+                    {% for error in form.image.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </label>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-control mt-4">
+                <label class="label" for="id_video">
+                    <span class="label-text">Video (optional)</span>
+                </label>
+                <input type="file" name="video" id="id_video" class="file-input file-input-bordered w-full" accept="video/*">
+                {% if form.video.errors %}
+                    {% for error in form.video.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </label>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="card-actions justify-end mt-6">
+                <button type="submit" class="btn btn-primary">Create Order</button>
+                <a href="{% url 'orders:order_history' %}" class="btn btn-ghost">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

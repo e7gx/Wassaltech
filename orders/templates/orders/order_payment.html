@@ -1,0 +1,72 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Order Payment - #{{ order.id }}</h1>
+
+    <div class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Order Details</h2>
+            <p><strong>Category:</strong> {{ order.category }}</p>
+            <p><strong>Description:</strong> {{ order.issue_description }}</p>
+            <p><strong>Status:</strong>
+                <span class="badge {% if order.status == 'Completed' %}badge-success{% else %}badge-warning{% endif %}">
+                    {{ order.status }}
+                </span>
+            </p>
+            <p><strong>Date Created:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Payment Information</h2>
+            <p><strong>Total Amount:</strong> ${{ order.accepted_offer.price }}</p>
+            <p><strong>Payment Status:</strong>
+                <span class="badge {% if order.payment_status == 'Paid' %}badge-success{% else %}badge-error{% endif %}">
+                    {{ order.payment_status }}
+                </span>
+            </p>
+            {% if order.payment_date %}
+                <p><strong>Payment Date:</strong> {{ order.payment_date|date:"M d, Y H:i" }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if order.payment_status != 'Paid' %}
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Make Payment</h2>
+                <form method="post" action="{% url 'orders:process_payment' order.id %}">
+                    {% csrf_token %}
+                    <div class="form-control">
+                        <label class="label" for="card_number">
+                            <span class="label-text">Card Number</span>
+                        </label>
+                        <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control mt-4">
+                        <label class="label" for="expiry_date">
+                            <span class="label-text">Expiry Date</span>
+                        </label>
+                        <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YY" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control mt-4">
+                        <label class="label" for="cvv">
+                            <span class="label-text">CVV</span>
+                        </label>
+                        <input type="text" id="cvv" name="cvv" placeholder="123" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control mt-6">
+                        <button type="submit" class="btn btn-primary">Pay ${{ order.accepted_offer.price }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mt-6">
+        <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline">Back to Order Details</a>
+    </div>
+</div>
+{% endblock %}

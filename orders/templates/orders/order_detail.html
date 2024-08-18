@@ -1,0 +1,95 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Order #{{ order.id }} Details</h1>
+    <button class="btn btn-primary">PDF PRINT</button>
+    <div class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Order Information</h2>
+            <p><strong>Category:</strong> {{ order.category }}</p>
+            <p><strong>Description:</strong> {{ order.issue_description }}</p>
+            <p><strong>Status:</strong>
+                <span class="badge
+                    {% if order.status == 'Open' %}badge-warning
+                    {% elif order.status == 'In Progress' %}badge-info
+                    {% elif order.status == 'Completed' %}badge-success
+                    {% else %}badge-error{% endif %}">
+                    {{ order.status }}
+                </span>
+            </p>
+            <p><strong>Date Created:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+        </div>
+    </div>
+
+    {% if offer %}
+    <div class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Accepted Offer</h2>
+            <p><strong>Freelancer:</strong> {{ offer.freelancer.user.username }}</p>
+            <p><strong>Price:</strong> ${{ offer.price }}</p>
+            <p><strong>Description:</strong> {{ offer.description }}</p>
+            <p><strong>Proposed Service Date:</strong> {{ offer.proposed_service_date|date:"M d, Y" }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if offer %}
+        {% if order.status != 'Completed' %}
+            {% if user.account.user_type == 'Customer' and not order.customer_completed %}
+                {% if order.freelancer_completed %}
+                    <button class="btn btn-primary mt-4" onclick="showReviewModal()">End Order</button>
+                {% else %}
+                    <div class="alert alert-warning mt-4">
+                        <label>The freelancer must complete the order before you can finalize it.</label>
+                    </div>
+                {% endif %}
+            {% elif user.account.user_type == 'Freelancer' and not order.freelancer_completed %}
+                <form method="post" action="{% url 'orders:end_order' order.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary mt-4">End Order</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+    {% if not offer %}
+        <form method="post" action="{% url 'orders:cancel_order' order.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-error mt-4">Cancel Order</button>
+        </form>
+    {% endif %}
+
+    <dialog id="review_modal" class="modal">
+        <form method="post" action="{% url 'orders:end_order' order.id %}" class="modal-box" id="review_form">
+            {% csrf_token %}
+            {{ review_form.as_p }}
+            <div class="modal-action">
+                <button type="submit" class="btn btn-primary">Submit Review and Complete Order</button>
+                <button type="button" class="btn" onclick="closeReviewModal()">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+
+    <div class="mt-6">
+        {% if user.account.user_type == 'Customer' and order.status == 'Open' %}
+            <a href="{% url 'orders:order_offers' order.id %}" class="btn btn-primary">View Offers</a>
+        {% endif %}
+        {% if user.account.user_type == 'Customer' %}
+            <a href="{% url 'orders:customer_orders' %}" class="btn btn-outline">Back to My Orders</a>
+        {% else %}
+            <a href="{% url 'orders:freelancer_orders' %}" class="btn btn-outline">Back to Available Orders</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function showReviewModal() {
+        document.getElementById('review_modal').showModal();
+    }
+
+    function closeReviewModal() {
+        document.getElementById('review_modal').close();
+    }
+</script>
+{% endblock %}

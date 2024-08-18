@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">My Orders</h1>
+
+    {% if orders %}
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.category }}</td>
+                            <td>
+                                <span class="badge {% if order.status == 'Open' %}badge-warning{% elif order.status == 'In Progress' %}badge-info{% else %}badge-success{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>{{ order.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-primary">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <div class="flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <label>You don't have any orders yet.</label>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mt-6">
+        <a href="{% url 'orders:create_order' %}" class="btn btn-primary">Create New Order</a>
+    </div>
+</div>
+{% endblock %}

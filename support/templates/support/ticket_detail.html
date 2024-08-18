@@ -1,97 +1,103 @@
 {% extends "main/base.html" %}
 
 {% block title %}
-    تعديل التذكرة
+تفاصيل التذكرة
 {% endblock %}
 
 {% block content %}
-<div class="flex justify-center items-start min-h-screen py-8 px-4">
-    <div class="bg-white shadow-xl rounded-lg p-10 max-w-4xl w-full">
+<div class="flex justify-center items-start min-h-screen py-8 px-4 bg-base-100">
+    <div class="card bg-base-200 shadow-xl w-full max-w-4xl">
+        <div class="card-body">
+            <h1 class="card-title text-3xl mb-6">تفاصيل التذكرة</h1>
 
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">تفاصيل التذكرة</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-base-300 p-4 rounded-lg">
+                    <h2 class="font-bold text-lg mb-2">معلومات المستخدم</h2>
+                    <p><span class="font-semibold">الاسم:</span> {{ ticket.ticket_creator.user.first_name }}
+                        {{ ticket.ticket_creator.user.last_name }}</p>
+                    <p><span class="font-semibold">البريد الإلكتروني:</span> {{ ticket.ticket_creator.user.email }}</p>
+                    <p><span class="font-semibold">رقم الهاتف:</span> {{ ticket.ticket_creator.phone_number }}</p>
+                    <p><span class="font-semibold">فئة المستخدم:</span> {{ ticket.ticket_creator.user_type }}</p>
+                    <p><span class="font-semibold">العنوان:</span> {{ ticket.ticket_creator.address }}</p>
+                </div>
 
-        <table class="w-full mb-8 text-right border-separate border-spacing-y-4">
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">منشئ التذكرة:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.user.first_name }} {{ ticket.ticket_creator.user.last_name }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">البريد الإلكتروني:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.user.email }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">رقم الهاتف:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.phone_number }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">فئة المستخدم:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.user_type }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">عنوان المستخدم:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_creator.address }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">عنوان التذكرة:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_title }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">فئة التذكرة:</td>
-                <td class="text-lg text-gray-900">{{ ticket.get_ticket_category_display }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">حالة التذكرة:</td>
-                <td class="text-lg p-3 rounded-full text-center
-                    {% if ticket.ticket_status == 'open' %} 
-                        bg-green-100 text-green-600 
-                    {% elif ticket.ticket_status == 'closed' %} 
-                        bg-red-100 text-red-600 
-                    {% elif ticket.ticket_status == 'in_progress' %} 
-                        bg-yellow-100 text-yellow-600 
-                    {% else %} 
-                        bg-gray-100 text-gray-600 
-                    {% endif %}">
-                    {{ ticket.get_ticket_status_display }}
-                </td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">وصف التذكرة:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_description }}</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-semibold text-gray-700">تاريخ إنشاء التذكرة:</td>
-                <td class="text-lg text-gray-900">{{ ticket.ticket_created_at }}</td>
-            </tr>
-        </table>
+                <div class="bg-base-300 p-4 rounded-lg">
+                    <h2 class="font-bold text-lg mb-2">معلومات التذكرة</h2>
+                    <p><span class="font-semibold">العنوان:</span> {{ ticket.ticket_title }}</p>
+                    <p><span class="font-semibold">الفئة:</span> {{ ticket.get_ticket_category_display }}</p>
+                    <p><span class="font-semibold">الحالة:</span>
+                        <span class="badge
+                            {% if ticket.ticket_status == 'open' %}
+                                badge-success
+                            {% elif ticket.ticket_status == 'closed' %}
+                                badge-error
+                            {% elif ticket.ticket_status == 'in_progress' %}
+                                badge-warning
+                            {% else %}
+                                badge-info
+                            {% endif %}">
+                            {{ ticket.get_ticket_status_display }}
+                        </span>
+                    </p>
+                    <p><span class="font-semibold">تاريخ الإنشاء:</span> {{ ticket.ticket_created_at }}</p>
+                </div>
+            </div>
 
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">الرد الحالي على التذكرة</h2>
+            <div class="mt-6 bg-base-300 p-4 rounded-lg">
+                <h2 class="font-bold text-lg mb-2">وصف التذكرة</h2>
+                <p>{{ ticket.ticket_description }}</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2 class="text-2xl font-bold mb-4">الردود على التذكرة</h2>
             {% for comment in ticket_comments %}
-            <div class="p-4 mb-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
-                <p class="text-gray-800 mb-2">{{ comment.comment_text }}</p>
-                <p class="text-sm text-gray-600">{{ comment.comment_creator.user.first_name }} {{ comment.comment_creator.user.last_name }} - {{ comment.created_at }}</p>
+            <div class="chat {% if comment.comment_creator == ticket.ticket_creator %}chat-end{% else %}chat-start{% endif %} mb-4">
+                <div class="chat-bubble {% if comment.comment_creator == ticket.ticket_creator %}chat-bubble{% else %}chat-bubble-primary{% endif %}">
+                    <p>{{ comment.comment_text }}</p>
+                    <div class="text-xs opacity-50 mt-1">
+                        {{ comment.comment_creator.user.first_name }} {{ comment.comment_creator.user.last_name }} -
+                        {{ comment.created_at }}
+                    </div>
+                </div>
             </div>
             {% empty %}
-            <p class="text-gray-600">لا توجد تعليقات حتى الآن.</p>
+            <p class="text-base-content opacity-60">لا توجد تعليقات حتى الآن.</p>
             {% endfor %}
-        </div>
 
-        <div class="text-center mt-8 ">
-            {% if request.user.is_superuser %}
-            <a href="{% url 'support:ticket_edit' ticket.pk %} " 
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-32 rounded-lg transition duration-300 shadow-md mx-4">
-                تعديل
-            </a>
-            {% endif %}
-            
-            {% if request.user.is_authenticated %}
-            <a href="{% url 'support:add_comment' ticket.pk %}" 
-                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-32 rounded-lg transition duration-300 shadow-md mx-4">
-                أضافة رد 
-            </a>
-            {% endif %}
-        </div>
 
+            <div class="form-control w-full max-w-xs">
+                <label for="comment" class="label">
+                    <span class="label-text">أضف ردك</span>
+                </label>
+
+                <form action="{% url 'support:add_comment' ticket.pk %}" method="post">
+                    {% csrf_token %}
+                    <div class="join">
+                        <input type="text" name="comment" id="comment" placeholder="اكتب ردك هنا"
+                            class="input input-bordered input-primary w-full max-w-sm join-item" />
+                        <button class="btn btn-primary join-item">إضافة رد</button>
+                    </div>
+                </form>
+
+
+
+            </div>
+
+            <div class="card-actions justify-center mt-8">
+                {% if request.user.is_superuser %}
+                <a href="{% url 'support:ticket_edit' ticket.pk %}" class="btn btn-primary btn-wide">
+                    تعديل
+                </a>
+                {% endif %}
+
+                <!-- {% if request.user.is_authenticated %}
+                <a href="{% url 'support:add_comment' ticket.pk %}" class="btn btn-primary btn-wide">
+                    إضافة رد
+                </a>
+                {% endif %} -->
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
