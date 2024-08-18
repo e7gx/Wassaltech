@@ -31,8 +31,8 @@ class Order(models.Model):
     issue_description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    freelancer_completed = models.BooleanField(default=False)  
-    customer_completed = models.BooleanField(default=False)  
+    freelancer_completed = models.BooleanField(default=False)
+    customer_completed = models.BooleanField(default=False)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open')
     customer_completed = models.BooleanField(default=False)
@@ -46,8 +46,8 @@ class Order(models.Model):
         self.save()
 
 class OrderImage(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='order_images/')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    image = models.FileField(upload_to='order_images/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
