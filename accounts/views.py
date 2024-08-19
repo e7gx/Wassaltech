@@ -94,3 +94,7 @@ def freelancer_account(request):
 def logout_view(request):
     logout(request)
     return redirect('main:index')
+
+
+def inbox(request):
+    return render(request, 'accounts/inbox.html')
