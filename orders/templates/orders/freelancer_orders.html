@@ -20,7 +20,7 @@
                             <div class="card-actions justify-end mt-4">
                                 <a href="{% url 'orders:create_offer' order.id %}" class="btn btn-primary">Create Offer</a>
                                 <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline">View Details</a>
-                                <button  class="btn btn-outline">Chat with Freelancer</button>
+                                <a href="{% url 'chat:create_chat' order.id %}" class="btn btn-outline">Chat with Freelancer</a>
                             </div>
                         </div>
                     </div>
