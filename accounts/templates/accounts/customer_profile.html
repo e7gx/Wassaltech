@@ -41,9 +41,9 @@
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600 font-medium">تم التحقق:</span>
                     {% if user.account.is_verified %}
-                        <span class="text-green-600">حسابك مفعل</span>
+                        <span class="bg-teal-500 text-white font-bold rounded-full px-8 py-2">حسابك مفعل</span>
                     {% else %}
-                        <span class="text-red-600">حسابك غير مفعل</span>
+                        <span class="text-white bg-red-500 font-bold rounded-full px-8 py-2">حسابك غير مفعل</span>
                     {% endif %}
                 </div>
             </div>

@@ -4719,6 +4719,10 @@ details.collapse summary::-webkit-details-marker {
   margin: 1rem;
 }
 
+.m-8 {
+  margin: 2rem;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
