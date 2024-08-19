@@ -2,61 +2,72 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Offers for Order #{{ order.id }}</h1>
+    <h1 class="text-3xl font-bold mb-6">العروض لطلب رقم #{{ order.id }}</h1>
 
     <div class="card bg-base-100 shadow-xl mb-8">
         <div class="card-body">
-            <h2 class="card-title mb-4">Order Details</h2>
-            <p><strong>Category:</strong> {{ order.category }}</p>
-            <p><strong>Description:</strong> {{ order.issue_description }}</p>
-            <p><strong>Status:</strong> 
+            <h2 class="card-title mb-4">تفاصيل الطلب</h2>
+            <p><strong>الفئة:</strong> {{ order.category }}</p>
+            <p><strong>الوصف:</strong> {{ order.issue_description }}</p>
+            <p><strong>الحالة:</strong> 
                 <span class="badge {% if order.status == 'Open' %}badge-warning{% else %}badge-success{% endif %}">
                     {{ order.status }}
                 </span>
             </p>
-            <p><strong>Date Created:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+            <p><strong>تاريخ الإنشاء:</strong> {{ order.created_at|date:"M d, Y" }}</p>
         </div>
     </div>
 
     {% if offers %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for offer in offers %}
-                <div class="card bg-base-100 shadow-xl">
-                    <div class="card-body">
-                        <h2 class="card-title">Offer from {{ offer.freelancer.user.username }}</h2>
-                        <p><strong>Price:</strong> ${{ offer.price }}</p>
-                        <p><strong>Description:</strong> {{ offer.description }}</p>
-                        <p><strong>Proposed Service Date:</strong> {{ offer.proposed_service_date|date:"M d, Y" }}</p>
-                        <p><strong>Status:</strong>
-                            <span class="badge {% if offer.status == 'Pending' %}badge-warning{% elif offer.status == 'Accepted' %}badge-success{% else %}badge-error{% endif %}">
-                                {{ offer.status }}
-                            </span>
-                        </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for offer in offers %}
+            <div class="card bg-base-100 shadow-xl rounded-lg overflow-hidden">
+                <div class="card-body p-4">
+                    <img src="{{ offer.freelancer.avatar.url }}" alt="صورة" class="w-16 h-16 rounded-full border-2 border-gray-200">
 
-                        <form action="{% url 'orders:fake_payment' offer.id %}">
-
-                            <button type="submit" class="btn btn-primary">Pay</button>
+                    <div class="flex items-center mb-4">
+                        <div class="ml-4">
+                            <h2 class="text-xl font-semibold mb-1">
+                                عرض من 
+                                <a href="{% url 'accounts:freelancer_profile' offer.freelancer.id %}" class="text-primary hover:underline">
+                                    {{ offer.freelancer.user.username }}
+                                </a>
+                            </h2>
                             
-                        </form>
-
-
+                            <p class="text-sm text-gray-600">{{ offer.freelancer.status }}</p>
+                        </div>
                     </div>
+
+                    <p class="text-lg font-medium mb-1"><strong>السعر:</strong> ${{ offer.price }}</p>
+                    <p class="mb-3"><strong>الوصف:</strong> {{ offer.description }}</p>
+                    <p class="mb-3"><strong>تاريخ الخدمة المقترح:</strong> {{ offer.proposed_service_date|date:"M d, Y" }}</p>
+                    <p class="mb-4"><strong>الحالة:</strong>
+                        <span class="badge {% if offer.status == 'Pending' %}badge-warning{% elif offer.status == 'Accepted' %}badge-success{% else %}badge-error{% endif %}">
+                            {{ offer.status }}
+                        </span>
+                    </p>
+
+                    <form action="{% url 'orders:fake_payment' offer.id %}" method="POST" class="text-center">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">دفع</button>
+                    </form>
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            <div class="flex-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <label>No offers have been made for this order yet.</label>
             </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current text-gray-500">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-gray-700">لم يتم تقديم أي عروض لهذا الطلب بعد.</span>
         </div>
-    {% endif %}
+    </div>
+{% endif %}
 
     <div class="mt-6">
-        <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline">Back to Order Details</a>
+        <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline">العودة إلى تفاصيل الطلب</a>
     </div>
 </div>
 {% endblock %}

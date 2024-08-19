@@ -1,10 +1,12 @@
 from django.db import transaction, IntegrityError
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import FreelancerSignUpForm
-from .models import Account
+from .models import Account, Freelancer
+from django.contrib.auth.decorators import login_required
+
 
 def customer_account(request):
     # if there is a user, redirect to main page
@@ -52,7 +54,6 @@ def customer_account(request):
 
     return render(request, 'accounts/customer_account.html')
 
-
 def freelancer_account(request):
     if request.user.is_authenticated:
         return redirect('main:index')
@@ -94,3 +95,21 @@ def freelancer_account(request):
 def logout_view(request):
     logout(request)
     return redirect('main:index')
+
+@login_required
+def profile(request,):
+    if request.user.is_authenticated:
+        if request.user.account.user_type == 'Customer':
+            return render(request, 'accounts/customer_profile.html', {'user': request.user})
+        if request.user.account.user_type == 'Freelancer':
+            return render(request, 'accounts/freelancer_profile.html', {'user': request.user})
+    else:
+        return redirect('accounts:login')
+
+@login_required
+def freelancer_profile(request, freelancer_id):
+    freelancer = get_object_or_404(Freelancer, id=freelancer_id)
+    context = {
+        'freelancer': freelancer,
+    }
+    return render(request, 'accounts/customer_view_freelancer.html', context)

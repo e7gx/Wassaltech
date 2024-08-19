@@ -59,13 +59,11 @@ def create_offer(request, order_id):
     return render(request, 'orders/create_offer.html', {'form': form, 'order': order})
 
 
-
 @login_required
 def order_offers(request, order_id):
     order = get_object_or_404(Order, id=order_id, customer=request.user.account)
-    offers = Offer.objects.filter(order=order)
+    offers = Offer.objects.filter(order=order).select_related('freelancer', 'freelancer__user')
     return render(request, 'orders/order_offers.html', {'order': order, 'offers': offers})
-
 
 
 @login_required
