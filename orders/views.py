@@ -10,15 +10,17 @@ from django.contrib import messages
 @login_required
 def create_order(request):
     if request.method == 'POST':
-        form = OrderForm(request.POST, request.FILES)
+
+
+        form = OrderForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
             order.customer = request.user.account
             order.save()
 
-            image = form.cleaned_data.get('image')
-            if image:
-                OrderImage.objects.create(order=order, image=image)
+            files = request.FILES.getlist('files')
+            for file in files:
+                OrderImage.objects.create(order=order, image=file)
 
             video = form.cleaned_data.get('video')
             if video:
@@ -157,7 +159,7 @@ def freelancer_offers(request):
 @login_required
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    
+
     if not order.offer_set.exists():
         order.status = 'Cancelled'
         order.save()

@@ -113,3 +113,6 @@ def freelancer_profile(request, freelancer_id):
         'freelancer': freelancer,
     }
     return render(request, 'accounts/customer_view_freelancer.html', context)
+
+def inbox(request):
+    return render(request, 'accounts/inbox.html')

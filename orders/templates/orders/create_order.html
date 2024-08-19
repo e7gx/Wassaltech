@@ -44,7 +44,8 @@
                 <label class="label" for="id_image">
                     <span class="label-text">Image (optional)</span>
                 </label>
-                <input type="file" name="image" id="id_image" class="file-input file-input-bordered w-full" accept="image/*">
+                <input type="file" multiple name="files" id="id_image" class="file-input file-input-bordered w-full" accept="image/*">
+                <p class="text-sm text-gray-500 mt-1">You can upload up to 5 images.</p>
                 {% if form.image.errors %}
                     {% for error in form.image.errors %}
                         <label class="label">

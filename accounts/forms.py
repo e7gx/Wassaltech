@@ -17,7 +17,6 @@ class FreelancerLoginForm(AuthenticationForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
     )
-
     class Meta:
         model = User
         fields = "__all__"
