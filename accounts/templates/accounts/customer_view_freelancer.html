@@ -1,0 +1,85 @@
+{% extends "main/base.html" %}
+
+{% block title %}ملف مزود الخدمة{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-lg rounded-lg p-8">
+
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-extrabold text-teal-700 mb-4">ملف مزود الخدمة {{ freelancer.user.first_name }}</h1>
+            <div class="flex justify-center">
+                <div class="w-32 h-32">
+                    <img src="{{ freelancer.avatar.url }}" alt="الصورة الرمزية" class="w-full h-full rounded-full shadow-xl object-cover">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105">
+                <div class="p-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg tracking-wider font-semibold">عدد التقييمات</h3>
+                    <p class="text-4xl font-bold">12,768</p>
+                </div>
+            </div>
+            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105">
+                <div class="p-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
+                </div>
+                <div class="px-4">
+                    <h3 class="text-lg tracking-wider font-semibold">تقييمي</h3>
+                    <p class="text-4xl font-bold">5/5</p>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- User Information Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+            <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-teal-600 mb-4">معلومات مزود الخدمة</h2>
+                <p><strong class="text-teal-600 font-bold">اسم المستخدم:</strong> {{ freelancer.user.username }}</p>
+                <p><strong class="text-teal-600 font-bold">الاسم الكامل:</strong> {{ freelancer.user.first_name }} {{ freelancer.user.last_name }}</p>
+                {% if freelancer.user.address %}
+                    <p><strong class="text-teal-600 font-bold">العنوان:</strong> {{ freelancer.user.address }}</p>
+                {% endif %}
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-teal-600 mb-4">موثوقية مزود الخدمة</h2>
+                <p class="my-2"><strong class="text-teal-600 font-bold">الحالة:</strong> 
+                    {% if freelancer.status == 'Active'  %}
+                        <span class="px-3 py-0 rounded-full text-white bg-green-500">مفعل</span>
+                    {% elif freelancer.status == 'Inactive' %}
+                    <span class="px-3 py-0 rounded-full text-white bg-red-500">موقوف</span>
+                    {% elif freelancer.status == 'Pending' %}
+                        <span class="px-3 py-0 rounded-full text-white bg-yellow-500">تحت المعالجة</span>
+                    {% endif %}
+                </p>
+                <p><strong class="text-teal-600 font-bold">رقم الشهادة:</strong> {{ freelancer.certificate_id }}</p>
+                <p><strong class="text-teal-600 font-bold">تاريخ انتهاء الشهادة:</strong> {{ freelancer.certificate_expiration|date:"Y-m-d"  }}</p>
+                <div class="mt-4">
+                    <p><strong class="text-teal-600 font-bold">الشهادة:</strong></p>
+                    <img src="{{ freelancer.certificate_image.url }}" alt="الشهادة" class="rounded-lg shadow-lg w-full object-cover">
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Information Section -->
+        <div class="mt-10 bg-gray-50 p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-teal-600 mb-4">معلومات الحساب</h2>
+            <p class="my-2"><strong class="text-teal-600 font-bold">تاريخ إنشاء الحساب:</strong> {{ freelancer.user.date_joined|date:"M d, Y" }}</p>
+            <p class="my-2"><strong class="text-teal-600 font-bold">تم التحقق:</strong> 
+                {% if freelancer.user.account.is_verified %}
+                    <span class="px-8 py-0 rounded-full text-white bg-green-500 mt-4">تم التحقق بنجاح</span>
+                {% else %}
+                    <span class="px-8 py-0 rounded-full text-white bg-red-500 mt-4">لم يتم التحقق</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
