@@ -67,7 +67,7 @@
 
 
         <div class="navbar-center">
-            {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
             <ul class="menu menu-horizontal px-1 hidden lg:flex">
                 {% if user.account.user_type == 'Customer' %}
                 <li><a href="{% url 'orders:create_order' %}" class="mx-2">إنشاء طلب</a></li>
@@ -80,13 +80,10 @@
                 <li><a href="{% url 'orders:freelancer_orders' %}" class="mx-2">الطلبات المتاحة</a></li>
                 <li><a href="{% url 'orders:freelancer_offers' %}" class="mx-2">عروضي</a></li>
                 <li><a href="{% url 'accounts:profile' %}" class="mx-2">ملفي الشخصي</a></li>
-                {% endif %}
-                {% endif %}
-
                 <li><a href="{% url 'orders:order_history' %}" class="mx-2">سجل الطلبات</a></li>
                 {% endif %}
             </ul>
-            {% endif %}
+        {% endif %}
         </div>
 
         <!-- {% if user.account.user_type == 'Customer' %}
