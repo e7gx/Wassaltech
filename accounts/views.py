@@ -143,3 +143,4 @@ def profile(request,):
             return render(request, 'accounts/freelancer_profile.html', context)
     else:
         return redirect('accounts:login')
+

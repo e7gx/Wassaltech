@@ -1,5 +1,5 @@
 {% extends 'main/base.html' %}
-
+{% load static %}
 {% block content %}
 
 <div class="drawer lg:drawer-open h-screen">
@@ -13,30 +13,39 @@
              <div class="flex justify-between items-center bg-base-300 p-4 border-b border-base-200 rounded-lg">
 
                  <div>
-                     <h2 class="text-xl font-bold">المحادثة مع عبدالله الغامدي</h2>
+                     <h2 class="text-xl font-bold">المحادثة مع {{ sender_user.freelancer.user.first_name }} {{ sender_user.freelancer.user.last_name }}</h2>
                     </div>
 
                     <div class="lg:hidden">
                         <label for="my-drawer" class="btn btn-primary drawer-button">
-                             جهات الاتصال
+                             جهات الاتصال    
                         </label>
+                       
                     </div>
                 </div>
 
             <!-- Messages Area -->
             <div class="flex-grow p-4 overflow-y-auto bg-neutral light:bg-black rounded-lg">
-                <div class="chat chat-start mb-4">
-                    <div class="chat-bubble chat-bubble-primary">السلام عليكم ورحمة الله وبركاته</div>
+                {% for messages in message %}
+                {% if messages.account.user == request.user %}
+                <div class="chat chat-start mb-4" >
+                    <div class="chat-bubble chat-bubble-primary" id="messages">{{messages.content}}</div>
                 </div>
+                {% else %}
                 <div class="chat chat-end mb-4">
-                    <div class="chat-bubble chat-bubble-secondary">وعليكم السلام ورحمة الله وبركاته</div>
+                    <div class="chat-bubble chat-bubble-secondary" id="messages">
+                        <p> {{messages.content}} </p>
+                    </div>
                 </div>
+                {% endif %}
+                {% endfor %}
             </div>
 
             <!-- Message Input -->
             <div class="bg-base-200 p-4">
-                <form class="flex items-center">
-                    <input type="text" placeholder="اكتب رسالتك هنا..." class="input input-bordered flex-grow ml-2">
+                <form class="flex items-center" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="content" placeholder="اكتب رسالتك هنا..." class="input input-bordered flex-grow ml-2">
                     <button type="submit" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
@@ -53,20 +62,78 @@
         <div class="menu p-4 w-80 h-full bg-base-200 text-base-content">
             <!-- Sidebar content here -->
             <h2 class="text-2xl font-bold mb-4 text-center">جهات الاتصال</h2>
+            
             <div class="divider"></div>
             <ul class="space-y-2">
+                {%for users in user_chat%}
+                <a href="{% url 'chat:get_chat' users.id %}">
                 <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
-                    <span>عبدالله الغامدي</span>
+                    <span>{{ users.freelancer.user.first_name }} {{ users.freelancer.user.last_name }}</span>
                 </li>
-                <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
-                    <span>خالد الردادي</span>
-                </li>
-                <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
-                    <span>عبدالرحمن مخرش</span>
-                </li>
+            </a>
+                {% endfor %}
+                
             </ul>
         </div>
     </div>
 </div>
+<script>
+    let chatId = {{ sender_user.id }}; // Assumes you have the chat id available in the context
 
+    function fetchMessages() {
+        fetch(`/chat/get/chat/${chatId}/`)
+            .then(response => response.json())
+            .then(data => {
+                let messageContainer = document.getElementById('messages');
+                messageContainer.innerHTML = ''; // Clear the container
+                data.messages.forEach(message => {
+                    let messageElement = document.createElement('p');
+                    messageElement.innerHTML = `${message.content}`;
+                    messageContainer.appendChild(messageElement);
+                });
+            });
+    }
+    
+    function sendMessage(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        let messageInput = document.querySelector('input[name="content"]');
+        let message = messageInput.value;
+    
+        fetch(`/chat/send_message/${chatId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ content: message })
+        })
+        .then(response => response.json())
+        .then(() => {
+            messageInput.value = ''; // Clear the input field
+            fetchMessages(); // Fetch new messages
+        });
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchMessages(); // Fetch messages on page load
+        setInterval(fetchMessages, 1000); // Poll every 5 seconds
+    
+        document.querySelector('form').addEventListener('submit', sendMessage);
+    });
+</script>
 {% endblock %}

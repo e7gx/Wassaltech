@@ -12,6 +12,6 @@ urlpatterns = [
     path('profile/customer/', views.profile, name='profile'),
     path('profile/freelancer/', views.profile, name='profile'),
     path('profile/<int:freelancer_id>/', views.freelancer_profile, name='freelancer_profile'),
-    path('inbox/', views.inbox, name='inbox'),
+
 
 ]
