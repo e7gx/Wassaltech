@@ -12,7 +12,7 @@ categories = (
     ('Headphones', 'Headphones'),
     ('Tablets', 'Tablets'),
 )
-STATUS_CHOICES = [
+order_statuses = [
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
         ('Closed', 'Closed'),
@@ -20,7 +20,7 @@ STATUS_CHOICES = [
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
     ]
-stages = (
+offer_stages = (
     ('Pending', 'Pending'),
     ('Accepted', 'Accepted'),
     ('Declined', 'Declined'),
@@ -39,10 +39,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     freelancer_completed = models.BooleanField(default=False)
     customer_completed = models.BooleanField(default=False)
-
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open')
-    customer_completed = models.BooleanField(default=False)
-    freelancer_completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=order_statuses, default='Open')
 
     def update_status(self):
         if self.customer_completed and self.freelancer_completed:
@@ -72,6 +69,6 @@ class Offer(models.Model):
     description = models.TextField()
     proposed_service_date = models.DateField()
     appointment = models.DateTimeField()
-    stage = models.CharField(max_length=100, choices=stages, default='Pending')
+    stage = models.CharField(max_length=100, choices=offer_stages, default='Pending')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
