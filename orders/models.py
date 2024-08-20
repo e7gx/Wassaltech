@@ -20,12 +20,14 @@ STATUS_CHOICES = [
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
     ]
-statuses = (
+stages = (
     ('Pending', 'Pending'),
     ('Accepted', 'Accepted'),
     ('Declined', 'Declined'),
     ('Cancelled', 'Cancelled'),
     ('Completed', 'Completed'),
+    ('Processed', 'Processed'),
+    ('Finalized', 'Finalized'),
 )
 
 class Order(models.Model):
@@ -70,6 +72,6 @@ class Offer(models.Model):
     description = models.TextField()
     proposed_service_date = models.DateField()
     appointment = models.DateTimeField()
-    status = models.CharField(max_length=100, choices=statuses, default='Pending')
+    stage = models.CharField(max_length=100, choices=stages, default='Pending')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
