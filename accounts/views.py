@@ -107,8 +107,8 @@ def profile(request,):
         if request.user.account.user_type == 'Freelancer':
             wallet = Offer.objects.filter(status='Accepted').aggregate(Sum('price'))['price__sum']
             In_progress_orders = Order.objects.filter(status='In Progress').count()
-            completed_orders = Order.objects.filter(status='Completed').count()
-            best_catgorie = Order.objects.filter(status='Completed').values('category').annotate(Count('category')).order_by('-category__count').first()
+            completed_orders = Order.objects.filter(status='Finalized').count()
+            best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
             if best_catgorie is not None:
                 best_catgorie = best_catgorie['category']
             rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
@@ -135,7 +135,7 @@ def profile(request,):
 @login_required
 def freelancer_profile(request, freelancer_id):
     freelancer = get_object_or_404(Freelancer, id=freelancer_id)
-    best_catgorie = Order.objects.filter(status='Completed').values('category').annotate(Count('category')).order_by('-category__count').first()
+    best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
     if best_catgorie is not None:
         best_catgorie = best_catgorie['category']
         
