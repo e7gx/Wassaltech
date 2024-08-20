@@ -24,16 +24,12 @@ def user_certificate_path(instance, filename):
 
 
 class Freelancer(models.Model):
-    STATUS = (
-        ('Active', 'Active'),
-        ('Inactive', 'Inactive'),
-    )
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     certificate_id = models.CharField(max_length=100)
     certificate_expiration = models.DateField(blank=True, null=True)
     certificate_image = models.ImageField(upload_to=user_certificate_path)
     avatar = models.ImageField(upload_to=user_avatar_path)
-    status = models.CharField(max_length=20, choices=STATUS, default='Inactive')
     internal_rating = models.FloatField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
     is_verified = models.BooleanField(default=False)
 
