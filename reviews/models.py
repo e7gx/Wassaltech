@@ -1,5 +1,5 @@
 from django.db import models
-from orders.models import Order
+from orders.models import Offer, Order
 
 class Review(models.Model):
     class RatingChoices(models.IntegerChoices):
@@ -9,7 +9,7 @@ class Review(models.Model):
         FOUR = 4, '4 Stars'
         FIVE = 5, '5 Stars'
 
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    offer = models.OneToOneField(Offer, on_delete=models.CASCADE)
     rating = models.IntegerField(choices=RatingChoices.choices)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

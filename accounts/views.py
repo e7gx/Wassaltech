@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Count, Sum, Avg, Max, Min
-from orders.models import Offer
+from orders.models import Offer, Order
 from reviews.models import Review
 from .forms import FreelancerSignUpForm
 from .models import Account, Freelancer
@@ -105,14 +105,53 @@ def profile(request,):
         if request.user.account.user_type == 'Customer':
             return render(request, 'accounts/customer_profile.html', {'user': request.user})
         if request.user.account.user_type == 'Freelancer':
-            return render(request, 'accounts/freelancer_profile.html', {'user': request.user})
+            wallet = Offer.objects.filter(status='Accepted').aggregate(Sum('price'))['price__sum']
+            In_progress_orders = Order.objects.filter(status='In Progress').count()
+            completed_orders = Order.objects.filter(status='Finalized').count()
+            best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
+            if best_catgorie is not None:
+                best_catgorie = best_catgorie['category']
+            rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
+            rating_count = Review.objects.all().count()
+            orders_count = Offer.objects.all().count()
+        
+            context = {
+                'wallet': wallet,
+                'rating': rating,
+                'rating_count': rating_count,
+                'orders_count': orders_count,
+                'best_catgorie': best_catgorie,
+                'completed_orders': completed_orders,
+                'In_progress_orders': In_progress_orders,
+                
+                
+                'user': request.user,
+            }
+            
+            return render(request, 'accounts/freelancer_profile.html', context)
     else:
         return redirect('accounts:login')
 
 @login_required
 def freelancer_profile(request, freelancer_id):
     freelancer = get_object_or_404(Freelancer, id=freelancer_id)
+    best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
+    if best_catgorie is not None:
+        best_catgorie = best_catgorie['category']
+        
+    else:
+        best_catgorie = 'لايوجد'
+    In_progress_orders = Order.objects.filter(status='In Progress').count()
+    rating_count = Review.objects.all().count()
+    rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
+
+
+
     context = {
+        'rating':rating,
+        'rating_count': rating_count,
+        'In_progress_orders': In_progress_orders,
+        'best_catgorie': best_catgorie,
         'freelancer': freelancer,
     }
     return render(request, 'accounts/customer_view_freelancer.html', context)
@@ -120,27 +159,5 @@ def freelancer_profile(request, freelancer_id):
 def inbox(request):
     return render(request, 'accounts/inbox.html')
 
-@login_required
-def profile(request,):
-    if request.user.is_authenticated:
-        if request.user.account.user_type == 'Customer':
-            return render(request, 'accounts/customer_profile.html', {'user': request.user})
-        if request.user.account.user_type == 'Freelancer':
-            wallet = Offer.objects.all().filter().aggregate(Sum('price'))['price__sum']
-            rating = Review.objects.all().filter().aggregate(Avg('rating'))['rating__avg']
-            rating_count = Review.objects.all().count()
-            orders_count = Offer.objects.all().count()
 
-
-            context = {
-                'rating': rating,
-                'rating_count': rating_count,
-                'wallet': wallet,
-                'user': request.user,
-                'orders_count': orders_count,
-            }
-
-            return render(request, 'accounts/freelancer_profile.html', context)
-    else:
-        return redirect('accounts:login')
 

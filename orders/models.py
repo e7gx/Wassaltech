@@ -37,7 +37,6 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     freelancer_completed = models.BooleanField(default=False)
     customer_completed = models.BooleanField(default=False)
-
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open')
     customer_completed = models.BooleanField(default=False)
     freelancer_completed = models.BooleanField(default=False)
