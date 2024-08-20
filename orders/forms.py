@@ -15,7 +15,8 @@ class OfferForm(forms.ModelForm):
     price = forms.DecimalField(max_digits=10, decimal_places=2)
     description = forms.CharField(widget=forms.Textarea)
     proposed_service_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    appointment = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
 
     class Meta:
         model = Offer
-        fields = ['price', 'description', 'proposed_service_date']
+        fields = ['price', 'description', 'proposed_service_date', 'appointment']

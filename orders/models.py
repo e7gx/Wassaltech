@@ -15,6 +15,8 @@ categories = (
 STATUS_CHOICES = [
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
+        ('Closed', 'Closed'),
+        #No need for these
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
     ]
@@ -22,6 +24,8 @@ statuses = (
     ('Pending', 'Pending'),
     ('Accepted', 'Accepted'),
     ('Declined', 'Declined'),
+    ('Cancelled', 'Cancelled'),
+    ('Completed', 'Completed'),
 )
 
 class Order(models.Model):
@@ -61,7 +65,11 @@ class Offer(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    refund = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    complete_on_time = models.BooleanField(default=False)
     description = models.TextField()
     proposed_service_date = models.DateField()
+    # appointment = models.DateTimeField()
     status = models.CharField(max_length=100, choices=statuses, default='Pending')
     updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
