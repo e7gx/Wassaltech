@@ -7,6 +7,20 @@
     <div class="card bg-base-100 shadow-xl mb-8">
         <div class="card-body">
             <h2 class="card-title mb-4">تفاصيل الطلب</h2>
+            {% if order_images %}
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">الصور:</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {% for image in order_images %}
+                        <div class="rounded-lg overflow-hidden">
+                            <img src="{{ image.image.url }}" alt="صورة الطلب" class="w-full h-auto">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p>لا توجد صور متاحة لهذا الطلب.</p>
+        {% endif %}
             <p><strong>الفئة:</strong> {{ order.category }}</p>
             <p><strong>الوصف:</strong> {{ order.issue_description }}</p>
             <p><strong>الحالة:</strong> 
@@ -23,7 +37,7 @@
         {% for offer in offers %}
             <div class="card bg-base-100 shadow-xl rounded-lg overflow-hidden">
                 <div class="card-body p-4">
-                    <img src="{{ offer.freelancer.avatar.url }}" alt="صورة" class="w-16 h-16 rounded-full border-2 border-gray-200">
+                    <img src="{{ offer.account.avatar.url }}" alt="صورة" class="w-16 h-16 rounded-full border-2 border-gray-200">
 
                     <div class="flex items-center mb-4">
                         <div class="ml-4">
@@ -42,8 +56,8 @@
                     <p class="mb-3"><strong>الوصف:</strong> {{ offer.description }}</p>
                     <p class="mb-3"><strong>تاريخ الخدمة المقترح:</strong> {{ offer.proposed_service_date|date:"M d, Y" }}</p>
                     <p class="mb-4"><strong>الحالة:</strong>
-                        <span class="badge {% if offer.status == 'Pending' %}badge-warning{% elif offer.status == 'Accepted' %}badge-success{% else %}badge-error{% endif %}">
-                            {{ offer.status }}
+                        <span class="badge {% if offer.offer_stages == 'Pending' %}badge-warning{% elif offer.offer_stages == 'Accepted' %}badge-success{% else %}badge-error{% endif %}">
+                            {{ offer.stage }}
                         </span>
                     </p>
 

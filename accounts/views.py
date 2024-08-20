@@ -113,10 +113,10 @@ def profile(request,):
         if request.user.account.user_type == 'Customer':
             return render(request, 'accounts/customer_profile.html', {'user': request.user})
         if request.user.account.user_type == 'Freelancer':
-            wallet = Offer.objects.filter(order_statuses='Accepted').aggregate(Sum('price'))['price__sum']
-            In_progress_orders = Order.objects.filter(order_statuses='In Progress').count()
-            completed_orders = Order.objects.filter(order_statuses='Finalized').count()
-            best_catgorie = Order.objects.filter(order_statuses='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
+            total_sum_finalized_offers = Offer.objects.filter(stage='Finalized').aggregate(total_price=Sum('price'))['total_price']
+            In_progress_orders = Order.objects.filter(status='In Progress').count()
+            completed_orders = Order.objects.filter(status='Finalized').count()
+            best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
             if best_catgorie is not None:
                 best_catgorie = best_catgorie['category']
             rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
@@ -124,7 +124,7 @@ def profile(request,):
             orders_count = Offer.objects.all().count()
         
             context = {
-                'wallet': wallet,
+                'total_sum_finalized_offers': total_sum_finalized_offers,
                 'rating': rating,
                 'rating_count': rating_count,
                 'orders_count': orders_count,
@@ -143,13 +143,13 @@ def profile(request,):
 @login_required
 def freelancer_profile(request, freelancer_id):
     freelancer = get_object_or_404(Freelancer, id=freelancer_id)
-    best_catgorie = Order.objects.filter(order_statuses='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
+    best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
     if best_catgorie is not None:
         best_catgorie = best_catgorie['category']
         
     else:
         best_catgorie = 'لايوجد'
-    In_progress_orders = Order.objects.filter(order_statuses='In Progress').count()
+    In_progress_orders = Order.objects.filter(status='In Progress').count()
     rating_count = Review.objects.all().count()
     rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
 

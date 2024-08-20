@@ -68,8 +68,16 @@ def create_offer(request, order_id):
 @login_required
 def order_offers(request, order_id):
     order = get_object_or_404(Order, id=order_id, customer=request.user.account)
+    order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
     offers = Offer.objects.filter(order=order).select_related('freelancer', 'freelancer__user')
-    return render(request, 'orders/order_offers.html', {'order': order, 'offers': offers})
+    
+    context= {
+        'order': order,
+        'offers': offers,
+        'order_images': order_images,
+    }
+    
+    return render(request, 'orders/order_offers.html', context)
 
 
 @login_required
@@ -158,16 +166,18 @@ def fake_payment(request, offer_id):
 @login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    offer = Offer.objects.filter(order=order, status='Accepted').first()
+    offer = Offer.objects.filter(order=order, stage='Accepted').first()
+    order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
     review_form = None
 
-    if request.user == order.customer.user and not order.customer_completed:
+    if request.user == order.customer and not order.customer_completed:
         review_form = ReviewForm()
 
     context = {
         'order': order,
         'offer': offer,
         'review_form': review_form,
+        'order_images': order_images,
     }
     return render(request, 'orders/order_detail.html', context)
 
