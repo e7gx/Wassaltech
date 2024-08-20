@@ -40,7 +40,7 @@ class Order(models.Model):
     freelancer_completed = models.BooleanField(default=False)
     customer_completed = models.BooleanField(default=False)
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open')
+    status = models.CharField(max_length=20, choices=order_statuses, default='Open')
     customer_completed = models.BooleanField(default=False)
     freelancer_completed = models.BooleanField(default=False)
 
