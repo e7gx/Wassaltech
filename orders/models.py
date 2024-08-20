@@ -16,9 +16,7 @@ order_statuses = [
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
         ('Closed', 'Closed'),
-        #No need for these
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
+        ('Deleted', 'Deleted')
     ]
 offer_stages = (
     ('Pending', 'Pending'),
