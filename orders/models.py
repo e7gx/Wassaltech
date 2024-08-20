@@ -20,6 +20,7 @@ order_statuses = [
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
     ]
+
 offer_stages = (
     ('Pending', 'Pending'),
     ('Accepted', 'Accepted'),

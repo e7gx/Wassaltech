@@ -29,24 +29,32 @@ def customer_account(request):
                     messages.error(request, 'Invalid credentials for customer account.')
             else:
                 messages.error(request, 'Invalid username or password.')
+                
         elif 'signup' in request.POST:
             username = request.POST.get('username')
             email = request.POST.get('email')
-            phone_number = request.POST.get('phone_number')  # Changed from 'phone'
+            phone_number = request.POST.get('phone_number')
             first_name = request.POST.get('first_name')
             last_name = request.POST.get('last_name')
             password = request.POST.get('password')
             address = request.POST.get('address')
+            avatar = request.FILES.get('avatar')
 
             try:
                 with transaction.atomic():
-                    user = User.objects.create_user(username=username, email=email, password=password,
-                                                    first_name=first_name, last_name=last_name)
+                    user = User.objects.create_user(
+                        username=username, 
+                        email=email, 
+                        password=password,
+                        first_name=first_name, 
+                        last_name=last_name
+                    )
                     Account.objects.create(
                         user=user,
                         phone_number=phone_number,
                         address=address,
-                        user_type='Customer'
+                        user_type='Customer',
+                        avatar=avatar
                     )
 
                 login(request, user)
@@ -105,10 +113,10 @@ def profile(request,):
         if request.user.account.user_type == 'Customer':
             return render(request, 'accounts/customer_profile.html', {'user': request.user})
         if request.user.account.user_type == 'Freelancer':
-            wallet = Offer.objects.filter(status='Accepted').aggregate(Sum('price'))['price__sum']
-            In_progress_orders = Order.objects.filter(status='In Progress').count()
-            completed_orders = Order.objects.filter(status='Finalized').count()
-            best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
+            wallet = Offer.objects.filter(order_statuses='Accepted').aggregate(Sum('price'))['price__sum']
+            In_progress_orders = Order.objects.filter(order_statuses='In Progress').count()
+            completed_orders = Order.objects.filter(order_statuses='Finalized').count()
+            best_catgorie = Order.objects.filter(order_statuses='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
             if best_catgorie is not None:
                 best_catgorie = best_catgorie['category']
             rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
@@ -135,13 +143,13 @@ def profile(request,):
 @login_required
 def freelancer_profile(request, freelancer_id):
     freelancer = get_object_or_404(Freelancer, id=freelancer_id)
-    best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
+    best_catgorie = Order.objects.filter(order_statuses='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
     if best_catgorie is not None:
         best_catgorie = best_catgorie['category']
         
     else:
         best_catgorie = 'لايوجد'
-    In_progress_orders = Order.objects.filter(status='In Progress').count()
+    In_progress_orders = Order.objects.filter(order_statuses='In Progress').count()
     rating_count = Review.objects.all().count()
     rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
 
