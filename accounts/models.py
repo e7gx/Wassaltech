@@ -37,11 +37,11 @@ class Freelancer(models.Model):
         return f"{self.user.username} | {self.status}"
 
     def get_completion_count(self):
-        completion_count = self.offer_set.filter(statuses='Completed').count()
+        completion_count = self.offer_set.filter(stage='Completed').count()
         return completion_count
 
     def get_cancellation_count(self):
-        cancellation_count = self.offer_set.filter(statuses='Cancelled').count()
+        cancellation_count = self.offer_set.filter(stage='Cancelled').count()
         return cancellation_count
 
     def get_completion_rate(self):
@@ -53,7 +53,8 @@ class Freelancer(models.Model):
             return completion_rate
 
     def get_timely_completion_count(self):
-        pass
+        timely_completion_count = self.offer_set.filter(stage='Completed', complete_on_time=True).count()
+        return timely_completion_count
 
     def get_success_rate(self):
         if self.offer_set.count() == 0:
