@@ -69,7 +69,7 @@ class Offer(models.Model):
     complete_on_time = models.BooleanField(default=False)
     description = models.TextField()
     proposed_service_date = models.DateField()
-    # appointment = models.DateTimeField()
+    appointment = models.DateTimeField()
     status = models.CharField(max_length=100, choices=statuses, default='Pending')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
