@@ -18,8 +18,8 @@
 
 
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-            
+        <div class="flex items-center bg-gradient-to-r from-blue-400 to-indigo-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
+
 
                 <div class="p-4">
                     <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
@@ -27,7 +27,7 @@
 
                 <div class="px-4">
                     <h3 class="text-lg tracking-wider font-semibold">المحفظة</h3>
-                    <p class="text-4xl font-bold">12,768 $</p>
+                    <p class="text-4xl font-bold">{{ wallet }} $</p>
                 </div>
 
             </div>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="px-4">
                     <h3 class="text-lg tracking-wider font-semibold">تقييمي</h3>
-                    <p class="text-4xl font-bold">5/5</p>
+                    <p class="text-4xl font-bold">{{rating}}/5.0 ⭐️</p>
                 </div>
             </div>
         </div>
@@ -47,8 +47,8 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
                 </div>
                 <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">عدد</h3>
-                    <p class="text-4xl font-bold">12,768</p>
+                    <h3 class="text-lg tracking-wider font-semibold">عدد التقيمات</h3>
+                    <p class="text-4xl font-bold">{{ rating_count}}</p>
                 </div>
             </div>
 
@@ -57,8 +57,8 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
                 </div>
                 <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">مجموع الطلبات</h3>
-                    <p class="text-4xl font-bold">17</p>
+                    <h3 class="text-lg tracking-wider font-semibold">مجموع العروض المقدمة</h3>
+                    <p class="text-4xl font-bold">{{ orders_count }}</p>
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@
 
             <div class="bg-gray-100 p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold text-teal-600 mb-4">موثوقية مزود الخدمة</h2>
-                    <p class="my-2"><strong class="text-teal-600 font-bold">الحالة:</strong> 
+                    <p class="my-2"><strong class="text-teal-600 font-bold">الحالة:</strong>
                         {% if user.freelancer.status == 'Active'  %}
                             <span class="px-3 py-0 rounded-full text-white bg-green-500">مفعل</span>
                         {% elif user.freelancer.status == 'Inactive' %}
@@ -100,8 +100,8 @@
         <div class="mt-10 bg-gray-50 p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-bold text-teal-600 mb-4">معلومات الحساب</h2>
             <p><strong class="text-teal-600 font-bold">تاريخ إنشاء الحساب:</strong> {{ user.date_joined|date:"Y-m-d"  }}</p>
-            <p class="my-2"><strong class="text-teal-600 font-bold">تم التحقق:</strong> 
-                {% if freelancer.user.account.is_verified %}
+            <p class="my-2"><strong class="text-teal-600 font-bold">تم التحقق:</strong>
+                {% if user.freelancer.is_verified %}
                     <span class="px-8 py-0 rounded-full text-white bg-green-500 mt-4">تم التحقق بنجاح</span>
                 {% else %}
                     <span class="px-8 py-0 rounded-full text-white bg-red-500 mt-4">لم يتم التحقق</span>

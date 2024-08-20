@@ -2,10 +2,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+
+from accounts.models import Account
 from reviews.forms import ReviewForm
 from .models import Order, OrderImage, OrderVideo, Offer
 from .forms import OrderForm, OfferForm
 from django.contrib import messages
+from accounts.decorators import user_type_required
+from datetime import datetime, timedelta
 
 @login_required
 def create_order(request):
@@ -78,14 +82,69 @@ def accept_offer(request, offer_id):
 
     offer.status = 'Accepted'
     offer.save()
-
-    Offer.objects.filter(order=order).exclude(id=offer_id).delete()
+    # Should set status to declined instead of deleting offers
+    unaccepted_offers = Offer.objects.filter(order=order).exclude(id=offer_id)
+    for offer in unaccepted_offers:
+        offer.status = 'Declined'
+        offer.save()
+    # Offer.objects.filter(order=order).exclude(id=offer_id).delete()
 
     order.status = 'In Progress'
     order.assigned_to = offer.freelancer
     order.save()
 
     return redirect('orders:order_detail', order_id=order.id)
+
+@user_type_required(['Customer'])
+def customer_cancel_offer(request, offer_id):
+    offer = get_object_or_404(Offer, id=offer_id)
+    order = offer.order
+
+    if request.user.account != order.customer:
+        return HttpResponseForbidden("You don't have permission to cancel this offer.")
+    full_refund = timedelta(hours=24)
+    half_refund = timedelta(hours=12)
+    time_until_visit = offer.appointment - datetime.now()
+    try:
+        if time_until_visit >= full_refund:
+            offer.refund = offer.price
+            offer.price = 0
+        elif time_until_visit >= half_refund:
+            offer.refund = offer.price / 2
+            offer.price = offer.price / 2
+
+        offer.status = 'Cancelled'
+        offer.save()
+
+        order.status = 'Open'
+        order.assigned_to = None
+        order.save()
+    except Exception as e:
+        print(e)
+
+    return redirect('orders:order_detail', order_id=order.id)
+
+@user_type_required(['Freelancer'])
+def freelancer_cancel_offer(request, offer_id):
+    offer = get_object_or_404(Offer, id=offer_id)
+    order = offer.order
+
+    if request.user.account != order.assigned_to:
+        return HttpResponseForbidden("You don't have permission to cancel this offer.")
+    try:
+        offer.status = 'Cancelled'
+        offer.refund = offer.price
+        offer.price = 0
+        offer.save()
+        offer.freelancer.update_internal_rating()
+
+        order.status = 'Open'
+        order.assigned_to = None
+        order.save()
+    except Exception as e:
+        print(e)
+
+    return redirect('orders:freelancer_offers', freelancer_id=offer.freelancer.id)
 
 
 #! edit this function redirct to the order detail page after payment
@@ -124,6 +183,9 @@ def end_order(request, order_id):
         if order.freelancer_completed:
             order.customer_completed = True
             order.status = 'Completed'
+
+            # Logic for complete on time
+
             order.save()
             messages.success(request, 'You have successfully completed the order.')
         else:
