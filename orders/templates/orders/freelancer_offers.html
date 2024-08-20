@@ -25,7 +25,7 @@
                             <td>${{ offer.price }}</td>
                             <td>
                                 <span class="badge {% if offer.status == 'Pending' %}badge-warning{% elif offer.status == 'Accepted' %}badge-success{% else %}badge-error{% endif %}">
-                                    {{ offer.status }}
+                                    {{ offer.stage }}
                                 </span>
                             </td>
                             <td>{{ offer.proposed_service_date|date:"M d, Y" }}</td>
