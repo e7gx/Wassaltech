@@ -10,10 +10,12 @@ from accounts.models import Account
 from datetime import datetime, timedelta
 
 
+########################################################################################################################
 # ORDER CRUD
-
+########################################################################################################################
+########################################################################################################################
 # ORDER CREATE
-
+########################################################################################################################
 # CUSTOMER CREATE
 @login_required
 def create_order(request):
@@ -39,8 +41,9 @@ def create_order(request):
     return render(request, 'orders/create_order.html', {'form': form})
 
 
+########################################################################################################################
 # ORDER READ
-
+########################################################################################################################
 # CUSTOMER READ
 @login_required
 def customer_orders(request):
@@ -91,8 +94,9 @@ def order_detail(request, order_id):
     return render(request, 'orders/order_detail.html', context)
 
 
+########################################################################################################################
 # ORDER UPDATE
-
+########################################################################################################################
 # MUTUAL UPDATE
 @login_required
 def end_order(request, order_id):
@@ -121,27 +125,30 @@ def end_order(request, order_id):
         return redirect('orders:freelancer_orders')
 
 
+########################################################################################################################
 # ORDER DELETE
-
+########################################################################################################################
 # CUSTOMER DELETE
 @login_required
-def cancel_order(request, order_id):
+def discard_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
     if not order.offer_set.exists():
-        order.status = 'Deleted'
+        order.status = 'Discarded'
         order.save()
-        messages.success(request, 'The order has been successfully deleted.')
+        messages.success(request, 'The order has been successfully discarded.')
     else:
-        messages.error(request, 'This order cannot be deleted as it has already been linked with a freelancer.')
+        messages.error(request, 'This order cannot be discarded as it has already been linked with a freelancer.')
 
     return redirect('orders:customer_orders')
 
 
+########################################################################################################################
 # OFFER CRUD
-
+########################################################################################################################
+########################################################################################################################
 # OFFER CREATE
-
+########################################################################################################################
 # FREELANCER CREATE
 @login_required
 def create_offer(request, order_id):
@@ -166,8 +173,9 @@ def create_offer(request, order_id):
     return render(request, 'orders/create_offer.html', {'form': form, 'order': order})
 
 
+########################################################################################################################
 # OFFER READ
-
+########################################################################################################################
 # CUSTOMER READ
 @login_required
 def order_offers(request, order_id):
@@ -191,8 +199,9 @@ def freelancer_offers(request):
     return render(request, 'orders/freelancer_offers.html', {'offers': offers})
 
 
+########################################################################################################################
 # OFFER UPDATE
-
+########################################################################################################################
 # CUSTOMER UPDATE
 @login_required
 def accept_offer(request, offer_id):
@@ -202,11 +211,11 @@ def accept_offer(request, offer_id):
     if request.user.account != order.customer:
         return HttpResponseForbidden("You don't have permission to accept this offer.")
 
-    offer.status = 'Accepted'
+    offer.stage = 'Accepted'
     offer.save()
     unaccepted_offers = Offer.objects.filter(order=order).exclude(id=offer_id)
     for offer in unaccepted_offers:
-        offer.status = 'Declined'
+        offer.stage = 'Declined'
         offer.save()
 
     order.status = 'In Progress'
@@ -217,6 +226,7 @@ def accept_offer(request, offer_id):
 
 
 # CUSTOMER UPDATE
+# An offer can be cancelled if and only if it is in the "Accepted" stage.
 @login_required
 def customer_cancel_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
@@ -235,7 +245,7 @@ def customer_cancel_offer(request, offer_id):
             offer.refund = offer.price / 2
             offer.price = offer.price / 2
 
-        offer.status = 'Cancelled'
+        offer.stage = 'Cancelled'
         offer.save()
 
         order.status = 'Open'
@@ -248,6 +258,7 @@ def customer_cancel_offer(request, offer_id):
 
 
 # FREELANCER UPDATE
+# An offer can be cancelled if and only if it is in the "Accepted" stage.
 @login_required
 def freelancer_cancel_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
@@ -256,7 +267,7 @@ def freelancer_cancel_offer(request, offer_id):
     if request.user.account != order.assigned_to:
         return HttpResponseForbidden("You don't have permission to cancel this offer.")
     try:
-        offer.status = 'Cancelled'
+        offer.stage = 'Cancelled'
         offer.refund = offer.price
         offer.price = 0
         offer.save()
@@ -271,7 +282,6 @@ def freelancer_cancel_offer(request, offer_id):
     return redirect('orders:freelancer_offers', freelancer_id=offer.freelancer.id)
 
 
-# OFFER DELETE
 
 
 # ! edit this function redirct to the order detail page after payment

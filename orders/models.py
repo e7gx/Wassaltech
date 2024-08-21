@@ -14,17 +14,19 @@ categories = (
 )
 order_statuses = [
         ('Open', 'Open'),
+        ('Discarded', 'Discarded'),
         ('In Progress', 'In Progress'),
         ('Closed', 'Closed'),
-        ('Deleted', 'Deleted')
     ]
 
 offer_stages = (
     ('Pending', 'Pending'),
+    ('Discarded', 'Discarded'),
     ('Accepted', 'Accepted'),
     ('Declined', 'Declined'),
     ('Cancelled', 'Cancelled'),
     ('Completed', 'Completed'),
+    # For payment tracking
     ('Processed', 'Processed'),
     ('Finalized', 'Finalized'),
 )
