@@ -30,4 +30,5 @@ urlpatterns = [
     path('reviews/', include('reviews.urls')),
     path('support/', include('support.urls')),
     path('chat/', include('chat.urls')),
+    path('api/', include('mobile_apis.urls')),  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
