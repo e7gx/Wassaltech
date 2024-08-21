@@ -1,0 +1,50 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <div class="m-8">
+        <h1 class="text-3xl font-bold text-center">صفحة التحقق من مزودين الخدمات</h1>
+    </div>
+    
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-center rtl:text-center text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">اسم مزود الخدمة</th>
+                    <th scope="col" class="px-6 py-3">حالة مزود الخدمة</th>
+                    <th scope="col" class="px-6 py-3">رقم الشهادة</th>
+                    <th scope="col" class="px-6 py-3"><span class="sr-only">تحرير</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for manage_freelancer in manage_freelancers  %}
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
+                        {{ manage_freelancer.user.username }}
+                    </th>
+                    <td class="px-6 py-4">
+                            {% if  manage_freelancer.is_verified == False  %}
+                            <span class="bg-red-500 px-8 py-0 rounded-full text-white">
+                                غير مفعل
+                            </span>
+                            {% else %}
+                            <span class="bg-green-500 px-8 py-0 rounded-full text-white">
+                                مفعل
+                            </span>
+                            {% endif %}
+                    </td>
+                    <td class="px-6 py-4"><p class="font-bold text-teal-500">{{ manage_freelancer.certificate_id }}</p></td>
+
+                    <td class="px-6 py-4 text-center">
+                        <a href="{% url 'accounts:freelancer_profile' manage_freelancer.id %}" class="px-8 py-1 rounded-full bg-teal-500 font-medium text-white">عرض</a>
+                        <span class="px-2"></span>
+                        <a href="https://freelance.sa/certificate-validation" target="_blank" rel="noopener noreferrer" class="px-8 py-1 rounded-full bg-yellow-500 font-medium text-white">التحقق من الشهادة</a>
+                    </td>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

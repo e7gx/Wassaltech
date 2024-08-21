@@ -90,11 +90,11 @@
             <h2 class="text-2xl font-bold text-teal-600 mb-4">معلومات الحساب</h2>
             <p class="my-2"><strong class="text-teal-600 font-bold">تاريخ إنشاء الحساب:</strong> {{ freelancer.user.date_joined|date:"M d, Y" }}</p>
             <p class="my-2"><strong class="text-teal-600 font-bold">تم التحقق:</strong> 
-                {% if freelancer.user.account.is_verified %}
-                    <span class="px-8 py-0 rounded-full text-white bg-green-500 mt-4">تم التحقق بنجاح</span>
-                {% else %}
-                    <span class="px-8 py-0 rounded-full text-white bg-red-500 mt-4">لم يتم التحقق</span>
-                {% endif %}
+                {% if freelancer.is_verified == True %}
+                <span class="px-8 py-0 rounded-full text-white bg-green-500 mt-4">تم التحقق بنجاح</span>
+            {% else %}
+                <span class="px-8 py-0 rounded-full text-white bg-red-500 mt-4">لم يتم التحقق</span>
+            {% endif %}
             </p>
         </div>
     </div>
