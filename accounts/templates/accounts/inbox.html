@@ -25,25 +25,26 @@
                 </div>
 
             <!-- Messages Area -->
-            <div class="flex-grow p-4 overflow-y-auto bg-neutral light:bg-black rounded-lg">
-                {% for messages in message %}
-                {% if messages.account.user == request.user %}
-                <div class="chat chat-start mb-4" >
-                    <div class="chat-bubble chat-bubble-primary" id="chat-log">{{messages.content}}</div>
-                </div>
-                {% else %}
-                <div class="chat chat-end mb-4">
-                    <div class="chat-bubble chat-bubble-secondary" id="chat-log">
-                        <p> {{messages.content}} </p>
-                    </div>
-                </div>
-                {% endif %}
-                {% endfor %}
-            </div>
+<div class="flex-grow p-4 overflow-y-auto bg-neutral light:bg-black rounded-lg" id="chat-log">
+    {% for messages in message %}
+    {% if messages.sender == request.user %}
+    <div class="chat chat-start mb-4">
+        <div class="chat-bubble chat-bubble-primary">{{ messages.content }}</div>
+    </div>
+    {% else %}
+    <div class="chat chat-end mb-4">
+        <div class="chat-bubble chat-bubble-secondary">
+            <p>{{ messages.content }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
 
             <!-- Message Input -->
             <div class="bg-base-200 p-4">
-               
+                <form class="flex items-center" method="post">
+                    {% csrf_token %}
                     <input type="text" name="content" id='chat-message-input' placeholder="اكتب رسالتك هنا..." class="input input-bordered flex-grow ml-2">
                     <button type="submit" id="chat-message-submit" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -52,7 +53,8 @@
                                 d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                         </svg>
                     </button>
-                
+                </form>
+
             </div>
         </div>
     </div>
@@ -71,10 +73,10 @@
                     <span>{{ users.freelancer.user.first_name }} {{ users.freelancer.user.last_name }}</span>
                 </li>
             </a>
-            {% elif user.account.user_type == 'Freelancer' %}
+            {% else %}
             <a href="{% url 'chat:get_chat' users.id %}">
                 <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
-                    <span>{{ users.user.first_name }} {{ users.user.last_name }}</span>
+                    <span>{{ users.user.user.first_name }} {{ users.user.user.last_name }}</span>
                 </li>
             </a>
             {% endif%}
@@ -88,28 +90,71 @@
     let chatId = {{ sender_user.id }}; 
 
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + chatId    + '/'
+        'ws://' + window.location.host + '/chat/get/chat/' + chatId + '/'
     );
+
+    chatSocket.onopen = function(e) {
+        console.log('WebSocket connection established.');
+    };
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        document.querySelector('#chat-log').value += (data.message + '\n');
-    };
-
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit').click();
+        if (data.error) {
+            console.error('Error:', data.error);
+        } else {
+            const chatLog = document.querySelector('#chat-log');
+            chatLog.innerHTML += `<div class="chat-message">${data.message}</div>`;
+            chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
         }
     };
 
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly:', e);
+    };
+
+    chatSocket.onerror = function(e) {
+        console.error('Chat socket error:', e);
+    };
+
     document.querySelector('#chat-message-submit').onclick = function(e) {
+        e.preventDefault(); // Prevent default form submission
+
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-        messageInputDom.value = '';
+
+        fetch(`/chat/send_message/${chatId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') // Ensure CSRF token is included
+            },
+            body: JSON.stringify({
+                'message': message
+            })
+        }).then(response => {
+            if (response.ok) {
+                messageInputDom.value = '';
+            } else {
+                console.error('Failed to send message');
+            }
+        });
     };
+
+    // Utility function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
+
 {% endblock %}
