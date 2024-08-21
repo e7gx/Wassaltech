@@ -130,7 +130,7 @@ def end_order(request, order_id):
 ########################################################################################################################
 # CUSTOMER DELETE
 @login_required
-def customer_discard_order(request, order_id):
+def discard_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
     if not order.offer_set.exists():
