@@ -298,7 +298,7 @@ def freelancer_discard_offer(request, offer_id):
     else:
         messages.error(request, 'This offer cannot be discarded.')
 
-    return redirect('orders:customer_orders')
+    return redirect('orders:freelancer_orders')
 
 
 # ! edit this function redirct to the order detail page after payment
