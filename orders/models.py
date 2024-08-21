@@ -1,6 +1,14 @@
 from django.db import models
 from accounts.models import Account, Freelancer
 
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.name
+
 categories = (
     ('Mobiles', 'Mobiles'),
     ('Laptops', 'Laptops'),
@@ -40,7 +48,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     freelancer_completed = models.BooleanField(default=False)
     customer_completed = models.BooleanField(default=False)
-    
+
     status = models.CharField(max_length=20, choices=order_statuses, default='Open')
 
     def update_status(self):
