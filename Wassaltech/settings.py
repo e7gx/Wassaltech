@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'reviews',
     'support',
     'mobile_apis',
+    'channels',
 
 ]
 
@@ -89,6 +90,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Wassaltech.wsgi.application'
+ASGI_APPLICATION = 'Wassaltech.asgi.application'
+
 
 
 # Database
@@ -142,3 +145,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

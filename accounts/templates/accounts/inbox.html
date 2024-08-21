@@ -29,11 +29,11 @@
                 {% for messages in message %}
                 {% if messages.account.user == request.user %}
                 <div class="chat chat-start mb-4" >
-                    <div class="chat-bubble chat-bubble-primary" id="messages">{{messages.content}}</div>
+                    <div class="chat-bubble chat-bubble-primary" id="chat-log">{{messages.content}}</div>
                 </div>
                 {% else %}
                 <div class="chat chat-end mb-4">
-                    <div class="chat-bubble chat-bubble-secondary" id="messages">
+                    <div class="chat-bubble chat-bubble-secondary" id="chat-log">
                         <p> {{messages.content}} </p>
                     </div>
                 </div>
@@ -43,17 +43,16 @@
 
             <!-- Message Input -->
             <div class="bg-base-200 p-4">
-                <form class="flex items-center" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="content" placeholder="اكتب رسالتك هنا..." class="input input-bordered flex-grow ml-2">
-                    <button type="submit" class="btn btn-primary">
+               
+                    <input type="text" name="content" id='chat-message-input' placeholder="اكتب رسالتك هنا..." class="input input-bordered flex-grow ml-2">
+                    <button type="submit" id="chat-message-submit" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                         </svg>
                     </button>
-                </form>
+                
             </div>
         </div>
     </div>
@@ -66,11 +65,19 @@
             <div class="divider"></div>
             <ul class="space-y-2">
                 {%for users in user_chat%}
+                {% if user.account.user_type == 'Customer' %}
                 <a href="{% url 'chat:get_chat' users.id %}">
                 <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
                     <span>{{ users.freelancer.user.first_name }} {{ users.freelancer.user.last_name }}</span>
                 </li>
             </a>
+            {% elif user.account.user_type == 'Freelancer' %}
+            <a href="{% url 'chat:get_chat' users.id %}">
+                <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
+                    <span>{{ users.user.first_name }} {{ users.user.last_name }}</span>
+                </li>
+            </a>
+            {% endif%}
                 {% endfor %}
                 
             </ul>
@@ -78,62 +85,31 @@
     </div>
 </div>
 <script>
-    let chatId = {{ sender_user.id }}; // Assumes you have the chat id available in the context
+    let chatId = {{ sender_user.id }}; 
 
-    function fetchMessages() {
-        fetch(`/chat/get/chat/${chatId}/`)
-            .then(response => response.json())
-            .then(data => {
-                let messageContainer = document.getElementById('messages');
-                messageContainer.innerHTML = ''; // Clear the container
-                data.messages.forEach(message => {
-                    let messageElement = document.createElement('p');
-                    messageElement.innerHTML = `${message.content}`;
-                    messageContainer.appendChild(messageElement);
-                });
-            });
-    }
-    
-    function sendMessage(event) {
-        event.preventDefault(); // Prevent the form from submitting normally
-        let messageInput = document.querySelector('input[name="content"]');
-        let message = messageInput.value;
-    
-        fetch(`/chat/send_message/${chatId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
-            },
-            body: JSON.stringify({ content: message })
-        })
-        .then(response => response.json())
-        .then(() => {
-            messageInput.value = ''; // Clear the input field
-            fetchMessages(); // Fetch new messages
-        });
-    }
-    
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            let cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + chatId    + '/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.querySelector('#chat-log').value += (data.message + '\n');
+    };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
         }
-        return cookieValue;
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchMessages(); // Fetch messages on page load
-        setInterval(fetchMessages, 1000); // Poll every 5 seconds
-    
-        document.querySelector('form').addEventListener('submit', sendMessage);
-    });
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        messageInputDom.value = '';
+    };
 </script>
 {% endblock %}
