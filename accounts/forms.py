@@ -12,10 +12,10 @@ class CustomerLoginForm(AuthenticationForm):
 class FreelancerLoginForm(AuthenticationForm):
     username = forms.CharField(
         max_length=254,
-        widget=forms.TextInput(attrs={'placeholder': 'Username'}),
+        widget=forms.TextInput(attrs={'placeholder': 'ادخل اسم المستخدم'}),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
+        widget=forms.PasswordInput(attrs={'placeholder': 'ادخل كلمة المرور'}),
     )
     class Meta:
         model = User
@@ -23,9 +23,9 @@ class FreelancerLoginForm(AuthenticationForm):
 
 
 class CustomerSignUpForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-    phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Phone Number'}))
-    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'Address'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'ادخل كلمة المرور'}))
+    phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'ادخل رقم الهاتف'}))
+    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'ادخل العنوان'}))
     avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
 
     class Meta:
@@ -49,10 +49,10 @@ class CustomerSignUpForm(forms.ModelForm):
 
 
 class FreelancerSignUpForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter password'}))
-    phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Enter phone number'}))
-    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'Enter address'}))
-    certificate_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Enter certificate ID'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'ادخل كلمة المرور'}))
+    phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'ادخل رقم الهاتف'}))
+    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'ادخل العنوان'}))
+    certificate_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'ادخل رقم الشهادة'}))
     certificate_image = forms.ImageField(required=True, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
     avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
 
@@ -73,7 +73,7 @@ class FreelancerSignUpForm(forms.ModelForm):
                 user=user,
                 phone_number=self.cleaned_data['phone_number'],
                 address=self.cleaned_data['address'],
-                user_type=user_type,  # Set the user type here
+                user_type=user_type,  
                 avatar=self.cleaned_data['avatar']
             )
             Freelancer.objects.create(
