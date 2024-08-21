@@ -26,10 +26,11 @@ class CustomerSignUpForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
     phone_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Phone Number'}))
     address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'Address'}))
+    avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone_number', 'address']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone_number', 'address', 'avatar']
 
     @transaction.atomic
     def save(self, commit=True):
@@ -53,7 +54,7 @@ class FreelancerSignUpForm(forms.ModelForm):
     address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'أدخل العنوان'}))
     certificate_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'أدخل رقم الشهادة'}))
     certificate_image = forms.ImageField(required=True, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
-    avatar = forms.ImageField(required=True, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
+    avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full max-w-xs'}))
 
     class Meta:
         model = User
@@ -76,12 +77,14 @@ class FreelancerSignUpForm(forms.ModelForm):
                 user=user,
                 phone_number=self.cleaned_data['phone_number'],
                 address=self.cleaned_data['address'],
-                user_type='Freelancer'
+                user_type='Freelancer',
+                avatar=self.cleaned_data['avatar']
+
+                
             )
             Freelancer.objects.create(
                 user=user,
                 certificate_id=self.cleaned_data['certificate_id'],
                 certificate_image=self.cleaned_data['certificate_image'],
-                avatar=self.cleaned_data['avatar']
             )
         return user

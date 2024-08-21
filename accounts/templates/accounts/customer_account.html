@@ -54,7 +54,7 @@
 
 <div id="signup" class="tab-content" style="display:none;">
     <form id="signupForm" action="{% url 'accounts:customer_account' %}" method="post"
-        class="form-control w-full max-w-2xl mx-auto mt-4">
+        class="form-control w-full max-w-2xl mx-auto mt-4" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="signup" value="signup" />
 
@@ -87,10 +87,15 @@
                 <label class="label">
                     <span class="label-text">الإسم الثاني</span>
                 </label>
-                <input name="last_name" placeholder="أدخل الإسم الثاني" class="input input-bordered w-full" required />
+                <input name="last_name" placeholder="أدخل الإسم الثاني" class="input input-bordered w-full" required/>
             </div>
 
-
+            <div>
+                <label class="label">
+                    <span class="label-text">أدخل الصورة الشخصية</span>
+                </label>
+                <input name="avatar" accept="image/*" placeholder="الصورة الشخصية"  class="file-input file-input-bordered w-full max-w-xs" id="avatar" type="file">
+            </div>
 
             <div>
                 <label class="label">

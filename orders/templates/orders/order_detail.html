@@ -2,14 +2,30 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Order #{{ order.id }} Details</h1>
-    <button class="btn btn-primary">PDF PRINT</button>
+    <h1 class="text-3xl font-bold mb-6">تفاصيل الطلب #{{ order.id }}</h1>
+    <button class="btn btn-primary">طباعة PDF</button>
+    
     <div class="card bg-base-100 shadow-xl mb-8">
         <div class="card-body">
-            <h2 class="card-title mb-4">Order Information</h2>
-            <p><strong>Category:</strong> {{ order.category }}</p>
-            <p><strong>Description:</strong> {{ order.issue_description }}</p>
-            <p><strong>Status:</strong>
+            <h2 class="card-title mb-4">معلومات الطلب</h2>
+            {% if order_images %}
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold">الصور:</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for image in order_images %}
+                            <div class="rounded-lg overflow-hidden">
+                                <img src="{{ image.image.url }}" alt="صورة الطلب" class="w-full h-auto">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <p>لا توجد صور متاحة لهذا الطلب.</p>
+            {% endif %}
+            
+            <p><strong>الفئة:</strong> {{ order.category }}</p>
+            <p><strong>الوصف:</strong> {{ order.issue_description }}</p>
+            <p><strong>الحالة:</strong>
                 <span class="badge
                     {% if order.status == 'Open' %}badge-warning
                     {% elif order.status == 'In Progress' %}badge-info
@@ -18,18 +34,18 @@
                     {{ order.status }}
                 </span>
             </p>
-            <p><strong>Date Created:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+            <p><strong>تاريخ الإنشاء:</strong> {{ order.created_at|date:"d M, Y" }}</p>
         </div>
     </div>
 
     {% if offer %}
     <div class="card bg-base-100 shadow-xl mb-8">
         <div class="card-body">
-            <h2 class="card-title mb-4">Accepted Offer</h2>
-            <p><strong>Freelancer:</strong> {{ offer.freelancer.user.username }}</p>
-            <p><strong>Price:</strong> ${{ offer.price }}</p>
-            <p><strong>Description:</strong> {{ offer.description }}</p>
-            <p><strong>Proposed Service Date:</strong> {{ offer.proposed_service_date|date:"M d, Y" }}</p>
+            <h2 class="card-title mb-4">العرض المقبول</h2>
+            <p><strong>المستقل:</strong> {{ offer.freelancer.user.username }}</p>
+            <p><strong>السعر:</strong> ${{ offer.price }}</p>
+            <p><strong>الوصف:</strong> {{ offer.description }}</p>
+            <p><strong>تاريخ الخدمة المقترح:</strong> {{ offer.proposed_service_date|date:"d M, Y" }}</p>
         </div>
     </div>
     {% endif %}
@@ -38,16 +54,16 @@
         {% if order.status != 'Completed' %}
             {% if user.account.user_type == 'Customer' and not order.customer_completed %}
                 {% if order.freelancer_completed %}
-                    <button class="btn btn-primary mt-4" onclick="showReviewModal()">End Order</button>
+                    <button class="btn btn-primary mt-4" onclick="showReviewModal()">إنهاء الطلب</button>
                 {% else %}
                     <div class="alert alert-warning mt-4">
-                        <label>The freelancer must complete the order before you can finalize it.</label>
+                        <label>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إنهائه.</label>
                     </div>
                 {% endif %}
             {% elif user.account.user_type == 'Freelancer' and not order.freelancer_completed %}
                 <form method="post" action="{% url 'orders:end_order' order.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary mt-4">End Order</button>
+                    <button type="submit" class="btn btn-primary mt-4">إنهاء الطلب</button>
                 </form>
             {% endif %}
         {% endif %}
@@ -56,7 +72,7 @@
     {% if not offer %}
         <form method="post" action="{% url 'orders:cancel_order' order.id %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-error mt-4">Cancel Order</button>
+            <button type="submit" class="btn btn-error mt-4">إلغاء الطلب</button>
         </form>
     {% endif %}
 
@@ -65,20 +81,20 @@
             {% csrf_token %}
             {{ review_form.as_p }}
             <div class="modal-action">
-                <button type="submit" class="btn btn-primary">Submit Review and Complete Order</button>
-                <button type="button" class="btn" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">تقديم التقييم وإكمال الطلب</button>
+                <button type="button" class="btn" onclick="closeReviewModal()">إلغاء</button>
             </div>
         </form>
     </dialog>
 
     <div class="mt-6">
         {% if user.account.user_type == 'Customer' and order.status == 'Open' %}
-            <a href="{% url 'orders:order_offers' order.id %}" class="btn btn-primary">View Offers</a>
+            <a href="{% url 'orders:order_offers' order.id %}" class="btn btn-primary">عرض العروض</a>
         {% endif %}
         {% if user.account.user_type == 'Customer' %}
-            <a href="{% url 'orders:customer_orders' %}" class="btn btn-outline">Back to My Orders</a>
+            <a href="{% url 'orders:customer_orders' %}" class="btn btn-outline">العودة إلى طلباتي</a>
         {% else %}
-            <a href="{% url 'orders:freelancer_orders' %}" class="btn btn-outline">Back to Available Orders</a>
+            <a href="{% url 'orders:freelancer_orders' %}" class="btn btn-outline">العودة إلى الطلبات المتاحة</a>
         {% endif %}
     </div>
 </div>

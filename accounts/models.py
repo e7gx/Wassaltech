@@ -4,7 +4,11 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+def user_avatar_path(instance, filename):
+    return f'avatars/{instance.user.username}/{filename}'
+
 class Account(models.Model):
+    avatar = models.ImageField(upload_to=user_avatar_path,default='avatars/default_profile.png')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, unique=True)
     address = models.CharField(max_length=255)
@@ -15,21 +19,17 @@ class Account(models.Model):
         return f"{self.user.username} | {self.user.first_name} {self.user.last_name}"
 
 
-def user_avatar_path(instance, filename):
-    return f'avatars/{instance.user.username}/{filename}'
-
 
 def user_certificate_path(instance, filename):
     return f'certificates/{instance.user.username}/{filename}'
 
 
 class Freelancer(models.Model):
-    
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     certificate_id = models.CharField(max_length=100)
     certificate_expiration = models.DateField(blank=True, null=True)
     certificate_image = models.ImageField(upload_to=user_certificate_path)
-    avatar = models.ImageField(upload_to=user_avatar_path)
     internal_rating = models.FloatField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
     is_verified = models.BooleanField(default=False)
 
