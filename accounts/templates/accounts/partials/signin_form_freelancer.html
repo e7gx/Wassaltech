@@ -1,0 +1,66 @@
+<form id="loginForm" action="{% url 'accounts:freelancer_account' %}" method="post" class="w-full max-w-md mx-auto mt-8 p-8 bg-white rounded-xl space-y-6">
+  {% csrf_token %}
+  <input type="hidden" name="login" value="login">
+  
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">تسجيل الدخول</h2>
+  
+  <div class="space-y-4">
+      {{ form.username.errors }}
+      <div class="relative">
+          <label for="username" class="text-sm font-medium text-gray-700 block mb-2 text-right">
+              اسم المستخدم
+          </label>
+          <input id="username" name="username" type="text" placeholder="أدخل اسم المستخدم"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out text-right"
+              required />
+      </div>
+
+      {{ form.password.errors }}
+      <div class="relative">
+          <label for="password" class="text-sm font-medium text-gray-700 block mb-2 text-right">
+              كلمة المرور
+          </label>
+          <input id="password" name="password" type="password" placeholder="أدخل كلمة المرور"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out text-right"
+              required />
+      </div>
+  </div>
+
+  <button type="submit" class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out transform hover:-translate-y-0.5">
+      تسجيل الدخول
+  </button>
+</form>
+
+<div id="message" class="mt-4 p-4 rounded-lg text-center hidden"></div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const username = this.querySelector('input[name="username"]').value;
+  const password = this.querySelector('input[name="password"]').value;
+
+  if (!username || !password) {
+      showMessage('الرجاء إدخال اسم المستخدم وكلمة المرور', 'error');
+      return;
+  }
+
+  this.submit();
+});
+
+function showMessage(text, type) {
+  const messageEl = document.getElementById('message');
+  messageEl.textContent = text;
+  messageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+  
+  if (type === 'error') {
+      messageEl.classList.add('bg-red-100', 'text-red-700');
+  } else {
+      messageEl.classList.add('bg-green-100', 'text-green-700');
+  }
+  
+  messageEl.classList.remove('hidden');
+  setTimeout(() => {
+      messageEl.classList.add('hidden');
+  }, 5000);
+}
+</script>

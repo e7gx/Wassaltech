@@ -5,11 +5,4 @@ module.exports = {
       "./**/templates/**/*.{html,js}",
       "./**/static/**/*.{js,css}",
     ],
-    theme: {
-      extend: {},
-    },
-    plugins: [require("daisyui")],
-    daisyui: {
-      themes: ["light", "dark"],
-    },
   }

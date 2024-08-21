@@ -2,55 +2,37 @@
 
 {% block content %}
 
-<h1 class="text-center text-2xl font-bold">
-    تسجيل الدخول كموفر خدمة
-</h1>
-<div role="tablist" class="tabs tabs-boxed mt-6">
-    <a role="tab" class="tab tab-active" onclick="openTab(event, 'login')">تسجيل الدخول</a>
-    <a role="tab" class="tab" onclick="openTab(event, 'signup')">حساب جديد</a>
-</div>
+<div class="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-center text-black text-2xl font-bold mb-6">
+        تسجيل الدخول كموفر خدمة
+    </h1>
+    <div class="flex justify-center border-b border-gray-200">
+        <button id="signup-tab" class="tab py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none" onclick="openTab(event, 'signup')">حساب جديد</button>
+        <button id="login-tab" class="tab py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none tab-active" onclick="openTab(event, 'login')">تسجيل الدخول</button>
+    </div>
 
-<div id="messages" class="mt-4">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} shadow-lg mb-4">
-                <div>
-                    {% if message.tags == 'success' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {% elif message.tags == 'error' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    {% endif %}
-                    <span>{{ message }}</span>
+    <div id="messages" class="mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} shadow-lg mb-4">
+                    <div>
+                        {% if message.tags == 'success' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {% elif message.tags == 'error' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
-    {% endif %}
-</div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
-<div id="login" class="tab-content">
-    <form id="loginForm" action="{% url 'accounts:freelancer_account' %}" method="post"
-        class="form-control w-full max-w-xs mx-auto mt-4">
-        {% csrf_token %}
-        <input type="hidden" name="login" value="login">
-        {{ form.username.errors }}
-        <label class="label">
-            <span class="label-text">اسم المستخدم</span>
-        </label>
-        <input name="username" type="text" placeholder="أدخل اسم المستخدم"
-            class="input input-bordered w-full max-w-xs" />
-
-        {{ form.password.errors }}
-        <label class="label mt-2">
-            <span class="label-text">كلمة المرور</span>
-        </label>
-        <input name="password" type="password" placeholder="أدخل كلمة المرور"
-            class="input input-bordered w-full max-w-xs" />
-
-        <button type="submit" class="btn btn-primary mt-4">تسجيل الدخول</button>
-    </form>
-</div>
+    <div id="login" class="tab-content mt-6">
+        {% include 'accounts/partials/signin_form_freelancer.html' %}
+    </div>
 
 <div id="signup" class="tab-content" style="display:none;">
     <form id="signupForm" action="{% url 'accounts:freelancer_account' %}" method="post" enctype="multipart/form-data"
@@ -160,13 +142,21 @@
         }
         tabLinks = document.getElementsByClassName("tab");
         for (i = 0; i < tabLinks.length; i++) {
-            tabLinks[i].className = tabLinks[i].className.replace(" tab-active", "");
+            tabLinks[i].classList.remove("tab-active");
+            tabLinks[i].classList.remove("border-orange-500");
+            tabLinks[i].classList.add("border-transparent");
         }
         document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " tab-active";
+        evt.currentTarget.classList.add("tab-active");
+        evt.currentTarget.classList.remove("border-transparent");
+        evt.currentTarget.classList.add("border-orange-500");
     }
 
+    // Set login tab as active by default
     document.getElementById("login").style.display = "block";
+    document.getElementById("login-tab").classList.add("tab-active");
+    document.getElementById("login-tab").classList.remove("border-transparent");
+    document.getElementById("login-tab").classList.add("border-orange-500");
 
     function validateForm() {
         var password = document.getElementById("pass").value;
