@@ -25,7 +25,6 @@ def user_certificate_path(instance, filename):
 
 
 class Freelancer(models.Model):
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     certificate_id = models.CharField(max_length=100)
     certificate_expiration = models.DateField(blank=True, null=True)
