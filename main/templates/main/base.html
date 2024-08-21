@@ -86,11 +86,19 @@
         {% endif %}
         </div>
 
-        <!-- {% if user.account.user_type == 'Customer' %}
+        {% if user.account.user_type == 'Customer' %}
         <p>im a customer</p>
         {% elif user.account.user_type == 'Freelancer' %}
         <p>im a freelancer</p>
-        {% endif %} -->
+        {% elif user.is_superuser %}
+        <p>im an admin</p>
+        {% endif %}
+        <!-- {
+        % else %}
+        <p>im not authenticated</p>
+
+        {% endif %
+        } -->
 
         <div class="navbar-end space-x-2">
 
