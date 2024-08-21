@@ -228,18 +228,15 @@ def freelancer_offers(request):
     offers = Offer.objects.filter(freelancer=request.user.freelancer)
     return render(request, 'orders/freelancer_offers.html', {'offers': offers})
 
-@login_required
+@user_type_required(['Customer'])
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
     if not order.offer_set.exists():
-        order.status = 'Cancelled'
+        order.status = 'Deleted'
         order.save()
-        messages.success(request, 'The order has been successfully cancelled.')
+        messages.success(request, 'The order has been successfully deleted.')
     else:
-        messages.error(request, 'This order cannot be cancelled as it has already been linked with a freelancer.')
+        messages.error(request, 'This order cannot be deleted as it has already been linked with a freelancer.')
 
-    if request.user.account.user_type == 'Customer':
-        return redirect('orders:customer_orders')
-    else:
-        return redirect('orders:freelancer_orders')
+    return redirect('orders:customer_orders')
