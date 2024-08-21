@@ -40,15 +40,14 @@ offer_stages = (
 )
 
 class Order(models.Model):
-    customer = models.ForeignKey(Account, on_delete=models.CASCADE)
-    assigned_to = models.ForeignKey(Freelancer, on_delete=models.CASCADE, null=True, blank=True)
+    customer = models.ForeignKey(Account, on_delete=models.PROTECT)
+    assigned_to = models.ForeignKey(Freelancer, on_delete=models.PROTECT, null=True, blank=True)
     category = models.CharField(max_length=100, choices=categories)
     issue_description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     freelancer_completed = models.BooleanField(default=False)
     customer_completed = models.BooleanField(default=False)
-
     status = models.CharField(max_length=20, choices=order_statuses, default='Open')
 
     def update_status(self):
@@ -71,8 +70,8 @@ class OrderVideo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class Offer(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     refund = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     complete_on_time = models.BooleanField(default=False)
