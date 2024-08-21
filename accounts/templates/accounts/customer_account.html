@@ -1,155 +1,141 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-
-<div class="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-    <h1 class="text-center text-black text-2xl font-bold mb-6">
+<div class="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md" dir="rtl">
+    <h1 class="text-center text-gray-800 text-3xl font-bold mb-6">
         تسجيل الدخول كمستفيد
     </h1>
-    <div class="flex justify-center border-b border-gray-200">
-      <button id="signup-tab" class="py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none" onclick="openTab(event, 'signup')">حساب جديد</button>
-        <button id="login-tab" class="py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none" onclick="openTab(event, 'login')">تسجيل الدخول</button>
+    <div class="flex justify-center border-b border-gray-200 mb-6">
+        <button id="login-tab" class="tab py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none transition duration-300 tab-active" onclick="openTab(event, 'login')">تسجيل الدخول</button>
+        <button id="signup-tab" class="tab py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none transition duration-300" onclick="openTab(event, 'signup')">حساب جديد</button>
     </div>
 
+    <div id="messages" class="mt-4"></div>
+
     <div id="login" class="tab-content mt-6">
-        <form id="loginForm" action="{% url 'accounts:customer_account' %}" method="post" class="space-y-4" x-data="{ username: '', password: '', showPassword: false }">
+        <form id="loginForm" action="{% url 'accounts:customer_account' %}" method="post" class="space-y-4">
             {% csrf_token %}
             <input type="hidden" name="login" value="login">
-            {{ form.username.errors }}
-            <div class="flex flex-row-reverse">
-                <label for="username" class="block text-sm font-medium text-gray-700 mb-1 text-right">اسم المستخدم</label>
-                <input class="text-black" id="username" name="username" type="text" placeholder="أدخل اسم المستخدم" 
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right"
-                       x-model="username">
+            
+            <div class="space-y-2">
+                <label for="username" class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
+                <input id="username" name="username" type="text" placeholder="أدخل اسم المستخدم" 
+                       class="text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right"
+                       required>
             </div>
 
-            {{ form.password.errors }}
-            <div class="flex flex-row-reverse relative">
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1 text-right">كلمة المرور</label>
-                <input class="text-black" :type="showPassword ? 'text' : 'password'" id="password" name="password" placeholder="أدخل كلمة المرور" 
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right pr-10"
-                       x-model="password">
-                <button type="button" class="absolute inset-y-0 left-0 pr-3 flex items-center" @click="showPassword = !showPassword">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" @click="showPassword = !showPassword"
-                         :class="{'hidden': !showPassword, 'block':showPassword }" xmlns="http://www.w3.org/2000/svg"
-                         viewbox="0 0 576 512">
-                        <path fill="currentColor"
-                              d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
-                        </path>
-                    </svg>
-
-                    <svg class="h-5 w-5 text-gray-400" fill="none" @click="showPassword = !showPassword"
-                         :class="{'block': !showPassword, 'hidden':showPassword }" xmlns="http://www.w3.org/2000/svg"
-                         viewbox="0 0 640 512">
-                        <path fill="currentColor"
-                              d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z">
-                        </path>
-                    </svg>
-                </button>
+            <div class="space-y-2">
+                <label for="password" class="block text-sm font-medium text-gray-700">كلمة المرور</label>
+                <input id="password" name="password" type="password" placeholder="أدخل كلمة المرور" 
+                       class="text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right"
+                       required>
             </div>
 
-            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                    :disabled="!username || !password" 
-                    :class="{ 'opacity-50 cursor-not-allowed': !username || !password }">
+            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-300">
                 تسجيل الدخول
             </button>
         </form>
     </div>
 
-    <div id="signup" class="tab-content mt-6" style="display:none;">
-        <form id="signupForm" action="{% url 'accounts:customer_account' %}" method="post" class="space-y-4" x-data="{ username: '', email: '', first_name: '', last_name: '', password: '', confirmPassword: '', phone_number: '', address: '', showPassword: false, showConfirmPassword: false }">
+    <div id="signup" class="tab-content" style="display:none;">
+        <form id="signupForm" action="{% url 'accounts:customer_account' %}" method="post" enctype="multipart/form-data"
+            class="space-y-6">
             {% csrf_token %}
-            <input class="text-black" type="hidden" name="signup" value="signup" />
+            <input type="hidden" name="signup" value="signup" />
 
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div class="col-span-2">
-                    <label for="signup-username" class="block text-sm font-medium text-gray-700 text-right">اسم المستخدم</label>
-                    <input class="text-black" id="signup-username" name="username" type="text" placeholder="أدخل اسم المستخدم" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right" 
-                           required x-model="username">
+                    <label for="signup-username" class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
+                    <input id="signup-username" name="username" type="text" placeholder="أدخل اسم المستخدم" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
                 </div>
 
                 <div class="col-span-2">
-                    <label for="email" class="block text-sm font-medium text-gray-700 text-right">البريد الإلكتروني</label>
-                    <input class="text-black" id="email" name="email" type="email" placeholder="أدخل البريد الإلكتروني" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right" 
-                           required x-model="email">
+                    <label for="email" class="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
+                    <input id="email" name="email" type="email" placeholder="أدخل البريد الإلكتروني" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
                 </div>
 
                 <div>
-                    <label for="first_name" class="block text-sm font-medium text-gray-700 text-right">الإسم الأول</label>
-                    <input class="text-black" id="first_name" name="first_name" placeholder="أدخل الإسم الأول" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right" 
-                           required x-model="first_name">
+                    <label for="first_name" class="block text-sm font-medium text-gray-700">الإسم الأول</label>
+                    <input id="first_name" name="first_name" placeholder="أدخل الإسم الأول" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
                 </div>
 
                 <div>
-                    <label for="last_name" class="block text-sm font-medium text-gray-700 text-right">الإسم الثاني</label>
-                    <input class="text-black" id="last_name" name="last_name" placeholder="أدخل الإسم الثاني" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right" 
-                           required x-model="last_name">
+                    <label for="last_name" class="block text-sm font-medium text-gray-700">الإسم الثاني</label>
+                    <input id="last_name" name="last_name" placeholder="أدخل اسم العائلة" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
                 </div>
 
-            <div>
-                <label class="label">
-                    <span class="label-text">أدخل الصورة الشخصية</span>
-                </label>
-                <input name="avatar" accept="image/*" placeholder="الصورة الشخصية"  class="file-input file-input-bordered w-full max-w-xs" id="avatar" type="file">
+                <div>
+                    <label for="pass" class="block text-sm font-medium text-gray-700">كلمة المرور</label>
+                    <input id="pass" name="password" type="password" placeholder="أدخل كلمة المرور"
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="confirmpass" class="block text-sm font-medium text-gray-700">تأكيد كلمة المرور</label>
+                    <input id="confirmpass" type="password" placeholder="أعد إدخال كلمة المرور"
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+                    <input id="phone_number" name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">العنوان</label>
+                    <input id="address" name="address" type="text" placeholder="أدخل العنوان" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="avatar" class="block text-sm font-medium text-gray-700">الصورة الشخصية</label>
+                    <input class= id="avatar" name="avatar" type="file" accept="image/*"
+                           class="mt-1 block w-full px-3 py-2 text-sm text-gray-700
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-orange-50 file:text-orange-700
+                           hover:file:bg-orange-100
+                           transition duration-300"
+                           required>
+                </div>
             </div>
 
-            <div>
-                <label class="label">
-                    <span class="label-text">كلمة المرور</span>
-                </label>
-                <input id="pass" name="password" type="password" placeholder="أدخل كلمة المرور"
-                    class="input input-bordered w-full" required />
-            </div>
-
-                <div class="relative">
-                    <label for="confirmpass" class="block text-sm font-medium text-gray-700 text-right">تأكيد كلمة المرور</label>
-                    <input class="text-black" id="confirmpass" :type="showConfirmPassword ? 'text' : 'password'" placeholder="أعد إدخال كلمة المرور" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right pr-10" 
-                           required x-model="confirmPassword">
-                    <button type="button" class="absolute inset-y-0 left-0 pr-3 flex items-center" @click="showConfirmPassword = !showConfirmPassword">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 576 512"
-                             :class="{'hidden': !showConfirmPassword, 'block':showConfirmPassword }">
-                            <path fill="currentColor"
-                                  d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
-                            </path>
-                        </svg>
-                        <svg class="h-5 w-5 text-gray-400" fill="none" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512"
-                             :class="{'block': !showConfirmPassword, 'hidden':showConfirmPassword }">
-                            <path fill="currentColor"
-                                  d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z">
-                            </path>
-                        </svg>
-                    </button>
-                </div>
-
-                <div>
-                    <label for="phone_number" class="block text-sm font-medium text-gray-700 text-right">رقم الهاتف</label>
-                    <input class="text-black" id="phone_number" name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right" 
-                           required x-model="phone_number">
-                </div>
-
-                <div>
-                    <label for="address" class="block text-sm font-medium text-gray-700 text-right">العنوان</label>
-                    <input class="text-black" id="address" name="address" type="text" placeholder="أدخل العنوان" 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-right" 
-                           required x-model="address">
-                </div>
-            </div>
-
-            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                    :disabled="!username || !email || !first_name || !last_name || !password || !confirmPassword || !phone_number || !address || password !== confirmPassword"
-                    :class="{ 'opacity-50 cursor-not-allowed': !username || !email || !first_name || !last_name || !password || !confirmPassword || !phone_number || !address || password !== confirmPassword }">
+            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-300">
                 إنشاء حساب
             </button>
         </form>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_scripts %}
@@ -160,16 +146,23 @@
         for (i = 0; i < tabContent.length; i++) {
             tabContent[i].style.display = "none";
         }
-        tabLinks = document.getElementsByClassName("py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none");
+        tabLinks = document.getElementsByClassName("tab");
         for (i = 0; i < tabLinks.length; i++) {
-            tabLinks[i].className = tabLinks[i].className.replace(" border-orange-500 text-orange-600", "");
+            tabLinks[i].classList.remove("tab-active");
+            tabLinks[i].classList.remove("border-orange-500");
+            tabLinks[i].classList.add("border-transparent");
         }
         document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " border-orange-500 text-orange-600";
-        localStorage.setItem('currentTabCustomer', tabName);
+        evt.currentTarget.classList.add("tab-active");
+        evt.currentTarget.classList.remove("border-transparent");
+        evt.currentTarget.classList.add("border-orange-500");
     }
 
+    // Set login tab as active by default
     document.getElementById("login").style.display = "block";
+    document.getElementById("login-tab").classList.add("tab-active");
+    document.getElementById("login-tab").classList.remove("border-transparent");
+    document.getElementById("login-tab").classList.add("border-orange-500");
 
     function validateForm() {
         var password = document.getElementById("pass").value;
@@ -182,13 +175,23 @@
     }
 
     function showMessage(message, type) {
-        const messagesDiv = document.createElement('div');
-        messagesDiv.className = `fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-        messagesDiv.textContent = message;
-        document.body.appendChild(messagesDiv);
+        const messagesDiv = document.getElementById('messages');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} shadow-lg mb-4`;
+        alertDiv.innerHTML = `
+            <div>
+                ${type === 'success'
+                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                    : '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                }
+                <span>${message}</span>
+            </div>
+        `;
+        messagesDiv.appendChild(alertDiv);
 
+        // Remove the message after 5 seconds
         setTimeout(() => {
-            messagesDiv.remove();
+            alertDiv.remove();
         }, 5000);
     }
 
@@ -216,10 +219,5 @@
         }
         this.submit();
     });
-
-    window.onload = function() {
-      const currentTab = localStorage.getItem('currentTabCustomer') || 'login';
-      document.getElementById(currentTab + '-tab').click();
-  }
 </script>
 {% endblock %}
