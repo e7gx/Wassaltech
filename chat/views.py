@@ -32,7 +32,10 @@ def create_chat(request , id_order):
 def get_chat(request , chat_id):
     get_chat = Chat.objects.get(pk = chat_id)
     get_message = Message.objects.filter(chat =get_chat ).order_by('create_at')
-    all_chat = Chat.objects.filter(user= request.user.account)
+    if request.user.account.user_type == 'Customer':
+        all_chat = Chat.objects.filter(user= request.user.account)
+    elif request.user.account.user_type == 'Freelancer':
+        all_chat = Chat.objects.filter(freelancer= request.user.freelancer)
     
     return render(request , 'accounts/inbox.html' , {'user_chat': all_chat , 'message':get_message , 'sender_user': get_chat})
 
