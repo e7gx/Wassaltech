@@ -282,6 +282,23 @@ def freelancer_cancel_offer(request, offer_id):
     return redirect('orders:freelancer_offers', freelancer_id=offer.freelancer.id)
 
 
+########################################################################################################################
+# OFFER DELETE
+########################################################################################################################
+# FREELANCER DELETE
+# An offer can be discarded if and only if it is in the "Pending" stage.
+@login_required
+def freelancer_discard_offer(request, offer_id):
+    offer = get_object_or_404(Offer, id=offer_id)
+
+    if offer.stage == 'Pending':
+        offer.stage = 'Discarded'
+        offer.save()
+        messages.success(request, 'The offer has been successfully discarded.')
+    else:
+        messages.error(request, 'This offer cannot be discarded.')
+
+    return redirect('orders:customer_orders')
 
 
 # ! edit this function redirct to the order detail page after payment
