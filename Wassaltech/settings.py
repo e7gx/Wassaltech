@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'reviews',
     'support',
     'mobile_apis',
+    'widget_tweaks',
 
 ]
 

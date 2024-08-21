@@ -1,44 +1,48 @@
 {% extends 'main/base.html' %}
+{% load widget_tweaks %}
+{% block title %}إنشاء عرض للطلب #{{ order.id }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Create Offer for Order #{{ order.id }}</h1>
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-orange-700 mb-6">إنشاء عرض للطلب #{{ order.id }}</h1>
 
-    <div class="card bg-base-100 shadow-xl mb-8">
-        <div class="card-body">
-            <h2 class="card-title mb-4">Order Details</h2>
-            <p><strong>Category:</strong> {{ order.category }}</p>
-            <p><strong>Description:</strong> {{ order.issue_description }}</p>
-        </div>
-    </div>
-
-    <form method="post" class="card bg-base-100 shadow-xl">
-        {% csrf_token %}
-        <div class="card-body">
-            {% for field in form %}
-                <div class="form-control">
-                    <label class="label" for="{{ field.id_for_label }}">
-                        <span class="label-text">{{ field.label }}</span>
-                    </label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <label class="label">
-                            <span class="label-text-alt text-info">{{ field.help_text }}</span>
-                        </label>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <label class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-
-            <div class="card-actions justify-end mt-6">
-                <button type="submit" class="btn btn-primary">Submit Offer</button>
-                <a href="{% url 'orders:freelancer_orders' %}" class="btn btn-ghost">Cancel</a>
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-orange-600 mb-4">تفاصيل الطلب</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <p><span class="font-semibold text-orange-600">الفئة:</span> {{ order.category }}</p>
+                <p><span class="font-semibold text-orange-600">الوصف:</span> {{ order.issue_description }}</p>
             </div>
         </div>
-    </form>
+
+        <form method="post" class="bg-white rounded-lg shadow-md p-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-6">
+                {% for field in form %}
+                    <div class="form-control">
+                        <label class="label" for="{{ field.id_for_label }}">
+                            <span class="label-text text-orange-600 font-semibold">{{ field.label }}</span>
+                        </label>
+                        {{ field|add_class:"w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" }}
+                        {% if field.help_text %}
+                            <label class="label">
+                                <span class="label-text-alt text-gray-600">{{ field.help_text }}</span>
+                            </label>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-red-600">{{ error }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="flex justify-end mt-6 space-x-4">
+                    <a href="{% url 'orders:freelancer_orders' %}" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300">إلغاء</a>
+                    <button type="submit" class="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-300">تقديم العرض</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}
