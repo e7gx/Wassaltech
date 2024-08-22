@@ -1,170 +1,195 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en" data-theme="light" dir="rtl">
+<html lang="ar">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Wassaltech{% endblock %}</title>
-    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <title>{% block title %}وَصّلْتِك{% endblock %}</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'gray': {
+                100: 'rgb(238 240 243)',
+                200: 'rgb(213 218 225)',
+                300: 'rgb(195 198 206)',
+                800: 'rgb(43 46 67)',
+                900: 'rgb(30 34 56)'
+              },
+              'body': 'rgb(255 255 255)',
+              'orange': {
+                50: 'rgb(255 242 238)',
+                200: 'rgb(255 199 183)',
+                900: 'rgb(255 70 12)'
+              }
+            }
+          }
+        }
+      };
+    </script>
 
-    {%block extra_head%}
-    {%endblock%}
     <style>
-        body {
+        html, body {
             font-family: 'Cairo', sans-serif;
+        }
+        * {
+            font-family: inherit;
         }
     </style>
 
-    <script>
-        // Check for saved theme preference or default to 'light'
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        }
-    </script>
+    {% block extra_head %}{% endblock %}
 </head>
 
-<body>
-    <div class="navbar bg-base-100 sm:px-6 lg:px-8 max-w-5xl mx-auto p-4 z-[1000]">
+<body x-data="{ mobileNavOpen: false }" class="antialiased bg-gray-50 text-body">
 
-        <div class="navbar-start">
-            <a href="/" class="btn btn-ghost normal-case text-2xl sm:text-3xl lg:text-4xl font-bold mr-2">
-                وَصّلْتِك
+<nav class="relative py-6 bg-transparent z-50">
+  <div class="container px-4 mx-auto">
+    <div class="flex items-center">
+
+      <!-- Action elements -->
+      <div class="hidden lg:block">
+        {% if not user.is_authenticated %}
+        <div class="flex items-center">
+          <div x-data="{ open: false }" class="relative group">
+            <a @click="open = !open" @click.away="open = false" class="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-900 hover:text-white border border-gray-200 rounded-md overflow-hidden transition duration-300 cursor-pointer" href="#">
+              <div class="absolute top-0 right-full w-full h-full bg-orange-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
+              <span class="relative font-bold">
+                الدخول
+              </span>
             </a>
-            {% if user.is_authenticated %}
-            <div class="dropdown lg:hidden">
-                <div tabindex="0" role="button" class="btn btn-ghost ml-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h8m-8 6h16" />
-                    </svg>
-                </div>
-                <ul tabindex="0"
-                    class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    {% if user.account.user_type == 'Customer' %}
-                    <li><a href="{% url 'orders:create_order' %}" class="py-2">إنشاء طلب</a></li>
-                    <li><a href="{% url 'orders:customer_orders' %}" class="py-2">طلباتي</a></li>
-                    <li><a href="{% url 'orders:order_history' %}" class="py-2">سجل الطلبات</a></li>
-                    {% elif user.account.user_type == 'Freelancer' %}
-                    <li><a href="{% url 'orders:freelancer_orders' %}" class="mx-2">الطلبات المتاحة</a></li>
-                    <li><a href="{% url 'orders:freelancer_offers' %}" class="mx-2">عروضي</a></li>
-                    <li><a href="{% url 'orders:order_history' %}" class="mx-2">سجل الطلبات</a></li>
-                    {% endif %}
-                </ul>
+            <div x-show="open" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform scale-100"
+                 x-transition:leave-end="opacity-0 transform scale-95"
+                 class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+              <a href="{% url 'accounts:customer_account' %}" class="block text-right px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 font-bold transition duration-150 ease-in-out">
+                الدخول كمستخدم                 
+              </a>
+              <a href="{% url 'accounts:freelancer_account' %}" class="block text-right px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 font-bold transition duration-150 ease-in-out">
+                الدخول كموفر خدمة         
+              </a>
             </div>
-            {% endif %}
+          </div>
         </div>
+        {% else %}
+        <form action="{% url 'accounts:logout_view' %}" method="post">
+          {% csrf_token %}
+          <button class="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-900 hover:text-white border border-gray-200 rounded-md overflow-hidden transition duration-300 cursor-pointer">
+            <div class="absolute top-0 right-full w-full h-full bg-orange-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
 
-
-        <div class="navbar-center">
-        {% if user.is_authenticated %}
-            <ul class="menu menu-horizontal px-1 hidden lg:flex">
-                {% if user.account.user_type == 'Customer' %}
-                <li><a href="{% url 'orders:create_order' %}" class="mx-2">إنشاء طلب</a></li>
-                <li><a href="{% url 'orders:customer_orders' %}" class="mx-2">طلباتي</a></li>
-                <li><a href="{% url 'accounts:profile' %}" class="mx-2">ملفي الشخصي</a></li>
-                <li><a href="{% url 'orders:order_history' %}" class="py-2">سجل الطلبات</a></li>
-
-
-                {% elif user.account.user_type == 'Freelancer' %}
-                <li><a href="{% url 'orders:freelancer_orders' %}" class="mx-2">الطلبات المتاحة</a></li>
-                <li><a href="{% url 'orders:freelancer_offers' %}" class="mx-2">عروضي</a></li>
-                <li><a href="{% url 'accounts:profile' %}" class="mx-2">ملفي الشخصي</a></li>
-                <li><a href="{% url 'orders:order_history' %}" class="mx-2">سجل الطلبات</a></li>
-                {% endif %}
-            </ul>
+            <span class="relative font-bold">
+              تسجيل الخروج
+            </span>
+          </button>
+        </form>
         {% endif %}
-        </div>
+      </div>
 
-        <!-- {% if user.account.user_type == 'Customer' %}
-        <p>im a customer</p>
-        {% elif user.account.user_type == 'Freelancer' %}
-        <p>im a freelancer</p>
-        {% endif %} -->
-
-        <div class="navbar-end space-x-2">
-
-            <label class="swap swap-rotate mx-2 btn btn-ghost">
-                <input type="checkbox" class="theme-controller" value="dark" onchange="toggleTheme()" />
-
-                <!-- sun icon -->
-                <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                        d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
-                </svg>
-                <!-- moon icon -->
-                <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                        d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
-                </svg>
-            </label>
-
-            {% if request.user.is_authenticated %}
-            <label class="btn btn-ghost">
-                <a href="{% url 'chat:inbox' %}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 24 24">
-                    <path fill="currentColor"
-                        d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm7-5q.95 0 1.725-.55T14.8 14H19V5H5v9h4.2q.3.9 1.075 1.45T12 16" />
-                </svg>
-                </a>
-            </label>
-
-            <form action="{% url 'accounts:logout_view' %}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-primary">
-                    تسجيل الخروج
-                </button>
-            </form>
-            {% else %}
-            <div class="dropdown dropdown-bottom dropdown-end">
-                <div tabindex="0" role="button" class="btn m-1">
-                    تسجيل الدخول
-                </div>
-                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                    <li><a href="{% url 'accounts:customer_account' %}">
-                            مستفيد
-                        </a></li>
-                    <li><a href="{% url 'accounts:freelancer_account' %}">
-                            موفر خدمة
-                        </a></li>
-                </ul>
-            </div>
-            {% endif %}
-        </div>
+      <!-- Navigation elements -->
+      <ul style="margin-left: auto;" class="hidden lg:flex lg:w-auto lg:space-x-12">
         {% if user.is_authenticated %}
-        <a href="{% url 'support:display_tickets' %}"
-            class="rounded-full w-20 h-20 fixed bottom-10 right-10 btn btn-primary transition transform hover:scale-125 duration-500 ">
+          {% if user.account.user_type == 'Customer' %}
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:create_order' %}">إنشاء طلب</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:customer_orders' %}">طلباتي</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'accounts:customer_view_profile' %}">الملف الشخصي</a></li>
+          {% elif user.account.user_type == 'Freelancer' %}
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_orders' %}">الطلبات المتاحة</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_offers' %}">عروضي</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'accounts:profile' %}">الملف الشخصي</a></li>
+            {% elif user.account.user_type == 'Admin' %}
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:dashboard' %}">لوحة التحكم</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:customers' %}">جميع المستخدمين</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_check_freelancers' %}">جميع مقدمي الخدمة</a></li>  
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_tickets' %}">جميع التذاكر</a></li>
+              {% comment %}
+              <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:all_orders' %}">جميع الطلبات</a></li>
+              <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:all_offers' %}">جميع العروض</a></li>
+              {% endcomment %}
+            {% endif %}
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
-                <path fill="currentColor" fill-rule="evenodd"
-                    d="M14.008 19.003L14.014 17a1.001 1.001 0 0 1 2.005 0v1.977c0 .481 0 .722.154.87c.155.147.39.137.863.117c1.863-.079 3.008-.33 3.814-1.136c.81-.806 1.061-1.951 1.14-3.817c.015-.37.023-.556-.046-.679c-.07-.123-.345-.277-.897-.586a1.999 1.999 0 0 1 0-3.492c.552-.308.828-.463.897-.586s.061-.308.045-.679c-.078-1.866-.33-3.01-1.139-3.817c-.877-.876-2.155-1.097-4.322-1.153a.497.497 0 0 0-.51.497V7a1.001 1.001 0 0 1-2.005 0l-.007-2.501a.5.5 0 0 0-.5-.499H9.994c-3.78 0-5.67 0-6.845 1.172c-.81.806-1.061 1.951-1.14 3.817c-.015.37-.023.556.046.679c.07.123.345.278.897.586a1.999 1.999 0 0 1 0 3.492c-.552.309-.828.463-.897.586s-.061.308-.045.678c.078 1.867.33 3.012 1.139 3.818C4.324 20 6.214 20 9.995 20h3.01c.472 0 .707 0 .854-.146s.148-.38.149-.851M16.018 13v-2a1.001 1.001 0 0 0-2.005 0v2a1.002 1.002 0 0 0 2.006 0"
-                    clip-rule="evenodd" /></svg>
-
-        </a>
         {% endif %}
+      </ul>
+
+
+
+
+      <!-- Mobile menu button -->
+      <div class="lg:hidden">
+        <button x-on:click="mobileNavOpen = !mobileNavOpen" class="flex w-12 h-12 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md transition duration-200">
+          <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M3 6H21" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M3 18H21" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </div>
+
+                 <!-- Logo -->
+                 <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
+                  وَصّلْتِك   
+                </a> 
+
     </div>
+  </div>
+</nav>
 
-    <main class="container mx-auto max-w-5xl mt-10 px-4 sm:px-6 lg:px-8">
-        {% block content %}
 
-        {% endblock %}
-    </main>
+<!-- Mobile menu -->
+<div :class="{'block': mobileNavOpen, 'hidden': !mobileNavOpen}" class="hidden fixed top-0 left-0 bottom-0 w-5/6 max-w-md z-50">
+  <div x-on:click="mobileNavOpen = !mobileNavOpen" class="fixed inset-0 bg-gray-800 opacity-25"></div>
+  <nav class="relative flex flex-col py-6 px-10 w-full h-full bg-white border-r overflow-y-auto">
+    <div class="flex items-center mb-16">
+      <a class="mr-auto text-2xl font-medium leading-none" href="#">
+        <img class="h-10" src="saturn-assets/logos/logo-saturn-dark.svg" alt="" width="auto">
+      </a>
+      <button x-on:click="mobileNavOpen = !mobileNavOpen">
+        <svg class="h-6 w-6 text-gray-500 cursor-pointer hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div>
+      <ul class="mb-2">
+        {% if user.is_authenticated %}
+          {% if user.account.user_type == 'Customer' %}
+            <li><a class="block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:create_order' %}">إنشاء طلب</a></li>
+            <li><a class="block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:customer_orders' %}">طلباتي</a></li>
+            <li><a class="block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
+          {% elif user.account.user_type == 'Freelancer' %}
+            <li><a class="block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:freelancer_orders' %}">الطلبات المتاحة</a></li>
+            <li><a class="block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:freelancer_offers' %}">عروضي</a></li>
+            <li><a class="block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
+          {% endif %}
+        {% endif %}
+      </ul>
+{% if not user.is_authenticated %}
+      <div class="flex mb-16 justify-center items-center">
+          <a class="inline-block text-sm p-4 font-semibold text-orange-900 hover:text-white border border-gray-300 hover:border-orange-600 hover:bg-orange-900 rounded-md transition duration-200" href="#">الدخول</a>
+        </div>
+{% endif %}
+     </div>
+  </nav>
+</div>
 
-    <script>
-        document.querySelector('.theme-controller').checked = (localStorage.getItem('theme') === 'dark');
-    </script>
-    {%block extra_scripts%}
-    {%endblock%}
+{% block content %}{% endblock %}
+
+    {% block extra_scripts %}
+
+    {% endblock %}
 </body>
 
 </html>

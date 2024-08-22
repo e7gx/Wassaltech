@@ -1,141 +1,141 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
+<div class="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md" dir="rtl">
+    <h1 class="text-center text-gray-800 text-3xl font-bold mb-6">
+        تسجيل الدخول كمستفيد
+    </h1>
+    <div class="flex justify-center border-b border-gray-200 mb-6">
+        <button id="login-tab" class="tab py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none transition duration-300 tab-active" onclick="openTab(event, 'login')">تسجيل الدخول</button>
+        <button id="signup-tab" class="tab py-2 px-4 font-semibold text-gray-600 border-b-2 border-transparent hover:border-orange-500 focus:outline-none transition duration-300" onclick="openTab(event, 'signup')">حساب جديد</button>
+    </div>
 
-<h1 class="text-center text-2xl font-bold">
-    تسجيل الدخول كمستفيد
-</h1>
-<div role="tablist" class="tabs tabs-boxed mt-6">
-    <a role="tab" class="tab tab-active" onclick="openTab(event, 'login')">تسجيل الدخول</a>
-    <a role="tab" class="tab" onclick="openTab(event, 'signup')">حساب جديد</a>
-</div>
+    <div id="messages" class="mt-4"></div>
 
-<div id="messages" class="mt-4">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} shadow-lg mb-4">
+    <div id="login" class="tab-content mt-6">
+        <form id="loginForm" action="{% url 'accounts:customer_account' %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="login" value="login">
+            
+            <div class="space-y-2">
+                <label for="username" class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
+                <input id="username" name="username" type="text" placeholder="أدخل اسم المستخدم" 
+                       class="text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right"
+                       required>
+            </div>
+
+            <div class="space-y-2">
+                <label for="password" class="block text-sm font-medium text-gray-700">كلمة المرور</label>
+                <input id="password" name="password" type="password" placeholder="أدخل كلمة المرور" 
+                       class="text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right"
+                       required>
+            </div>
+
+            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-300">
+                تسجيل الدخول
+            </button>
+        </form>
+    </div>
+
+    <div id="signup" class="tab-content" style="display:none;">
+        <form id="signupForm" action="{% url 'accounts:customer_account' %}" method="post" enctype="multipart/form-data"
+            class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="signup" value="signup" />
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="col-span-2">
+                    <label for="signup-username" class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
+                    <input id="signup-username" name="username" type="text" placeholder="أدخل اسم المستخدم" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div class="col-span-2">
+                    <label for="email" class="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
+                    <input id="email" name="email" type="email" placeholder="أدخل البريد الإلكتروني" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
                 <div>
-                    {% if message.tags == 'success' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {% elif message.tags == 'error' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    {% endif %}
-                    <span>{{ message }}</span>
+                    <label for="first_name" class="block text-sm font-medium text-gray-700">الإسم الأول</label>
+                    <input id="first_name" name="first_name" placeholder="أدخل الإسم الأول" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="last_name" class="block text-sm font-medium text-gray-700">الإسم الثاني</label>
+                    <input id="last_name" name="last_name" placeholder="أدخل اسم العائلة" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="pass" class="block text-sm font-medium text-gray-700">كلمة المرور</label>
+                    <input id="pass" name="password" type="password" placeholder="أدخل كلمة المرور"
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="confirmpass" class="block text-sm font-medium text-gray-700">تأكيد كلمة المرور</label>
+                    <input id="confirmpass" type="password" placeholder="أعد إدخال كلمة المرور"
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+                    <input id="phone_number" name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">العنوان</label>
+                    <input id="address" name="address" type="text" placeholder="أدخل العنوان" 
+                           class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                           transition duration-300 text-right"
+                           required>
+                </div>
+
+                <div>
+                    <label for="avatar" class="block text-sm font-medium text-gray-700">الصورة الشخصية</label>
+                    <input class= id="avatar" name="avatar" type="file" accept="image/*"
+                           class="mt-1 block w-full px-3 py-2 text-sm text-gray-700
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-orange-50 file:text-orange-700
+                           hover:file:bg-orange-100
+                           transition duration-300"
+                           required>
                 </div>
             </div>
-        {% endfor %}
-    {% endif %}
+
+            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-300">
+                إنشاء حساب
+            </button>
+        </form>
+    </div>
 </div>
-
-<div id="login" class="tab-content">
-    <form id="loginForm" action="{% url 'accounts:customer_account' %}" method="post"
-        class="form-control w-full max-w-xs mx-auto mt-4">
-        {% csrf_token %}
-        <input type="hidden" name="login" value="login">
-        {{ form.username.errors }}
-        <label class="label">
-            <span class="label-text">اسم المستخدم</span>
-        </label>
-        <input name="username" type="text" placeholder="أدخل اسم المستخدم"
-            class="input input-bordered w-full max-w-xs" />
-
-        {{ form.password.errors }}
-        <label class="label mt-2">
-            <span class="label-text">كلمة المرور</span>
-        </label>
-        <input name="password" type="password" placeholder="أدخل كلمة المرور"
-            class="input input-bordered w-full max-w-xs" />
-
-        <button type="submit" class="btn btn-primary mt-4">تسجيل الدخول</button>
-    </form>
-</div>
-
-<div id="signup" class="tab-content" style="display:none;">
-    <form id="signupForm" action="{% url 'accounts:customer_account' %}" method="post"
-        class="form-control w-full max-w-2xl mx-auto mt-4" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" name="signup" value="signup" />
-
-        <div class="grid grid-cols-2 gap-4">
-            <div class="col-span-2">
-                <label class="label">
-                    <span class="label-text">اسم المستخدم</span>
-                </label>
-                <input name="username" type="text" placeholder="أدخل اسم المستخدم" class="input input-bordered w-full"
-                    required />
-            </div>
-
-            <div class="col-span-2">
-                <label class="label">
-                    <span class="label-text">البريد الإلكتروني</span>
-                </label>
-                <input name="email" type="email" placeholder="أدخل البريد الإلكتروني"
-                    class="input input-bordered w-full" required />
-            </div>
-
-
-            <div>
-                <label class="label">
-                    <span class="label-text">الإسم الأول</span>
-                </label>
-                <input name="first_name" placeholder="أدخل الإسم الأول" class="input input-bordered w-full" required />
-            </div>
-
-            <div>
-                <label class="label">
-                    <span class="label-text">الإسم الثاني</span>
-                </label>
-                <input name="last_name" placeholder="أدخل الإسم الثاني" class="input input-bordered w-full" required/>
-            </div>
-
-            <div>
-                <label class="label">
-                    <span class="label-text">أدخل الصورة الشخصية</span>
-                </label>
-                <input name="avatar" accept="image/*" placeholder="الصورة الشخصية"  class="file-input file-input-bordered w-full max-w-xs" id="avatar" type="file">
-            </div>
-
-            <div>
-                <label class="label">
-                    <span class="label-text">كلمة المرور</span>
-                </label>
-                <input id="pass" name="password" type="password" placeholder="أدخل كلمة المرور"
-                    class="input input-bordered w-full" required />
-            </div>
-
-
-
-            <div>
-                <label class="label">
-                    <span class="label-text">تأكيد كلمة المرور</span>
-                </label>
-                <input id="confirmpass" type="password" placeholder="أعد إدخال كلمة المرور"
-                    class="input input-bordered w-full" required />
-            </div>
-
-            <div>
-                <label class="label">
-                    <span class="label-text">رقم الهاتف</span>
-                </label>
-                <input name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" class="input input-bordered w-full"
-                    required />
-            </div>
-
-            <div>
-                <label class="label">
-                    <span class="label-text">العنوان</span>
-                </label>
-                <input name="address" type="text" placeholder="أدخل العنوان" class="input input-bordered w-full"
-                    required />
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-4 w-full">إنشاء حساب</button>
-    </form>
-</div>
-
 {% endblock %}
 
 {% block extra_scripts %}
@@ -148,13 +148,21 @@
         }
         tabLinks = document.getElementsByClassName("tab");
         for (i = 0; i < tabLinks.length; i++) {
-            tabLinks[i].className = tabLinks[i].className.replace(" tab-active", "");
+            tabLinks[i].classList.remove("tab-active");
+            tabLinks[i].classList.remove("border-orange-500");
+            tabLinks[i].classList.add("border-transparent");
         }
         document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " tab-active";
+        evt.currentTarget.classList.add("tab-active");
+        evt.currentTarget.classList.remove("border-transparent");
+        evt.currentTarget.classList.add("border-orange-500");
     }
 
+    // Set login tab as active by default
     document.getElementById("login").style.display = "block";
+    document.getElementById("login-tab").classList.add("tab-active");
+    document.getElementById("login-tab").classList.remove("border-transparent");
+    document.getElementById("login-tab").classList.add("border-orange-500");
 
     function validateForm() {
         var password = document.getElementById("pass").value;
