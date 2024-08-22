@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, F
 
 
 # Create your models here.
@@ -67,7 +67,9 @@ class Freelancer(models.Model):
         # If the freelancer has not completed an offer yet, they would not have a rating
         if self.offer_set.filter(stage='Completed').exists() is False:
             return 1
-        average_rating = self.offer_set.aggregate(average_rating=Avg('rating'))['average_rating']
+        average_rating = self.offer_set.annotate(
+            rating=F('review__rating')
+        ).aggregate(average_rating=Avg('rating'))['average_rating']
         freelancer_rating = average_rating / 5
         return freelancer_rating
 
