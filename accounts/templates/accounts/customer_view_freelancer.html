@@ -76,16 +76,16 @@
                     <h2 class="text-2xl font-bold text-orange-700 mb-4">معلومات مزود الخدمة</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <p class="mb-2"><span class="font-semibold text-orange-600">اسم المستخدم:</span> {{ freelancer.user.username }}</p>
-                            <p class="mb-2"><span class="font-semibold text-orange-600">الاسم الكامل:</span> {{ freelancer.user.first_name }} {{ freelancer.user.last_name }}</p>
+                            <p class="mb-2 text-gray-600"><span class="font-semibold text-orange-600">اسم المستخدم:</span> {{ freelancer.user.username }}</p>
+                            <p class="mb-2 text-gray-600"><span class="font-semibold text-orange-600">الاسم الكامل:</span> {{ freelancer.user.first_name }} {{ freelancer.user.last_name }}</p>
                             {% if freelancer.user.address %}
-                                <p class="mb-2"><span class="font-semibold text-orange-600">العنوان:</span> {{ freelancer.user.address }}</p>
+                                <p class="mb-2 text-gray-600"><span class="font-semibold text-orange-600">العنوان:</span> {{ freelancer.user.address }}</p>
                             {% endif %}
                         </div>
                         <div>
-                            <p class="mb-2"><span class="font-semibold text-orange-600">تاريخ إنشاء الحساب:</span> {{ freelancer.user.date_joined|date:"M d, Y" }}</p>
-                            <p class="mb-2"><span class="font-semibold text-orange-600">رقم الشهادة:</span> {{ freelancer.certificate_id }}</p>
-                            <p class="mb-2"><span class="font-semibold text-orange-600">تاريخ انتهاء الشهادة:</span> {{ freelancer.certificate_expiration|date:"Y-m-d" }}</p>
+                            <p class="mb-2 text-gray-600"><span class="font-semibold text-orange-600">تاريخ إنشاء الحساب:</span> {{ freelancer.user.date_joined|date:"M d, Y" }}</p>
+                            <p class="mb-2 text-gray-600"><span class="font-semibold text-orange-600">رقم الشهادة:</span> {{ freelancer.certificate_id }}</p>
+                            <p class="mb-2 text-gray-600"><span class="font-semibold text-orange-600">تاريخ انتهاء الشهادة:</span> {{ freelancer.certificate_expiration|date:"Y-m-d" }}</p>
                         </div>
                     </div>
                 </div>
