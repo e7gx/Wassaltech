@@ -1,12 +1,29 @@
+from django.http import JsonResponse
 from ninja import NinjaAPI
 from typing import Dict, List
 from accounts.models import Account, Freelancer
 from orders.models import Order, Offer
-from .schemas import OfferSchema
+from .schemas import AuthResponseSchema, OfferSchema,LoginSchema
+from django.contrib.auth import authenticate
 
 api = NinjaAPI()
 
+@api.post("/login/", response=AuthResponseSchema)
+def login(request, data: LoginSchema):
+    user = authenticate(username=data.username, password=data.password)
+    
+    if user is None:
+        return JsonResponse({"message": "Invalid credentials"}, status=401)
 
+    try:
+        account = Account.objects.get(user=user)
+    except Account.DoesNotExist:
+        return JsonResponse({"message": "Account does not exist"}, status=404)
+
+    if account.user_type != 'Admin' or not user.is_superuser:
+        return JsonResponse({"message": "Unauthorized access"}, status=403)
+    
+    return JsonResponse({"message": "Login successful", "username": user.username})
 
 
 @api.get("/offers/", response=List[OfferSchema])

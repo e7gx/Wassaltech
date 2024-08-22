@@ -28,15 +28,10 @@ class OfferSchema(Schema):
     updated_at: datetime
     created_at: datetime
 
-
-# class AccountSchema(Schema):
-#     id: int
-#     user_id: int
-#     user_type: str
-#     created_at: datetime
-#     updated_at: datetime
-#     phone_number: str
-#     address: str
-#     city: str
-#     country: str
-#     zip_code: str
+class LoginSchema(Schema):
+    username: str
+    password: str
+    
+class AuthResponseSchema(Schema):
+    message: str
+    username: str
