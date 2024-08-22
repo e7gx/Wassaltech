@@ -6,9 +6,6 @@ from .schemas import OfferSchema
 
 api = NinjaAPI()
 
-# @api.get("/orders/", response=List[OrderSchema])
-# def list_orders(request):
-#     return Order.objects.all()
 
 
 
