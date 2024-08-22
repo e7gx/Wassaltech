@@ -153,6 +153,8 @@ def discard_order(request, order_id):
 @login_required
 def create_offer(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
+
     freelancer = request.user.freelancer
 
     if Offer.objects.filter(order=order, freelancer=freelancer).exists():
@@ -170,7 +172,7 @@ def create_offer(request, order_id):
             return redirect('orders:freelancer_orders')
     else:
         form = OfferForm()
-    return render(request, 'orders/create_offer.html', {'form': form, 'order': order})
+    return render(request, 'orders/create_offer.html', {'form': form, 'order': order,"order_images":order_images})
 
 
 ########################################################################################################################

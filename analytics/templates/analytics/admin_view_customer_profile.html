@@ -1,0 +1,62 @@
+{% extends "main/base.html" %}
+
+{% block title %}الملف الشخصي للعميل - {{ user.first_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+            <div class="bg-gradient-to-l from-orange-500 to-orange-400 p-6 sm:p-10">
+                <div class="flex flex-col sm:flex-row items-center justify-between">
+                    <div class="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
+                        <img src="{{ user.account.avatar.url }}" alt="صورة الملف الشخصي" class="w-32 h-32 rounded-full border-4 border-white shadow-lg mb-4 sm:mb-0 sm:ml-6">
+                        <div class="text-center sm:text-right">
+                            <h1 class="text-3xl font-bold text-white mb-2">{{ user.first_name }} {{ user.last_name }}</h1>
+                            <p class="text-xl text-white opacity-90">{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <p class="text-xl font-semibold text-white">نوع الحساب</p>
+                        <p class="text-2xl font-bold text-white">{{ user.account.user_type }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-orange-700 mb-6">تفاصيل الملف الشخصي</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <p class="mb-4">
+                        <span class="font-semibold text-orange-600 block mb-1">البريد الإلكتروني:</span>
+                        <a href="mailto:{{ user.email }}" class="text-gray-800 hover:text-orange-500">{{ user.email }}</a>
+                    </p>
+                    <p class="mb-4">
+                        <span class="font-semibold text-orange-600 block mb-1">رقم الهاتف:</span>
+                        <a href="tel:{{ user.account.phone_number }}" class="text-gray-800 hover:text-orange-500">{{ user.account.phone_number }}</a>
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-4">
+                        <span class="font-semibold text-orange-600 block mb-1">العنوان:</span>
+                        <span class="text-gray-800">{{ user.account.address }}</span>
+                    </p>
+                    <p class="mb-4">
+                        <span class="font-semibold text-orange-600 block mb-1">تاريخ إنشاء الحساب:</span>
+                        <span class="text-gray-800">{{ user.date_joined|date:"Y-m-d" }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Button -->
+        <div class="text-center">
+            <a href="{% url 'accounts:edit_profile' user.id %}" class="inline-block bg-orange-600 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-orange-700 transition-colors duration-300 text-lg font-semibold">
+                تعديل الملف الشخصي
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -24,12 +24,12 @@
                     <div class="mb-6">
                         <label for="ticket_title" class="block text-sm font-medium text-gray-700 mb-2">عنوان التذكرة:</label>
                         <input type="text" name="ticket_title" id="ticket_title" value="{{ ticket.ticket_title }}" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                               class="text-orange-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                     </div>
                     <div class="mb-6">
                         <label for="ticket_category" class="block text-sm font-medium text-gray-700 mb-2">فئة التذكرة:</label>
                         <select name="ticket_category" id="ticket_category" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-orange-700" required>
                             {% for value, label in ticket_categorys %}
                                 <option value="{{ value }}" {% if ticket.ticket_category == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
@@ -38,7 +38,7 @@
                     <div class="mb-6">
                         <label for="ticket_status" class="block text-sm font-medium text-gray-700 mb-2">حالة التذكرة:</label>
                         <select name="ticket_status" id="ticket_status" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-orange-700" required>
                             {% for value, label in ticket_status %}
                                 <option value="{{ value }}" {% if ticket.ticket_status == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
@@ -47,10 +47,10 @@
                     <div class="mb-6">
                         <label for="ticket_description" class="block text-sm font-medium text-gray-700 mb-2">وصف التذكرة:</label>
                         <textarea name="ticket_description" id="ticket_description" 
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 h-32" required>{{ ticket.ticket_description }}</textarea>
+                                  class="text-orange-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 h-32" required>{{ ticket.ticket_description }}</textarea>
                     </div>
                     <button type="submit" 
-                            class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors duration-300">
+                            class="w-full font-bold bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors duration-300">
                         تحديث التذكرة
                     </button>
                 </form>
