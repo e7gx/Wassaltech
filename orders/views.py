@@ -101,23 +101,27 @@ def order_detail(request, order_id):
 @login_required
 def end_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
 
-    if request.user.account.user_type == 'Freelancer':
+    if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
         order.freelancer_completed = True
         order.save()
         messages.success(request,
-                         'You have successfully marked the order as completed. The customer can now finalize the order.')
-    elif request.user.account.user_type == 'Customer':
+                         'You have successfully marked the order as closed. The customer can now finalize the order.')
+    elif hasattr(request.user, 'freelancer') and request.user.account == order.customer:
         if order.freelancer_completed:
             order.customer_completed = True
-            order.status = 'Completed'
-
-            # Logic for complete on time
-
+            order.status = 'Closed'
             order.save()
-            messages.success(request, 'You have successfully completed the order.')
+            offer.stage = 'Completed'
+            # Logic for complete on time
+            complete_on_time = (offer.proposed_service_date - datetime.now().date()).days >= 0
+            if complete_on_time:
+                offer.complete_on_time = True
+            offer.save()
+            messages.success(request, 'You have successfully closed the order.')
         else:
-            messages.error(request, 'The freelancer must complete the order before you can finalize it.')
+            messages.error(request, 'The freelancer must close the order before you can finalize it.')
 
     if request.user.account.user_type == 'Customer':
         return redirect('orders:customer_orders')
@@ -129,11 +133,12 @@ def end_order(request, order_id):
 # ORDER DELETE
 ########################################################################################################################
 # CUSTOMER DELETE
+# An order can be discarded if and only if its status is "Open".
 @login_required
-def discard_order(request, order_id):
+def customer_discard_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
-    if not order.offer_set.exists():
+    if order.status == 'Open':
         order.status = 'Discarded'
         order.save()
         messages.success(request, 'The order has been successfully discarded.')
