@@ -15,7 +15,8 @@ urlpatterns = [
     path('history/', views.order_history, name='order_history'),
     path('customer/orders/', views.customer_orders, name='customer_orders'),
     path('freelancer/offers/', views.freelancer_offers, name='freelancer_offers'),
-    path('discard_order/<int:order_id>/', views.discard_order, name='discard_order'),
-    path('cancel_offer/customer/<int:offer_id>/', views.customer_cancel_offer, name='customer_cancel_offer'),
-    path('cancel_offer/freelancer/<int:offer_id>/', views.freelancer_cancel_offer, name='freelancer_cancel_offer'),
+    path('customer/discard-order/<int:order_id>/', views.customer_discard_order, name='customer_discard_order'),
+    path('customer/cancel_offer/<int:offer_id>/', views.customer_cancel_offer, name='customer_cancel_offer'),
+    path('freelancer/discard-offer/<int:offer_id>/', views.freelancer_discard_offer, name='freelancer_discard_offer'),
+    path('freelancer/cancel_offer/<int:offer_id>/', views.freelancer_cancel_offer, name='freelancer_cancel_offer'),
 ]

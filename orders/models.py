@@ -1,13 +1,16 @@
 from django.db import models
 from accounts.models import Account, Freelancer
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return self.name
+
 
 categories = (
     ('Mobiles', 'Mobiles'),
@@ -21,11 +24,11 @@ categories = (
     ('Tablets', 'Tablets'),
 )
 order_statuses = [
-        ('Open', 'Open'),
-        ('Discarded', 'Discarded'),
-        ('In Progress', 'In Progress'),
-        ('Closed', 'Closed'),
-    ]
+    ('Open', 'Open'),
+    ('Discarded', 'Discarded'),
+    ('In Progress', 'In Progress'),
+    ('Closed', 'Closed'),
+]
 
 offer_stages = (
     ('Pending', 'Pending'),
@@ -34,10 +37,14 @@ offer_stages = (
     ('Declined', 'Declined'),
     ('Cancelled', 'Cancelled'),
     ('Completed', 'Completed'),
-    # For payment tracking
-    ('Processed', 'Processed'),
-    ('Finalized', 'Finalized'),
+
 )
+payment_stages = (
+    ('On Hold', 'On Hold'),
+    # ('Ready To Deposit', 'Ready To Deposit'),
+    ('Deposited', 'Deposited'),
+)
+
 
 class Order(models.Model):
     customer = models.ForeignKey(Account, on_delete=models.PROTECT)
@@ -57,17 +64,20 @@ class Order(models.Model):
             self.status = 'In Progress'
         self.save()
 
+
 class OrderImage(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     image = models.FileField(upload_to='order_images/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 class OrderVideo(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     video = models.FileField(upload_to='order_videos/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class Offer(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
@@ -79,5 +89,6 @@ class Offer(models.Model):
     proposed_service_date = models.DateField()
     appointment = models.DateField()
     stage = models.CharField(max_length=100, choices=offer_stages, default='Pending')
+    payment = models.CharField(max_length=100, choices=payment_stages, default='On Hold')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
