@@ -1,58 +1,54 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-
-    <div class="m-8">
-        <h1 class="text-3xl font-bold text-center">مرحبا انت في صفحة مدير النظام 🔥</h1>
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-orange-700">التذكرة الالكترونية</h1>
+        </div>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-right rtl:text-right text-gray-500">
+                    <thead class="bg-orange-100">
+                        <tr>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">عنوان الطلب</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">فئة الطلب</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">حالة الطلب</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">تاريخ الإنشاء</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">تحرير</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for admin_ticket in admin_tickets %}
+                            <tr class="hover:bg-orange-50 transition-colors duration-200">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ admin_ticket.ticket_title }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ admin_ticket.get_ticket_category_display }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    {% if admin_ticket.ticket_status == admin_ticket.StatusChoices.OPEN %}
+                                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">
+                                        {{ admin_ticket.get_ticket_status_display }}
+                                    </span>
+                                    {% elif admin_ticket.ticket_status == admin_ticket.StatusChoices.IN_PROGRESS %}
+                                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
+                                        {{ admin_ticket.get_ticket_status_display }}
+                                    </span>
+                                    {% else %}
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                                        {{ admin_ticket.get_ticket_status_display }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ admin_ticket.ticket_created_at }}</td>
+                                <td class="px-6 py-4 text-sm font-medium">
+                                    <a href="{% url 'support:add_comment' admin_ticket.id %}" class="text-teal-600 hover:text-teal-900 transition-colors duration-200 ml-2">الرد</a>
+                                    <a href="{% url 'support:ticket_edit' admin_ticket.id %}" class="text-yellow-600 hover:text-yellow-900 transition-colors duration-200 ml-2">تحرير</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-center rtl:text-center text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3">عنوان الطلب</th>
-                    <th scope="col" class="px-6 py-3">فئة الطلب</th>
-                    <th scope="col" class="px-6 py-3">حالة الطلب</th>
-                    <th scope="col" class="px-6 py-3">تاريخ الإنشاء</th>
-                    <th scope="col" class="px-6 py-3"><span class="sr-only">تحرير</span></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for admin_ticket in admin_tickets  %}
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
-                        {{ admin_ticket.ticket_title }}
-                    </th>
-                    <td class="px-6 py-4 text-black">{{ admin_ticket.get_ticket_category_display }}</td>
-                    <td class="px-6 py-4">
-
-                        {% if admin_ticket.ticket_status == admin_ticket.StatusChoices.OPEN %}
-                        <span class="bg-red-500 px-8 py-1 rounded-full text-white">
-                            {{ admin_ticket.get_ticket_status_display }}
-                        </span>
-                        
-                        {% elif admin_ticket.ticket_status == admin_ticket.StatusChoices.IN_PROGRESS %}
-                        <span class="bg-yellow-500 px-8 py-1 rounded-full text-white">
-                            {{ admin_ticket.get_ticket_status_display }}
-                        </span>
-                        
-                        {% else %}
-                        <span class="bg-green-500 px-2 py-1 rounded-full text-white">
-                            {{ admin_ticket.get_ticket_status_display }}
-                        </span>
-                        {% endif %}
-                        
-                    </td>
-                    <td class="px-6 py-4">{{ admin_ticket.ticket_created_at }}</td>
-                    <td class="px-6 py-4 text-center">
-                        <a href="{% url 'support:add_comment' admin_ticket.id %}" class="px-8 py-1 rounded-full bg-teal-500 font-medium text-white hover:bg-green-500 ">الرد</a>
-                        <a href="{% url 'support:ticket_edit' admin_ticket.id %}" class="px-8 py-1 rounded-full bg-yellow-500 font-medium text-white hover:bg-blue-500">تحرير</a>
-
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
+</div>
 {% endblock %}

@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -103,11 +104,23 @@
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:create_order' %}">إنشاء طلب</a></li>
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:customer_orders' %}">طلباتي</a></li>
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'accounts:customer_view_profile' %}">الملف الشخصي</a></li>
           {% elif user.account.user_type == 'Freelancer' %}
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_orders' %}">الطلبات المتاحة</a></li>
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_offers' %}">عروضي</a></li>
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
-          {% endif %}
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'accounts:profile' %}">الملف الشخصي</a></li>
+            {% elif user.account.user_type == 'Admin' %}
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:dashboard' %}">لوحة التحكم</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:customers' %}">جميع المستخدمين</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_check_freelancers' %}">جميع مقدمي الخدمة</a></li>  
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_tickets' %}">جميع التذاكر</a></li>
+              {% comment %}
+              <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:all_orders' %}">جميع الطلبات</a></li>
+              <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:all_offers' %}">جميع العروض</a></li>
+              {% endcomment %}
+            {% endif %}
+
         {% endif %}
       </ul>
 

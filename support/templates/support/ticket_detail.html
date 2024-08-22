@@ -12,18 +12,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-orange-50 p-4 rounded-lg">
                         <h2 class="font-bold text-lg text-orange-800 mb-3">معلومات المستخدم</h2>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">الاسم:</span> {{ ticket.ticket_creator.user.first_name }} {{ ticket.ticket_creator.user.last_name }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">البريد الإلكتروني:</span> {{ ticket.ticket_creator.user.email }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">رقم الهاتف:</span> {{ ticket.ticket_creator.phone_number }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">فئة المستخدم:</span> {{ ticket.ticket_creator.user_type }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">العنوان:</span> {{ ticket.ticket_creator.address }}</p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">الاسم:</span> {{ ticket.ticket_creator.user.first_name }} {{ ticket.ticket_creator.user.last_name }}</p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">البريد الإلكتروني:</span> <a href="mailto:{{ ticket.ticket_creator.user.email }}">{{ ticket.ticket_creator.user.email }}</a></p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">رقم الهاتف:</span> <a href="tel:{{ ticket.ticket_creator.phone_number }}">{{ ticket.ticket_creator.phone_number }}</a></p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">فئة المستخدم:</span> {{ ticket.ticket_creator.user_type }}</p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">العنوان:</span> {{ ticket.ticket_creator.address }}</p>
                     </div>
 
                     <div class="bg-orange-50 p-4 rounded-lg">
                         <h2 class="font-bold text-lg text-orange-800 mb-3">معلومات التذكرة</h2>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">العنوان:</span> {{ ticket.ticket_title }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">الفئة:</span> {{ ticket.get_ticket_category_display }}</p>
-                        <p class="mb-2">
+                        <p class="mb-2 text-teal-700 "><span class="font-semibold text-gray-700">العنوان:</span> {{ ticket.ticket_title }}</p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">الفئة:</span> {{ ticket.get_ticket_category_display }}</p>
+                        <p class="mb-2 text-teal-700">
                             <span class="font-semibold text-gray-700">الحالة:</span>
                             <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
                                 {% if ticket.ticket_status == 'open' %}bg-green-100 text-green-800
@@ -33,7 +33,7 @@
                                 {{ ticket.get_ticket_status_display }}
                             </span>
                         </p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">تاريخ الإنشاء:</span> {{ ticket.ticket_created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2 text-teal-700"><span class="font-semibold text-gray-700">تاريخ الإنشاء:</span> {{ ticket.ticket_created_at|date:"d/m/Y H:i" }}</p>
                     </div>
                 </div>
 
@@ -70,7 +70,7 @@
 
                 <div class="flex justify-center">
                     {% if request.user.is_superuser %}
-                        <a href="{% url 'support:ticket_edit' ticket.pk %}" class="bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition-colors duration-300">
+                        <a href="{% url 'support:ticket_edit' ticket.pk %}" class="bg-orange-500 text-white px-16 py-2 rounded-full hover:bg-orange-600 transition-colors duration-300">
                             تعديل
                         </a>
                     {% endif %}
