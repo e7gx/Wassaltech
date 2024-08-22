@@ -2,6 +2,7 @@ from django.shortcuts import render , redirect
 from django.http import HttpResponse
 from orders.models import Order
 from .models import Chat , Message
+from notifications.views import NotificationService as sendemail
 from accounts.models import Freelancer , Account
 from django.http import JsonResponse , HttpResponseBadRequest
 import json
@@ -25,6 +26,7 @@ def create_chat(request , id_order):
     get_chat = Chat.objects.filter(user = get_user , freelancer = get_freelancer)
     if get_chat:
         return redirect('chat:inbox' )
+    sendemail.notify_new_chat( get_user , get_order , get_freelancer )
     save_chat = Chat(user = get_user , freelancer = get_freelancer)
     save_chat.save()
     return redirect('chat:inbox' )
