@@ -1,14 +1,16 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Q, Avg
 
 
 # Create your models here.
 def user_avatar_path(instance, filename):
     return f'avatars/{instance.user.username}/{filename}'
 
+
 class Account(models.Model):
-    avatar = models.ImageField(upload_to=user_avatar_path,default='avatars/default_profile.png')
+    avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default_profile.png')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, unique=True)
     address = models.CharField(max_length=255)
@@ -17,7 +19,6 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.user.username} | {self.user.first_name} {self.user.last_name}"
-
 
 
 def user_certificate_path(instance, filename):
@@ -44,26 +45,32 @@ class Freelancer(models.Model):
         return cancellation_count
 
     def get_completion_rate(self):
-        if self.offer_set.count() == 0:
+        if self.offer_set.filter(
+                Q(stage='Completed') | Q(stage='Cancelled')
+        ).exists() is False:
             return 1
-        else:
-            completion_rate = self.get_completion_count() / (
-                    self.get_completion_count() + self.get_cancellation_count())
-            return completion_rate
+        completion_rate = self.get_completion_count() / (
+                self.get_completion_count() + self.get_cancellation_count())
+        return completion_rate
 
     def get_timely_completion_count(self):
         timely_completion_count = self.offer_set.filter(stage='Completed', complete_on_time=True).count()
         return timely_completion_count
 
     def get_success_rate(self):
-        if self.offer_set.count() == 0:
+        if self.offer_set.filter(stage='Completed').exists() is False:
             return 1
-        else:
-            success_rate = self.get_timely_completion_count() / self.get_completion_count()
-            return success_rate
+        success_rate = self.get_timely_completion_count() / self.get_completion_count()
+        return success_rate
 
     def get_freelancer_rating(self):
-        pass
+        # If the freelancer has not completed an offer yet, they would not have a rating
+        if self.offer_set.filter(stage='Completed').exists() is False:
+            return 1
+        average_rating = self.offer_set.aggregate(average_rating=Avg('rating'))['average_rating']
+        freelancer_rating = average_rating / 5
+        return freelancer_rating
 
     def update_internal_rating(self):
         self.internal_rating = 0.3 * self.get_completion_rate() + 0.4 * self.get_success_rate() + 0.3 * self.get_freelancer_rating()
+        self.save()
