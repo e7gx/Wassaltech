@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
+from notifications.views import NotificationService as SendEmail
 from support.models import Ticket, Comment
 
 @login_required
@@ -111,4 +112,5 @@ def add_comment(request, ticket_id):
                 comment_creator=request.user.account,
                 comment_text=comment_text
             )
+            
     return redirect('support:ticket_detail', ticket_id=ticket_id)
