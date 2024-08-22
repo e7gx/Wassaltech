@@ -40,28 +40,8 @@ def get_chat(request , chat_id):
     return render(request , 'accounts/inbox.html' , {'user_chat': all_chat , 'message':get_message , 'sender_user': get_chat})
 
 def send_message(request, chat_id):
-    try:
-        # Ensure request body is not empty
-        if not request.body:
-            return HttpResponseBadRequest('Empty request body')
-
-        data = json.loads(request.body)
-        content = data.get('content')
-
-        # Validate content
-        if not content:
-            return HttpResponseBadRequest('No content provided')
-
-        # Fetch the chat object
-        try:
-            chat = Chat.objects.get(id=chat_id)
-        except Chat.DoesNotExist:
-            return JsonResponse({'error': 'Chat not found'}, status=404)
-
-        # Create the message
-        get_account = Account.objects.get( user = request.user )
-        Message.objects.create(chat=chat, sender=get_account, content=content)
-        return JsonResponse({'status': 'Message sent'})
-
-    except json.JSONDecodeError:
-        return HttpResponseBadRequest('Invalid JSON')
+    data = json.loads(request.body)
+    content = data.get('content')
+    chat = Chat.objects.get(id=chat_id)
+    Message.objects.create(chat=chat, sender=request.user.account, content=content)
+    return JsonResponse({'status': 'Message sent'})

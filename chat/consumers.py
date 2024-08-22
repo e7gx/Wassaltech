@@ -11,7 +11,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat_id = self.scope['url_route']['kwargs']['chat_id']
         self.chat_group_name = f'chat_{self.chat_id}'
 
-        # Add the WebSocket to the chat group
+        
         await self.channel_layer.group_add(
             self.chat_group_name,
             self.channel_name
@@ -19,7 +19,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Remove the WebSocket from the chat group
         await self.channel_layer.group_discard(
             self.chat_group_name,
             self.channel_name
@@ -31,14 +30,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message_content = text_data_json['message']
             user = self.scope['user']
 
-            # Ensure the user is authenticated
             if not user.is_authenticated:
                 await self.send(text_data=json.dumps({
                     'error': 'User is not authenticated'
                 }))
                 return
 
-            # Get the chat and create a message
             chat = await database_sync_to_async(Chat.objects.get)(id=self.chat_id)
             await database_sync_to_async(Message.objects.create)(
                 chat=chat,
@@ -46,7 +43,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 content=message_content
             )
 
-            # Send the message to the group
             await self.channel_layer.group_send(
                 self.chat_group_name,
                 {
@@ -74,7 +70,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         message = event['message']
 
-        # Send the message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message
         }))

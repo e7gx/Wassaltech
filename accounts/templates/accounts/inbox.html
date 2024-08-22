@@ -86,11 +86,11 @@
         </div>
     </div>
 </div>
-<script>
-    let chatId = {{ sender_user.id }}; 
+<script type="text/javascript">
+    let chatId = "{{ sender_user.id }}"; 
 
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/chat/get/chat/' + chatId + '/'
+        'ws://' + window.location.host + '/ws/chat/' + chatId + '/'
     );
 
     chatSocket.onopen = function(e) {
@@ -104,7 +104,7 @@
         } else {
             const chatLog = document.querySelector('#chat-log');
             chatLog.innerHTML += `<div class="chat-message">${data.message}</div>`;
-            chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
+            chatLog.scrollTop = chatLog.scrollHeight; 
         }
     };
 
@@ -117,7 +117,7 @@
     };
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault(); 
 
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
@@ -126,10 +126,10 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') // Ensure CSRF token is included
+                'X-CSRFToken': getCookie('csrftoken') 
             },
             body: JSON.stringify({
-                'message': message
+                'content': message
             })
         }).then(response => {
             if (response.ok) {
@@ -140,7 +140,7 @@
         });
     };
 
-    // Utility function to get CSRF token
+   
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
