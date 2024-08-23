@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
+from notifications.views import NotificationService as sendemail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import user_type_required
@@ -177,6 +178,7 @@ def create_offer(request, order_id):
             offer.order = order
             offer.freelancer = freelancer
             offer.save()
+            sendemail.notify_new_offer(freelancer , order , offer.price )
             messages.success(request, "Your offer has been submitted successfully.")
             return redirect('orders:freelancer_orders')
     else:
@@ -232,6 +234,7 @@ def accept_offer(request, offer_id):
     order.status = 'In Progress'
     order.assigned_to = offer.freelancer
     order.save()
+    sendemail.notify_order_accepted(offer , order )
     # print(f"Order: {order}")
     # print(f"Offer: {offer}")
     # print(f"order.assigned_to {order.assigned_to}")

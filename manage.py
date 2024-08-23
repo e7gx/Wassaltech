@@ -2,8 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import django
 
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Wassaltech.settings')
+django.setup()
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Wassaltech.settings')
