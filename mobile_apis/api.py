@@ -3,6 +3,8 @@ from ninja import NinjaAPI
 from typing import Dict, List
 from accounts.models import Account, Freelancer
 from orders.models import Order, Offer
+from reviews.models import Review
+from django.db.models import Avg
 from .schemas import AuthResponseSchema, OfferSchema,LoginSchema
 from django.contrib.auth import authenticate
 
@@ -56,3 +58,9 @@ def get_offer_count(request):
 def get_order_count(request):
     order_count = Order.objects.count()
     return {"order_count": order_count}
+
+
+@api.get("/reviews/rating_avg/", response=Dict[str, int])
+def get_order_count(request):
+    rating_avg = Review.objects.aggregate(Avg('rating'))['rating__avg']
+    return {"rating_avg": rating_avg}
