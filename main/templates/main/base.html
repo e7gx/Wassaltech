@@ -147,12 +147,25 @@
   </div>
 </nav>
 
+{% if user.is_authenticated %}
+  <div class="absolute bottom-4 right-4 rounded-full bg-gradient-to-r flex items-center justify-center from-orange-500 to-orange-900 w-28 h-28 cursor-pointer hover:scale-125 transition-all duration-200">
+    <a href="support/tickets">
+      <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.008 19.003L14.014 17a1.001 1.001 0 0 1 2.005 0v1.977c0 .481 0 .722.154.87c.155.147.39.137.863.117c1.863-.079 3.008-.33 3.814-1.136c.81-.806 1.061-1.951 1.14-3.817c.015-.37.023-.556-.046-.679c-.07-.123-.345-.277-.897-.586a1.999 1.999 0 0 1 0-3.492c.552-.308.828-.463.897-.586s.061-.308.045-.679c-.078-1.866-.33-3.01-1.139-3.817c-.877-.876-2.155-1.097-4.322-1.153a.497.497 0 0 0-.51.497V7a1.001 1.001 0 0 1-2.005 0l-.007-2.501a.5.5 0 0 0-.5-.499H9.994c-3.78 0-5.67 0-6.845 1.172c-.81.806-1.061 1.951-1.14 3.817c-.015.37-.023.556.046.679c.07.123.345.278.897.586a1.999 1.999 0 0 1 0 3.492c-.552.309-.828.463-.897.586s-.061.308-.045.678c.078 1.867.33 3.012 1.139 3.818C4.324 20 6.214 20 9.995 20h3.01c.472 0 .707 0 .854-.146s.148-.38.149-.851M16.018 13v-2a1.001 1.001 0 0 0-2.005 0v2a1.002 1.002 0 0 0 2.006 0" clip-rule="evenodd"/></svg>
+    </a>
+  </div>
+
+{% endif %}
 
 <!-- Mobile menu -->
 <div :class="{'block': mobileNavOpen, 'hidden': !mobileNavOpen}" class="hidden fixed top-0 left-0 bottom-0 w-5/6 max-w-md z-50">
   <div x-on:click="mobileNavOpen = !mobileNavOpen" class="fixed inset-0 bg-gray-800 opacity-25"></div>
   <nav class="relative flex flex-col py-6 px-10 w-full h-full bg-white border-r overflow-y-auto">
     <div class="flex items-center mb-16">
+      <div class="text-black">
+        <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
+          وَصّلْتِك   
+        </a> 
+      </div>
       <a class="mr-auto text-2xl font-medium leading-none" href="#">
         <img class="h-10" src="saturn-assets/logos/logo-saturn-dark.svg" alt="" width="auto">
       </a>
@@ -162,7 +175,7 @@
         </svg>
       </button>
     </div>
-    <div>
+    <div class="flex-grow">
       <ul class="mb-2">
         {% if user.is_authenticated %}
           {% if user.account.user_type == 'Customer' %}
@@ -182,7 +195,22 @@
         </div>
 {% endif %}
      </div>
-  </nav>
+     <div class="text-center">
+
+      <form action="{% url 'accounts:logout_view' %}" method="post">
+        {% csrf_token %}
+        <button class="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-900 hover:text-white border border-gray-200 rounded-md overflow-hidden transition duration-300 cursor-pointer">
+          <div class="absolute top-0 right-full w-full h-full bg-orange-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
+
+          <span class="relative font-bold">
+            تسجيل الخروج
+          </span>
+        </button>
+      </form>
+
+
+     </div>
+    </nav>
 </div>
 
 {% block content %}{% endblock %}
