@@ -102,13 +102,17 @@ def order_detail(request, order_id):
 def end_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
-
+    # print(f"Order: {order}")
+    # print(f"Offer: {offer}")
+    # print(f"order.assigned_to {order.assigned_to}")
+    if hasattr(request.user, 'freelancer'):
+        print(f"request.user.freelancer: {request.user.freelancer}")
     if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
         order.freelancer_completed = True
         order.save()
         messages.success(request,
                          'You have successfully marked the order as closed. The customer can now finalize the order.')
-    elif hasattr(request.user, 'freelancer') and request.user.account == order.customer:
+    elif hasattr(request.user, 'account') and request.user.account == order.customer:
         if order.freelancer_completed:
             order.customer_completed = True
             order.status = 'Closed'
@@ -228,6 +232,9 @@ def accept_offer(request, offer_id):
     order.status = 'In Progress'
     order.assigned_to = offer.freelancer
     order.save()
+    # print(f"Order: {order}")
+    # print(f"Offer: {offer}")
+    # print(f"order.assigned_to {order.assigned_to}")
 
     return redirect('orders:order_detail', order_id=order.id)
 

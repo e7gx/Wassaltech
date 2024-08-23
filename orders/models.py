@@ -31,10 +31,12 @@ order_statuses = [
 ]
 
 offer_stages = (
+    # No payment involved here
     ('Pending', 'Pending'),
     ('Discarded', 'Discarded'),
-    ('Accepted', 'Accepted'),
     ('Declined', 'Declined'),
+    # There is payment here
+    ('Accepted', 'Accepted'),
     ('Cancelled', 'Cancelled'),
     ('Completed', 'Completed'),
 
@@ -63,7 +65,11 @@ class Order(models.Model):
         elif self.assigned_to and self.status == 'Open':
             self.status = 'In Progress'
         self.save()
-
+    def __str__(self):
+        if self.status == 'In Progress' or self.status == 'Closed':
+            return f"Order #{self.id} by {self.customer} - Assigned to: {self.assigned_to} - Status: {self.status}"
+        else:
+            return f"Order #{self.id} by {self.customer} - Status: {self.status}"
 
 class OrderImage(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -92,3 +98,6 @@ class Offer(models.Model):
     payment = models.CharField(max_length=100, choices=payment_stages, default='On Hold')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Offer by {self.freelancer} to {self.order.customer} - Price: {self.price} - Stage: {self.stage}"
