@@ -81,7 +81,7 @@
     <div class="flex items-center">
 
       <!-- Action elements -->
-      <div class="hidden lg:block">
+      <div class="hidden lg:flex space-x-4 items-center">
         {% if not user.is_authenticated %}
         <div class="flex items-center">
           <div x-data="{ open: false }" class="relative group">
@@ -120,6 +120,14 @@
           </button>
         </form>
         {% endif %}
+        <div class="text-center" dir="rtl">
+          <span class="text-orange-900 font-bold text-xl">
+            اهلا بك 
+          </span>
+          <span class="text-black text-lg">
+            {{ user.first_name }} {{ user.last_name }}
+          </span>
+         </div>
       </div>
 
       <!-- Navigation elements -->
@@ -174,7 +182,7 @@
 
 {% if user.is_authenticated %}
   <div class="bottom-4 right-4 fixed rounded-full bg-gradient-to-r flex items-center justify-center from-orange-500 to-orange-900 w-28 h-28 cursor-pointer hover:scale-125 transition-all duration-200">
-    <a href="support/tickets">
+    <a href="{%url 'support:display_tickets'%}">
       <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.008 19.003L14.014 17a1.001 1.001 0 0 1 2.005 0v1.977c0 .481 0 .722.154.87c.155.147.39.137.863.117c1.863-.079 3.008-.33 3.814-1.136c.81-.806 1.061-1.951 1.14-3.817c.015-.37.023-.556-.046-.679c-.07-.123-.345-.277-.897-.586a1.999 1.999 0 0 1 0-3.492c.552-.308.828-.463.897-.586s.061-.308.045-.679c-.078-1.866-.33-3.01-1.139-3.817c-.877-.876-2.155-1.097-4.322-1.153a.497.497 0 0 0-.51.497V7a1.001 1.001 0 0 1-2.005 0l-.007-2.501a.5.5 0 0 0-.5-.499H9.994c-3.78 0-5.67 0-6.845 1.172c-.81.806-1.061 1.951-1.14 3.817c-.015.37-.023.556.046.679c.07.123.345.278.897.586a1.999 1.999 0 0 1 0 3.492c-.552.309-.828.463-.897.586s-.061.308-.045.678c.078 1.867.33 3.012 1.139 3.818C4.324 20 6.214 20 9.995 20h3.01c.472 0 .707 0 .854-.146s.148-.38.149-.851M16.018 13v-2a1.001 1.001 0 0 0-2.005 0v2a1.002 1.002 0 0 0 2.006 0" clip-rule="evenodd"/></svg>
     </a>
   </div>
@@ -185,21 +193,32 @@
 <div :class="{'block': mobileNavOpen, 'hidden': !mobileNavOpen}" class="hidden fixed top-0 left-0 bottom-0 w-5/6 max-w-md z-50">
   <div x-on:click="mobileNavOpen = !mobileNavOpen" class="fixed inset-0 bg-gray-800 opacity-25"></div>
   <nav class="relative flex flex-col py-6 px-10 w-full h-full bg-white border-r overflow-y-auto">
-    <div class="flex items-center mb-16">
+    <div class="flex items-center justify-between mb-8">
       <div class="text-black">
         <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
           وَصّلْتِك   
         </a> 
       </div>
-      <a class="mr-auto text-2xl font-medium leading-none" href="#">
-        <img class="h-10" src="saturn-assets/logos/logo-saturn-dark.svg" alt="" width="auto">
-      </a>
+  
+    
       <button x-on:click="mobileNavOpen = !mobileNavOpen">
         <svg class="h-6 w-6 text-gray-500 cursor-pointer hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
+      
     </div>
+
+    <div class="text-center border-b pb-4">
+      <span class="text-orange-900 font-bold text-xl">
+        اهلا بك 
+      </span>
+      <p class="block text-black text-lg">
+        {{ user.first_name }} {{ user.last_name }}
+      </p>
+     </div>
+
+
     <div class="flex-grow">
       <ul class="mb-2">
         {% if user.is_authenticated %}
@@ -224,6 +243,8 @@
      </div>
      <div class="text-center">
 
+     {% if user.is_authenticated %}
+
       <form action="{% url 'accounts:logout_view' %}" method="post">
         {% csrf_token %}
         <button class="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-900 hover:text-white border border-gray-200 rounded-md overflow-hidden transition duration-300 cursor-pointer">
@@ -234,14 +255,41 @@
           </span>
         </button>
       </form>
-
+{% endif %}
 
      </div>
     </nav>
+
+ 
 </div>
 
 {% block content %}{% endblock %}
 
+
+<!-- footer -->
+<section class="relative py-20 overflow-hidden mt-auto">
+  <img class="absolute top-0 left-0" src="{% static 'images/blue-light-left.png' %}" alt="">
+  <img class="absolute bottom-0 left-1/2" src="{% static 'images/orange-light-bottom.png' %}" alt="">
+  <div class="relative container px-4 mx-auto">
+    <div class="max-w-7xl mx-auto">
+      <div class="pb-8 mb-15 border-b border-gray-100 text-center">
+        <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
+          وَصّلْتِك   
+        </a> 
+      </div>
+      <div class="flex flex-wrap -mb-5 -mx-6 items-center justify-center">
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Product</a></div>
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Features</a></div>
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Pricing</a></div>
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Resources</a></div>
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Careers</a></div>
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Help</a></div>
+        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Privacy</a></div>
+      </div>
+
+    </div>
+  </div>
+</section>
     {% block extra_scripts %}
 
     {% endblock %}
