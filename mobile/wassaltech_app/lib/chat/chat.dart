@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
@@ -24,6 +23,7 @@ class _MainPageState extends State<AiChatPage> {
   int _offerCount = 0;
   int _orderCount = 0;
   double _totalPrice = 0.0;
+  double _reviewsAverage = 0.0;
 
   @override
   void initState() {
@@ -64,6 +64,7 @@ class _MainPageState extends State<AiChatPage> {
       _freelancerCount = await fetchFreelancerCount();
       List<Offer> offers = await fetchOffers();
       _orderCount = await fetchOrdersCount();
+      _reviewsAverage = await fetchReviewsAverage();
 
       setState(() {
         _userCount = _userCount;
@@ -71,10 +72,10 @@ class _MainPageState extends State<AiChatPage> {
         _offerCount = offers.length;
         _orderCount = _orderCount;
         _totalPrice = _totalPrice;
+        _reviewsAverage = _reviewsAverage;
       });
     } catch (e) {
-      // Handle errors appropriately
-      print("Error fetching counts: $e");
+      print("Error fetching counts: $e"); 
     }
   }
 
@@ -146,6 +147,7 @@ class _MainPageState extends State<AiChatPage> {
       3- Current offer count: $_offerCount
       4- Current order count: $_orderCount
       5- totalPrice: $_totalPrice
+      6- Reviews Average: $_reviewsAverage
 
     only this data is available for now. do not ask for any other data.
 
@@ -160,6 +162,7 @@ class _MainPageState extends State<AiChatPage> {
     make sure to provide the best answer for the user's question.
 
     Make sure that your respond is well structured and readable
+    
 
     """;
 

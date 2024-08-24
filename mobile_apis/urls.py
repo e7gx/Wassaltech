@@ -4,3 +4,4 @@ from .api import api
 urlpatterns = [
     path('', api.urls),
 ]
+

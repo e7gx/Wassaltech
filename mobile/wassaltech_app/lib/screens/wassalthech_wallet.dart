@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
-import 'offer_details_page.dart'; 
+import 'offer_details_page.dart';
 
 class Wallet extends StatefulWidget {
   final Future<List<Offer>> _offersFuture;
@@ -22,11 +22,13 @@ class Wallet extends StatefulWidget {
 
 class _WalletState extends State<Wallet> {
   late Future<int> _ordersCountFuture;
+  late Future<int> _fetchReviewsCount;
 
   @override
   void initState() {
     super.initState();
     _ordersCountFuture = fetchOrdersCount();
+    _fetchReviewsCount = fetchReviewsCount();
   }
 
   @override
@@ -42,7 +44,25 @@ class _WalletState extends State<Wallet> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final ordersCount = snapshot.data!;
-                  return _buildSummaryCard(ordersCount);
+                  return FutureBuilder<int>(
+                    future: _fetchReviewsCount,
+                    builder: (context, reviewsSnapshot) {
+                      if (reviewsSnapshot.hasData) {
+                        final reviewsCount = reviewsSnapshot.data!;
+                        return _buildSummaryCard(ordersCount, reviewsCount);
+                      } else if (reviewsSnapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${reviewsSnapshot.error}'),
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.orangeAccent,
+                          ),
+                        );
+                      }
+                    },
+                  );
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
@@ -61,7 +81,7 @@ class _WalletState extends State<Wallet> {
     );
   }
 
-  Widget _buildSummaryCard(int ordersCount) {
+  Widget _buildSummaryCard(int ordersCount, int reviewsCount) {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(
@@ -79,6 +99,9 @@ class _WalletState extends State<Wallet> {
             _buildSummaryTile('Total Offers', 'Count: ${widget._offerCount}'),
             const SizedBox(height: 8.0),
             _buildSummaryTile('Total Orders', 'Count: $ordersCount'),
+            const SizedBox(height: 8.0),
+            _buildSummaryTile('Average Reviews',
+                'Rating: ${reviewsCount.toStringAsFixed(1)}'),
           ],
         ),
       ),
@@ -198,10 +221,10 @@ class _WalletState extends State<Wallet> {
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.orange.withOpacity(0.99),
             spreadRadius: 2,
             blurRadius: 8,
-            offset: Offset(0, 2), 
+            offset: Offset(0, 2),
           ),
         ],
       ),

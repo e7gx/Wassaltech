@@ -1,6 +1,29 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+class Review {
+  final int id;
+  final int rating;
+  final String comment;
+  final DateTime createdAt;
+
+  Review({
+    required this.id,
+    required this.rating,
+    required this.comment,
+    required this.createdAt,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      id: json['id'],
+      rating: json['rating'],
+      comment: json['comment'],
+      createdAt: DateTime.parse(json['created_at']),
+    );
+  }
+}
+
 class Order {
   final int id;
   final int customerId;
@@ -149,6 +172,36 @@ Future<int> fetchOrdersCount() async {
   }
 }
 
+Future<int> fetchReviewsCount() async {
+  final response = await http
+      .get(Uri.parse('http://127.0.0.1:8000/api/reviews/rating_avg/'));
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> data = json.decode(response.body);
+    return (data['rating_avg'] as num).toInt();
+  } else {
+    throw Exception('Failed to load Reviews Count');
+  }
+}
+
+Future<double> fetchReviewsAverage() async {
+  try {
+    final response = await http
+        .get(Uri.parse('http://127.0.0.1:8000/api/reviews/rating_avg/'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print('API Response Data: $data');
+      return (data['rating_avg'] as num).toDouble();
+    } else {
+      throw Exception('Failed to load reviews average');
+    }
+  } catch (e) {
+    print('Error: $e');
+    return 0.0;
+  }
+}
+
 class ApiService {
   final String baseUrl = "http://127.0.0.1:8000/api";
 
@@ -168,5 +221,37 @@ class ApiService {
     } else {
       throw Exception('Failed to login');
     }
+  }
+}
+
+class ReviewService {
+  static const String baseUrl = 'http://127.0.0.1:8000/api';
+
+  Future<List<Review>> fetchAllReviews() async {
+    final response = await http.get(Uri.parse('$baseUrl/reviews/all/'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> reviewsJson = json.decode(response.body)['reviews'];
+      return reviewsJson.map((json) => Review.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load reviews');
+    }
+  }
+}
+
+class Freelancer {
+  final int id;
+  final String username;
+  final bool isVerified;
+
+  Freelancer(
+      {required this.id, required this.username, required this.isVerified});
+
+  factory Freelancer.fromJson(Map<String, dynamic> json) {
+    return Freelancer(
+      id: json['id'],
+      username: json['username'],
+      isVerified: json['is_verified'],
+    );
   }
 }

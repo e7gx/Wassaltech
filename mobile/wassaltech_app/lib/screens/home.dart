@@ -8,8 +8,10 @@ import 'package:wassaltech_app/auth/login.dart';
 import 'package:wassaltech_app/chat/chat.dart';
 import 'package:wassaltech_app/model/service/shared_preferences_service.dart';
 import 'package:wassaltech_app/screens/order_offers_chart.dart';
+import 'package:wassaltech_app/screens/reviews.dart';
 import 'package:wassaltech_app/screens/users_dashboard.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
+// import 'package:wassaltech_app/screens/verify_freelancer_screen.dart';
 import 'package:wassaltech_app/screens/wassalthech_wallet.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -196,11 +198,27 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.grey.shade100,
             thickness: 12,
           ),
-          _buildDrawerItem(
-            'Users',
-            2,
-            Icon(
-              Icons.people,
+          ListTile(
+            title: Text(
+              'Reviews',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.orange,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReviewsPage(),
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.rate_review_sharp,
               color: Colors.orange,
             ),
           ),
@@ -208,6 +226,34 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.grey.shade100,
             thickness: 12,
           ),
+          // ListTile(
+          //   title: Text(
+          //     'Freelancers',
+          //     textAlign: TextAlign.center,
+          //     style: TextStyle(
+          //       fontFamily: 'Cairo',
+          //       fontWeight: FontWeight.bold,
+          //       fontSize: 24,
+          //       color: Colors.orange,
+          //     ),
+          //   ),
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => VerifyFreelancerPage(),
+          //       ),
+          //     );
+          //   },
+          //   leading: Icon(
+          //     Icons.rate_review_sharp,
+          //     color: Colors.orange,
+          //   ),
+          // ),
+          // Divider(
+          //   color: Colors.grey.shade100,
+          //   thickness: 12,
+          // ),
           _buildDrawerItem(
             'Chat',
             3,

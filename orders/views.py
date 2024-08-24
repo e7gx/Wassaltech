@@ -48,19 +48,23 @@ def create_order(request):
 # CUSTOMER READ
 @login_required
 def customer_orders(request):
-    orders = Order.objects.filter(customer=request.user.account)
+    orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress'])
+    for order in orders:
+        pending_offers = Offer.objects.filter(order=order, stage='Pending').count()
+        order.pending_offers = pending_offers
     return render(request, 'orders/customer_orders.html', {'orders': orders})
 
 
 # CUSTOMER READ
-# ! edit  this function
+# ! UPDATE THIS FUNCTION TO SHOW ONLY COMPLETED ORDERS IN THE HISTORY
 @login_required
 def order_history(request):
     user = request.user
     if hasattr(user, 'account'):
-        orders = Order.objects.filter(customer=user.account).exclude(status='Open')
-    elif hasattr(user, 'freelancer'):
-        orders = Order.objects.filter(assigned_to=user.freelancer).exclude(status='Open')
+        if hasattr(user, 'account'):
+            orders = Order.objects.filter(customer=user.account).exclude(status__in=['Open', 'In Progress'])
+        elif hasattr(user, 'freelancer'):
+            orders = Order.objects.filter(customer=user.account).exclude(status__in=['Open', 'In Progress'])
     else:
         orders = []
     return render(request, 'orders/order_history.html', {'orders': orders})
