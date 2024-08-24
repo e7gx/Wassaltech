@@ -4,4 +4,4 @@ from .models import Review
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['rating', 'comment']  # Exclude the order field
+        fields = ['rating', 'comment']  

@@ -1,18 +1,10 @@
 from ninja import Schema
 from datetime import datetime
 from decimal import Decimal
+from pydantic import BaseModel
+from typing import Optional
 
-# class OrderSchema(Schema):
-#     id: int
-#     customer_id: int
-#     assigned_to_id: int = None
-#     category: str
-#     issue_description: str
-#     created_at: datetime
-#     updated_at: datetime
-#     freelancer_completed: bool
-#     customer_completed: bool
-#     status: str
+
 
 class OfferSchema(Schema):
     id: int
@@ -35,3 +27,38 @@ class LoginSchema(Schema):
 class AuthResponseSchema(Schema):
     message: str
     username: str
+
+class ReviewSchema(Schema):
+    id: int
+    rating: int
+    comment: str
+    created_at: datetime
+    
+
+# class FreelancerSchema(Schema):
+#     id: int
+#     username: str
+#     first_name: str
+#     last_name: str
+#     email: str
+#     phone_number: str
+#     address: str
+#     certificate_id: str
+#     certificate_expiration: Optional[datetime]
+#     internal_rating: float
+#     is_verified: bool
+#     created_at: datetime
+# class VerifyFreelancerSchema(Schema):
+#     is_verified: bool
+
+# class OrderSchema(Schema):
+#     id: int
+#     customer_id: int
+#     assigned_to_id: int = None
+#     category: str
+#     issue_description: str
+#     created_at: datetime
+#     updated_at: datetime
+#     freelancer_completed: bool
+#     customer_completed: bool
+#     status: str
