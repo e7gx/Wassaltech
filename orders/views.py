@@ -103,9 +103,6 @@ def order_detail(request, order_id):
 def end_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
-    # print(f"Order: {order}")
-    # print(f"Offer: {offer}")
-    # print(f"order.assigned_to {order.assigned_to}")
     if hasattr(request.user, 'freelancer'):
         print(f"request.user.freelancer: {request.user.freelancer}")
     if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
@@ -223,21 +220,17 @@ def accept_offer(request, offer_id):
 
     if request.user.account != order.customer:
         return HttpResponseForbidden("You don't have permission to accept this offer.")
-
     offer.stage = 'Accepted'
     offer.save()
-    unaccepted_offers = Offer.objects.filter(order=order).exclude(id=offer_id)
-    for offer in unaccepted_offers:
-        offer.stage = 'Declined'
-        offer.save()
-
     order.status = 'In Progress'
     order.assigned_to = offer.freelancer
     order.save()
+    unaccepted_offers = Offer.objects.filter(order=order).exclude(id=offer_id)
+    for unaccepted_offer in unaccepted_offers:
+        unaccepted_offer.stage = 'Declined'
+        unaccepted_offer.save()
+
     sendemail.notify_order_accepted(offer , order )
-    # print(f"Order: {order}")
-    # print(f"Offer: {offer}")
-    # print(f"order.assigned_to {order.assigned_to}")
 
     return redirect('orders:order_detail', order_id=order.id)
 
