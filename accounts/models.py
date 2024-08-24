@@ -33,7 +33,7 @@ class Freelancer(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.username} | {self.status}"
+        return f"{self.user.username} | Is Verified: {self.is_verified}"
 
     def get_completion_count(self):
         completion_count = self.offer_set.filter(stage='Completed').count()

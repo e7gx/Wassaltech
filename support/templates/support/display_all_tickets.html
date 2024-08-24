@@ -1,59 +1,67 @@
 {% extends "main/base.html" %}
 
-{% block title %}All Tickets{% endblock %}
+{% block title %}جميع التذاكر{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center">
-    <h1 class="text-3xl font-bold text-center mb-6">
-        جميع التذاكر
-    </h1>
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-orange-700">جميع التذاكر</h1>
+            <a href="{% url 'support:create_ticket' %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+                إنشاء تذكرة
+            </a>
+        </div>
 
-    <a href="{% url 'support:create_ticket' %}" class="btn btn-primary">
-        إنشاء تذكرة
-    </a>
-</div>
-
-<div class="overflow-x-auto">
-    {% if tickets %}
-    <table class="table table-zebra w-full">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ticket in tickets %}
-            <tr>
-                <td>{{ ticket.id }}</td>
-                <td>{{ ticket.ticket_title }}</td>
-                <td>{{ ticket.get_ticket_category_display }}</td>
-                <td>
-                    <div
-                        class="badge {% if ticket.ticket_status == 'open' %}badge-success{% elif ticket.ticket_status == 'closed' %}badge-error{% elif ticket.ticket_status == 'in_progress' %}badge-warning{% else %}badge-info{% endif %}">
-                        {{ ticket.get_ticket_status_display }}
-                    </div>
-                </td>
-                <td>{{ ticket.ticket_created_at }}</td>
-                <td>
-                    <a href="{% url 'support:ticket_detail' ticket.pk %}" class="btn btn-xs btn-primary mr-2">View</a>
-                    {% if request.user.is_superuser %}
-                    <button class="btn btn-xs btn-error">Delete</button>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="text-center">
-        لا يوجد تذاكر حالية
-
-    </p>
-    {% endif %}
+        {% if tickets %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-orange-100">
+                            <tr>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">العنوان</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الفئة</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الحالة</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">تاريخ الإنشاء</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for ticket in tickets %}
+                                <tr class="hover:bg-orange-50 transition-colors duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ ticket.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ ticket.ticket_title }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ ticket.get_ticket_category_display }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            {% if ticket.ticket_status == 'open' %}bg-green-100 text-green-800
+                                            {% elif ticket.ticket_status == 'closed' %}bg-red-100 text-red-800
+                                            {% elif ticket.ticket_status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                                            {% else %}bg-blue-100 text-blue-800{% endif %}">
+                                            {{ ticket.get_ticket_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ ticket.ticket_created_at|date:"d/m/Y H:i" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="{% url 'support:ticket_detail' ticket.pk %}" class="text-orange-600 hover:text-orange-900 transition-colors duration-200 ml-2">عرض</a>
+                                        {% if request.user.is_superuser %}
+                                            <button class="text-red-600 hover:text-red-900 transition-colors duration-200">حذف</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-orange-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <p class="text-xl text-gray-700">لا يوجد تذاكر حالية</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

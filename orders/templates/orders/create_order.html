@@ -1,79 +1,75 @@
 {% extends 'main/base.html' %}
 
+{% block title %}إنشاء طلب جديد{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Create New Order</h1>
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-orange-700 mb-6">إنشاء طلب جديد</h1>
 
-    <form method="post" enctype="multipart/form-data" class="card bg-base-100 shadow-xl">
-        {% csrf_token %}
-        <div class="card-body">
-            <div class="form-control">
-                <label class="label" for="id_category">
-                    <span class="label-text">Category</span>
-                </label>
-                <select name="category" id="id_category" class="select select-bordered w-full">
-                    <option value="" selected>Select a category</option>
-                    {% for value, label in form.fields.category.choices %}
-                        <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-                {% if form.category.errors %}
-                    {% for error in form.category.errors %}
-                        <label class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </label>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-6">
+            {% csrf_token %}
+            <div class="space-y-6">
+                <div class="form-control">
+                    <label class="block text-orange-600 font-semibold mb-2" for="id_category">
+                        الفئة
+                    </label>
+                    <select name="category" id="id_category" class="w-full text-gray-600 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="" selected>اختر فئة</option>
+                        {% for value, label in form.fields.category.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.category.errors %}
+                        {% for error in form.category.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
-            <div class="form-control">
-                <label class="label" for="id_issue_description">
-                    <span class="label-text">Issue Description</span>
-                </label>
-                <textarea name="issue_description" id="id_issue_description" class="textarea textarea-bordered h-24" placeholder="Describe your issue here..."></textarea>
-                {% if form.issue_description.errors %}
-                    {% for error in form.issue_description.errors %}
-                        <label class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </label>
-                    {% endfor %}
-                {% endif %}
-            </div>
+                <div class="form-control">
+                    <label class="block text-orange-600 font-semibold mb-2" for="id_issue_description">
+                        وصف المشكلة
+                    </label>
+                    <textarea name="issue_description" id="id_issue_description" class="w-full px-4 text-black py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 h-32" placeholder="صف مشكلتك هنا..."></textarea>
+                    {% if form.issue_description.errors %}
+                        {% for error in form.issue_description.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
-            <div class="form-control mt-4">
-                <label class="label" for="id_image">
-                    <span class="label-text">Image (optional)</span>
-                </label>
-                <input type="file" multiple name="files" id="id_image" class="file-input file-input-bordered w-full" accept="image/*">
-                <p class="text-sm text-gray-500 mt-1">You can upload up to 5 images.</p>
-                {% if form.image.errors %}
-                    {% for error in form.image.errors %}
-                        <label class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </label>
-                    {% endfor %}
-                {% endif %}
-            </div>
+                <div class="form-control">
+                    <label class="block text-orange-600 font-semibold mb-2" for="id_image">
+                        الصور (اختياري)
+                    </label>
+                    <input type="file" multiple name="files" id="id_image" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" accept="image/*">
+                    <p class="text-sm text-gray-500 mt-1">يمكنك تحميل حتى 5 صور.</p>
+                    {% if form.image.errors %}
+                        {% for error in form.image.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
-            <div class="form-control mt-4">
-                <label class="label" for="id_video">
-                    <span class="label-text">Video (optional)</span>
-                </label>
-                <input type="file" name="video" id="id_video" class="file-input file-input-bordered w-full" accept="video/*">
-                {% if form.video.errors %}
-                    {% for error in form.video.errors %}
-                        <label class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </label>
-                    {% endfor %}
-                {% endif %}
-            </div>
+                <div class="form-control">
+                    <label class="block text-orange-600 font-semibold mb-2" for="id_video">
+                        الفيديو (اختياري)
+                    </label>
+                    <input type="file" name="video" id="id_video" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" accept="video/*">
+                    {% if form.video.errors %}
+                        {% for error in form.video.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
-            <div class="card-actions justify-end mt-6">
-                <button type="submit" class="btn btn-primary">Create Order</button>
-                <a href="{% url 'orders:order_history' %}" class="btn btn-ghost">Cancel</a>
+                <div class="flex justify-end space-x-4">
+                    <a href="{% url 'orders:order_history' %}" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300 mx-4">إلغاء</a>
+                    <button type="submit" class="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-300">إنشاء الطلب</button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 {% endblock %}

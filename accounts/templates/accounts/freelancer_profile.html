@@ -1,142 +1,117 @@
 {% extends "main/base.html" %}
 
-{% block title %}ملف مزود الخدمة{% endblock %}
+{% block title %}ملف مزود الخدمة - {{ user.first_name }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white shadow-lg rounded-lg p-8">
-
-
-        <div class="text-center mb-10">
-            <h1 class="text-5xl font-extrabold text-teal-700 mb-4">ملف مزود الخدمة {{ user.first_name }}</h1>
-            <div class="flex justify-center">
-                <div class="w-32 h-32">
-                    <img src="{{ user.account.avatar.url }}" alt="الصورة الرمزية" class="w-full h-full rounded-full shadow-xl object-cover">
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+            <div class="bg-gradient-to-l from-orange-500 to-orange-600 p-6 sm:p-10">
+                <div class="flex flex-col sm:flex-row items-center justify-between">
+                    <div class="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
+                        <img src="{{ user.account.avatar.url }}" alt="الصورة الرمزية" class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 sm:mb-0 sm:ml-6">
+                        <div class="text-center sm:text-right">
+                            <h1 class="text-3xl font-bold text-white mb-2">{{ user.first_name }} {{ user.last_name }}</h1>
+                            <p class="text-xl text-white opacity-90">مزود خدمة</p>
+                        </div>
+                    </div>
+                    <div class="text-center sm:text-right">
+                        <p class="text-xl font-semibold text-white">التقييم</p>
+                        <p class="text-2xl font-bold text-white">
+                            {% if rating %}
+                                {{rating}} /5.0 ⭐️
+                            {% else %}
+                                لم يتم التقييم بعد
+                            {% endif %}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-
-        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <div class="flex items-center bg-gradient-to-r from-blue-400 to-indigo-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-
-
-                <div class="p-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
-                </div>
-                {% if wallet %}
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">المحفظة</h3>
-                    <p class="text-4xl font-bold">{{ total_sum_finalized_offers }} $</p>
-                </div>
-                {% else %}
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">المحفظة</h3>
-                    <p class="text-4xl font-bold">0 $</p>
-                </div>
-                {% endif %}
-
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">المحفظة</h3>
+                <p class="text-3xl font-bold text-orange-600">
+                    {% if wallet %}
+                        {{ total_sum_finalized_offers }} $
+                    {% else %}
+                        0 $
+                    {% endif %}
+                </p>
             </div>
-            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-                <div class="p-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
-                </div>
-                {% if rating %}
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">تقييم مزود الخدمة</h3>
-                    <p class="text-4xl font-bold">{{rating}} /5.0 ⭐️</p>
-                </div>
-                {% else %}
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">لم يتم تقييم مزود الخدمة بعد</h3>
-                </div>
-                {% endif %}
+            <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">الطلبات المكتملة</h3>
+                <p class="text-3xl font-bold text-green-600">{{ completed_orders }}</p>
             </div>
-
-            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-                <div class="p-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
-                </div>
-                {% if best_catgorie %}
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">القسم الاكثر صيانة</h3>
-                    <p class="text-4xl font-bold">{{ best_catgorie }}</p>
-                </div>
-                {% else %}
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">لم يتم تحديد القسم الاكثر صيانة</h3>
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-                <div class="p-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
-                </div>
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">عدد الطلبات التي اعمل عليها </h3>
-                    <p class="text-4xl font-bold">{{ In_progress_orders }}</p>
-                </div>
-            </div>
-
-            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-                <div class="p-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
-                </div>
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">مجموع العروض المقدمة</h3>
-                    <p class="text-4xl font-bold">{{ orders_count }}</p>
-                </div>
-            </div>
-
-
-            <div class="flex items-center bg-gradient-to-r from-green-400 to-teal-500 text-white border rounded-lg shadow-lg transition transform hover:scale-105 mb-4">
-                <div class="p-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6065/6065481.png" alt="Image" class="w-12 h-12">
-                </div>
-                <div class="px-4">
-                    <h3 class="text-lg tracking-wider font-semibold">عدد الطلبات المكتملة</h3>
-                    <p class="text-4xl font-bold">{{ completed_orders }}</p>
-                </div>
-            </div>
-        </div>
-    
-
-        <!-- User Information Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-            <div class="bg-gray-100 p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-teal-600 mb-4">معلومات المستخدم</h2>
-                <p><strong class="text-teal-600 font-bold">اسم المستخدم:</strong> {{ user.username }}</p>
-                <p><strong class="text-teal-600 font-bold">الاسم الكامل:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong class="text-teal-600 font-bold">البريد الإلكتروني:</strong> <a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
-                <p><strong class="text-teal-600 font-bold">رقم الهاتف:</strong> <a href="tel:{{ user.account.phone_number }}">{{ user.account.phone_number }}</a></p>
-                <p><strong class="text-teal-600 font-bold">العنوان:</strong> {{ user.account.address }}</p>
-                <p><strong class="text-teal-600 font-bold">الاسم الأول:</strong> {{ user.first_name }}</p>
-                <p><strong class="text-teal-600 font-bold">الاسم الأخير:</strong> {{ user.last_name }}</p>
-            </div>
-
-            <div class="bg-gray-100 p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-teal-600 mb-4">موثوقية مزود الخدمة</h2>
-                <p><strong class="text-teal-600 font-bold">رقم الشهادة:</strong> {{ user.freelancer.certificate_id }}</p>
-                <p><strong class="text-teal-600 font-bold">تاريخ انتهاء الشهادة:</strong> {{ user.freelancer.certificate_expiration|date:"Y-m-d"  }}</p>
-                <div class="mt-4">
-                    <p><strong class="text-teal-600 font-bold">الشهادة:</strong></p>
-                    <img src="{{ user.freelancer.certificate_image.url }}" alt="الشهادة" class="rounded-lg shadow-lg w-full object-cover">
-                </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">الطلبات قيد العمل</h3>
+                <p class="text-3xl font-bold text-blue-600">{{ In_progress_orders }}</p>
             </div>
         </div>
 
-        <!-- Account Information Section -->
-        <div class="mt-10 bg-gray-50 p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold text-teal-600 mb-4">معلومات الحساب</h2>
-            <p><strong class="text-teal-600 font-bold">تاريخ إنشاء الحساب:</strong> {{ user.date_joined|date:"Y-m-d"  }}</p>
-            <p class="my-2"><strong class="text-teal-600 font-bold">تم التحقق:</strong>
-                {% if user.freelancer.is_verified %}
-                    <span class="px-8 py-0 rounded-full text-white bg-green-500 mt-4">تم التحقق بنجاح</span>
-                {% else %}
-                    <span class="px-8 py-0 rounded-full text-white bg-red-500 mt-4">لم يتم التحقق</span>
-                {% endif %}
-            </p>
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Right Column (changed from Left) -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">معلومات المستخدم</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <p class="mb-2"><span class="font-semibold text-gray-700">اسم المستخدم:</span> {{ user.username }}</p>
+                            <p class="mb-2"><span class="font-semibold text-gray-700">الاسم الكامل:</span> {{ user.first_name }} {{ user.last_name }}</p>
+                            <p class="mb-2"><span class="font-semibold text-gray-700">البريد الإلكتروني:</span> <a href="mailto:{{ user.email }}" class="text-orange-600 hover:text-orange-800">{{ user.email }}</a></p>
+                        </div>
+                        <div>
+                            <p class="mb-2"><span class="font-semibold text-gray-700">رقم الهاتف:</span> <a href="tel:{{ user.account.phone_number }}" class="text-orange-600 hover:text-orange-800">{{ user.account.phone_number }}</a></p>
+                            <p class="mb-2"><span class="font-semibold text-gray-700">العنوان:</span> {{ user.account.address }}</p>
+                            <p class="mb-2"><span class="font-semibold text-gray-700">تاريخ إنشاء الحساب:</span> {{ user.date_joined|date:"Y-m-d" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">الإحصائيات</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-gray-100 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">القسم الأكثر صيانة</h3>
+                            <p class="text-xl font-bold text-orange-600">
+                                {% if best_catgorie %}
+                                    {{ best_catgorie }}
+                                {% else %}
+                                    لم يتم التحديد
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">مجموع العروض المقدمة</h3>
+                            <p class="text-xl font-bold text-orange-600">{{ orders_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left Column (changed from Right) -->
+            <div>
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">موثوقية مزود الخدمة</h2>
+                    <p class="mb-2"><span class="font-semibold text-gray-700">رقم الشهادة:</span> {{ user.freelancer.certificate_id }}</p>
+                    <p class="mb-2"><span class="font-semibold text-gray-700">تاريخ انتهاء الشهادة:</span> {{ user.freelancer.certificate_expiration|date:"Y-m-d" }}</p>
+                    <p class="mb-2"><span class="font-semibold text-gray-700">حالة التحقق:</span>
+                        {% if user.freelancer.is_verified %}
+                            <span class="px-2 py-1 rounded-full text-xs text-white bg-green-500 mr-2">تم التحقق</span>
+                        {% else %}
+                            <span class="px-2 py-1 rounded-full text-xs text-white bg-red-500 mr-2">لم يتم التحقق</span>
+                        {% endif %}
+                    </p>
+                    <div class="mt-4">
+                        <p class="font-semibold text-gray-700 mb-2">الشهادة:</p>
+                        <img src="{{ user.freelancer.certificate_image.url }}" alt="الشهادة" class="rounded-lg shadow-lg w-full object-cover">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

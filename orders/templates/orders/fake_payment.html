@@ -1,53 +1,73 @@
 {% extends 'main/base.html' %}
 
+{% block title %}الدفع للعرض #{{ offer.id }}{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Payment for Offer #{{ offer.id }}</h1>
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-orange-700 mb-6">الدفع للعرض #{{ offer.id }}</h1>
 
-    <div class="card bg-base-100 shadow-xl mb-8">
-        <div class="card-body">
-            <h2 class="card-title mb-4">Offer Details</h2>
-            <p><strong>Order:</strong> #{{ offer.order.id }}</p>
-            <p><strong>Freelancer:</strong> {{ offer.freelancer.user.username }}</p>
-            <p><strong>Price:</strong> ${{ offer.price }}</p>
-            <p><strong>Description:</strong> {{ offer.description }}</p>
-            <p><strong>Proposed Service Date:</strong> {{ offer.proposed_service_date }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-orange-600 mb-4">تفاصيل العرض</h2>
+                <div class="space-y-2">
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">رقم الطلب:</span> #{{ offer.order.id }}</p>
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">مزود الخدمة:</span> {{ offer.freelancer.user.username }}</p>
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">السعر:</span> ${{ offer.price }}</p>
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">الوصف:</span> {{ offer.description }}</p>
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">تاريخ الخدمة المقترح:</span> {{ offer.proposed_service_date }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-orange-600 mb-4">تفاصيل الدفع</h2>
+                <form method="post" action="{% url 'orders:accept_offer' offer.id %}">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="card_number">
+                                رقم البطاقة
+                            </label>
+                            <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" 
+                                class="text-gray-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" for="expiry_date">
+                                    تاريخ الانتهاء
+                                </label>
+                                <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YY" 
+                                       class="text-gray-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" for="cvv">
+                                    رمز الأمان CVV
+                                </label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" 
+                                       class="text-gray-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <button type="submit" 
+                                    class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors duration-300">
+                                ادفع ${{ offer.price }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <form method="post"  action="{% url 'orders:accept_offer' offer.id %}" class="card bg-base-100 shadow-xl">                       
-
-        {% csrf_token %}
-        <div class="card-body">
-            <div class="form-control">
-                <label class="label" for="card_number">
-                    <span class="label-text">Card Number</span>
-                </label>
-                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" class="input input-bordered" required>
-            </div>
-
-            <div class="form-control">
-                <label class="label" for="expiry_date">
-                    <span class="label-text">Expiry Date</span>
-                </label>
-                <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YY" class="input input-bordered" required>
-            </div>
-
-            <div class="form-control">
-                <label class="label" for="cvv">
-                    <span class="label-text">CVV</span>
-                </label>
-                <input type="text" id="cvv" name="cvv" placeholder="123" class="input input-bordered" required>
-            </div>
-
-            <div class="form-control mt-6">
-                <button type="submit" class="btn btn-primary">Pay ${{ offer.price }}</button>
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-sm">هذه صفحة دفع وهمية لأغراض العرض فقط. لن يتم معالجة أي مدفوعات حقيقية.</p>
             </div>
         </div>
-    </form>
-
-    <div class="mt-6 text-center">
-        <p class="text-sm text-gray-500">This is a fake payment page for demonstration purposes only. No real payment will be processed.</p>
     </div>
 </div>
 {% endblock %}

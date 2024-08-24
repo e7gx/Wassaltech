@@ -3,40 +3,45 @@
 {% block title %}إنشاء تذكرة{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto p-6">
-    <h1 class="text-3xl font-bold text-center mb-8">إنشاء تذكرة</h1>
-    <form action="{% url 'support:create_ticket' %}" method="post" class="card bg-base-100 shadow-xl">
-        {% csrf_token %}
-        <div class="card-body">
-            <div class="form-control">
-                <label for="ticket_category" class="label">
-                    <span class="label-text">نوع الشكوى</span>
-                </label>
-                <select name="ticket_category" id="ticket_category" required class="select select-bordered w-full">
-                    {% for value, label in ticket_categorys %}
-                        <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+<div class="bg-gray-100 min-h-screen py-8 px-4" dir="rtl">
+    <div class="container mx-auto max-w-2xl">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <h1 class="text-3xl font-bold text-orange-700 mb-8 text-center">إنشاء تذكرة</h1>
 
-            <div class="form-control">
-                <label for="ticket_title" class="label">
-                    <span class="label-text">العنوان</span>
-                </label>
-                <input type="text" name="ticket_title" id="ticket_title" required class="input input-bordered w-full">
-            </div>
+                <form action="{% url 'support:create_ticket' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-6">
+                        <label for="ticket_category" class="block text-sm font-medium text-gray-700 mb-2">نوع الشكوى</label>
+                        <select name="ticket_category" id="ticket_category" required 
+                                class="text-orange-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            {% for value, label in ticket_categorys %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <div class="form-control">
-                <label for="ticket_description" class="label">
-                    <span class="label-text">الوصف</span>
-                </label>
-                <textarea name="ticket_description" id="ticket_description" required class="textarea textarea-bordered h-24"></textarea>
-            </div>
+                    <div class="mb-6">
+                        <label for="ticket_title" class="block text-sm font-medium text-gray-700 mb-2">العنوان</label>
+                        <input type="text" name="ticket_title" id="ticket_title" required 
+                            class="text-orange-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    </div>
 
-            <div class="form-control mt-6">
-                <button type="submit" class="btn btn-primary">إنشاء التذكرة</button>
+                    <div class="mb-6">
+                        <label for="ticket_description" class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+                        <textarea name="ticket_description" id="ticket_description" required 
+                            class="text-orange-700 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 h-32"></textarea>
+                    </div>
+
+                    <div class="mt-8">
+                        <button type="submit" 
+                                class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors duration-300">
+                            إنشاء التذكرة
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

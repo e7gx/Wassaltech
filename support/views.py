@@ -80,7 +80,7 @@ def ticket_edit(request, ticket_id):
             ticket.ticket_description = request.POST.get('ticket_description')
             ticket.ticket_status = request.POST.get('ticket_status')
             ticket.save()
-            return redirect('support:display_tickets')
+            return redirect('analytics:admin_tickets')
 
         elif 'comment_text' in request.POST:
             comment_text = request.POST.get('comment_text')
@@ -90,7 +90,7 @@ def ticket_edit(request, ticket_id):
                     comment_creator=request.user.account,
                     comment_text=comment_text
                 )
-            return redirect('support:ticket_edit', ticket_id=ticket_id)
+                return redirect('analytics:admin_tickets')
 
     comments = ticket.comments.all()
     context = {
