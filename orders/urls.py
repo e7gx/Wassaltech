@@ -18,4 +18,5 @@ urlpatterns = [
     path('discard_order/<int:order_id>/', views.discard_order, name='discard_order'),
     path('cancel_offer/customer/<int:offer_id>/', views.customer_cancel_offer, name='customer_cancel_offer'),
     path('cancel_offer/freelancer/<int:offer_id>/', views.freelancer_cancel_offer, name='freelancer_cancel_offer'),
+    path('export_pdf/<int:order_id>/', views.export_pdf_from_html, name='export_pdf_from_html'),
 ]

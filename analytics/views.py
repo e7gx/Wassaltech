@@ -3,14 +3,52 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from accounts.models import Account, Freelancer
 from support.models import Ticket
-
+from django.db.models import Count, Sum, Avg, Q
+from orders.models import Order, Offer
+from accounts.models import Account, Freelancer
+        
 
 
 # Create your views here.
 @login_required
 def admin_dashboard(request):
     if request.user.is_superuser:
-        return render(request, 'analytics/admin_dashboard.html')
+
+        # Order statistics
+        order_stats = Order.objects.aggregate(
+            total_orders=Count('id'),
+            open_orders=Count('id', filter=Q(status='Open')),
+            completed_orders=Count('id', filter=Q(status='Closed'))
+        )
+
+        # User statistics
+        user_stats = Account.objects.aggregate(
+            total_users=Count('id'),
+            customers=Count('id', filter=Q(user_type='Customer')),
+            freelancers=Count('id', filter=Q(user_type='Freelancer'))
+        )
+        
+        # Freelancer statistics
+        freelancer_stats = Freelancer.objects.aggregate(
+            avg_rating=Avg('internal_rating'),
+            verified_freelancers=Count('id', filter=Q(is_verified=True))
+        )
+        
+        # Offer statistics
+        offer_stats = Offer.objects.aggregate(
+            total_offers=Count('id'),
+            avg_price=Avg('price'),
+            total_revenue=Sum('price', filter=Q(stage='Completed'))
+        )
+        
+        context = {
+            'order_stats': order_stats,
+            'user_stats': user_stats,
+            'freelancer_stats': freelancer_stats,
+            'offer_stats': offer_stats
+        }
+        
+        return render(request, 'analytics/admin_dashboard.html', context)
     else:
         return redirect('main:index')
 

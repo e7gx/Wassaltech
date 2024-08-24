@@ -310,3 +310,31 @@ def freelancer_discard_offer(request, offer_id):
 def fake_payment(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     return render(request, 'orders/fake_payment.html', {'offer': offer})
+
+@login_required
+def export_pdf_from_html(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    offer = get_object_or_404(Offer, order=order, stage='Accepted')
+    
+    customer = order.customer
+    customer_user = customer.user if customer else None
+    freelancer = offer.freelancer
+    freelancer_user = freelancer.user if freelancer else None
+    
+    context = {
+        'order': order,
+        'customer_name': f"{customer_user.first_name} {customer_user.last_name}" if customer_user else "N/A",
+        'freelancer_name': f"{freelancer_user.first_name} {freelancer_user.last_name}" if freelancer_user else "N/A",
+        'freelancer_certificate': freelancer.certificate_id if freelancer else "N/A",
+        'order_date': datetime.now().strftime("%Y-%m-%d"),
+        'order_category': order.category,
+        'order_description': order.issue_description,
+        'customer_phone_number': customer.phone_number if customer else "N/A",
+        'customer_email': customer_user.email if customer_user else "N/A",
+        'freelancer_phone_number': freelancer.user.account.phone_number if freelancer and freelancer.user and hasattr(freelancer.user, 'account') else "N/A",
+        'freelancer_email': freelancer_user.email if freelancer_user else "N/A",
+        'freelancer_address': freelancer.user.account.address if freelancer and freelancer.user and hasattr(freelancer.user, 'account') else "N/A",
+        'customer_address': customer.address if customer else "N/A",
+    }
+    
+    return render(request, 'orders/export_pdf_from_html.html', context)
