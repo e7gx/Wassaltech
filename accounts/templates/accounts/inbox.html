@@ -29,12 +29,12 @@
     {% for messages in message %}
     {% if messages.sender == request.user.account %}
     <div class="chat chat-start mb-4">
-        <div class="chat-bubble chat-bubble-primary">{{ messages.content }}</div>
+        <div class="chat-bubble chat-bubble-primary" id="chat-box">{{ messages.content }}</div>
     </div>
     {% else %}
-    <div class="chat chat-end mb-4">
-        <div class="chat-bubble chat-bubble-secondary">
-            <p>{{ messages.content }}</p>
+    <div class="chat chat-end mb-4 " >
+        <div class="chat-bubble chat-bubble-secondary" id="chat-box">
+            {{ messages.content }}
         </div>
     </div>
     {% endif %}
@@ -89,58 +89,74 @@
 <script type="text/javascript">
     let chatId = {{ sender_user.id }}; 
 
-    const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + chatId + '/'
-    );
-
-    chatSocket.onopen = function(e) {
-        console.log('WebSocket connection established.');
-    };
-
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.error) {
-            console.error('Error:', data.error);
-        } else {
-            const chatLog = document.querySelector('#chat-log');
-            chatLog.innerHTML += `<div class="chat-message">${data.message}</div>`;
-            chatLog.scrollTop = chatLog.scrollHeight; 
-        }
-    };
-
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly:', e);
-    };
-
-    chatSocket.onerror = function(e) {
-        console.error('Chat socket error:', e);
-    };
-
+    function fetchMessages() {
+        fetch('/chat/update/chat/' + chatId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // تحويل الاستجابة إلى JSON
+            })
+            .then(data => {
+                let chatBox = document.getElementById('chat-log');
+                chatBox.innerHTML = '';  // تفريغ المحتوى الحالي
+                data.forEach(message => {
+                    if (message.sender == "{{ request.user.account.id }}") {
+                        chatBox.innerHTML += `
+                            <div class="chat chat-start mb-4">
+                                <div class="chat-bubble chat-bubble-primary">${message.content}</div>
+                            </div>`;
+                    } else {
+                        chatBox.innerHTML += `
+                            <div class="chat chat-end mb-4">
+                                <div class="chat-bubble chat-bubble-secondary">${message.content}</div>
+                            </div>`;
+                    }
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;  // التمرير إلى أسفل المحادثة تلقائيًا
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    }
+    
+    // استدعاء الدالة كل ثانية
+    setInterval(fetchMessages, 1000);
+    
+    // إرسال الرسالة باستخدام fetch
     document.querySelector('#chat-message-submit').onclick = function(e) {
         e.preventDefault(); 
-
+    
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
-
+    
         fetch(`/chat/send_message/${chatId}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') 
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
                 'content': message
             })
         }).then(response => {
             if (response.ok) {
-                messageInputDom.value = '';
+                messageInputDom.value = ''; // تفريغ حقل الإدخال بعد إرسال الرسالة
+                
+                // إضافة الرسالة مباشرة إلى واجهة المستخدم للطرف الذي أرسل الرسالة
+                let chatBox = document.getElementById('chat-log');
+                chatBox.innerHTML += `
+                    <div class="chat chat-start mb-4">
+                        <div class="chat-bubble chat-bubble-primary">${message}</div>
+                    </div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;  // التمرير إلى أسفل المحادثة تلقائياً
             } else {
                 console.error('Failed to send message');
             }
         });
     };
-
-   
+    
+    // دالة للحصول على قيمة CSRFToken
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {

@@ -11,7 +11,15 @@ import json
 def chat(request):
     return HttpResponse("Hello, World!")
 
+def get_chat_messages(request, chat_id):
+    # تأكد من أنك تحقق من صلاحيات المستخدم، وتقوم بفلترة الرسائل بناءً على الدردشة المطلوبة
+    messages = Message.objects.filter(chat_id=chat_id).values('content','sender')
 
+    # تحويل الرسائل إلى قائمة من القواميس
+    messages_list = list(messages)
+    
+    # إرجاع البيانات كـ JSON
+    return JsonResponse(messages_list, safe=False)
 def inbox(request):
     if request.user.account.user_type == 'Customer':
         get_chat = Chat.objects.filter(user= request.user.account)
