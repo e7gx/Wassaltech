@@ -7,7 +7,7 @@ def user_type_required(allowed_types):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if request.user.is_authenticated:
-                if request.user.user_type in allowed_types:
+                if request.user.account.user_type in allowed_types:
                     return view_func(request, *args, **kwargs)
                 else:
                     raise PermissionDenied
