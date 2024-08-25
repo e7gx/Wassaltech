@@ -36,19 +36,19 @@
                 <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
                     <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المعلقة</h3>
                     <p class="text-3xl font-bold text-orange-600">
-                        {% if total_amount_unclaimed %}
-                            {{ total_amount_unclaimed }} $
+                        {% if total_amount_pending_deposit %}
+                            {{ total_amount_pending_deposit }} $
                         {% else %}
                             0 $
                         {% endif %}
                     </p>
                 </div>
                 <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">تجهيز المبالغ المعلقة</h3>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">تجهيز المبالغ المعلقة </h3>
                     <p class="text-3xl font-bold text-orange-600"></p>
                     <form action="{% url 'orders:process_payments' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit">Process Payments</button>
+                        <button class="bg-orange-500 py-2 px-8 rounded-full" type="submit">Process Payments</button>
                     </form>
                 </div>
                 <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
@@ -66,7 +66,7 @@
                     <p class="text-3xl font-bold text-orange-600">
                     <form action="{% url 'orders:deposit_payments' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit">Process Payments</button>
+                        <button class="bg-orange-500 py-2 px-8 rounded-full" type="submit">Deposit Payments</button>
                     </form>
                     </p>
                 </div>
