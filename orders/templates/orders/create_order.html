@@ -3,11 +3,11 @@
 {% block title %}إنشاء طلب جديد{% endblock %}
 
 {% block content %}
-<div class="bg-gray-100 min-h-screen" dir="rtl">
-    <div class="container mx-auto px-4 py-8">
+<div class="form-page">
+    <div class="form-container">
         <h1 class="text-4xl font-bold text-orange-700 mb-8 text-center">إنشاء طلب جديد</h1>
 
-        <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             <div class="space-y-6">
                 <div class="form-control">

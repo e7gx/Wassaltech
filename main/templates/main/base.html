@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="ar">
+<html lang="ar" class="h-full">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}وَصّلْتِك{% endblock %}</title>
-<!-- favicon -->
-<link rel="icon" type="image/ico" href="{% static 'images/screwdriver.ico' %}">
+    <!-- favicon -->
+    <link rel="icon" type="image/ico" href="{% static 'images/screwdriver.ico' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
@@ -70,12 +70,39 @@
         .form-cancel {
             @apply px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300 font-semibold;
         }
+        /* New styles for form pages */
+        .form-page {
+            @apply relative min-h-screen;
+            background-image: url('{% static "images/background-pattern-1.svg" %}'), url('{% static "images/background-pattern-2.svg" %}');
+            background-position: top left, bottom right;
+            background-repeat: no-repeat;
+            background-size: 50% auto, 50% auto;
+        }
+        .form-container {
+            @apply bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto my-10;
+        }
+        /* Message styles */
+        .message {
+            @apply mb-4 p-4 rounded-lg text-white text-center;
+        }
+        .message-success {
+            @apply bg-green-500;
+        }
+        .message-error {
+            @apply bg-red-500;
+        }
+        .message-info {
+            @apply bg-blue-500;
+        }
+        .message-warning {
+            @apply bg-yellow-500;
+        }
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
 
-<body x-data="{ mobileNavOpen: false }" class="antialiased bg-gray-50 text-body">
+<body x-data="{ mobileNavOpen: false }" class="antialiased bg-gray-50 text-body flex flex-col min-h-screen">
 
 <nav class="relative py-6 bg-transparent z-50">
   <div class="container px-4 mx-auto">
@@ -277,36 +304,54 @@
  
 </div>
 
-{% block content %}{% endblock %}
+<!-- Messages -->
+<div class="container mx-auto px-4 mt-6">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message message-{{ message.tags }} flex items-center justify-between" x-data="{ show: true }" x-show="show">
+                <p>{{ message }}</p>
+                <button @click="show = false" class="text-white hover:text-gray-200 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
 
+<!-- Main content wrapper -->
+<div class="flex-grow">
+    {% block content %}{% endblock %}
+</div>
 
-<!-- footer -->
-<section class="relative py-20 overflow-hidden mt-auto">
-  <img class="absolute top-0 left-0" src="{% static 'images/blue-light-left.png' %}" alt="">
-  <img class="absolute bottom-0 left-1/2" src="{% static 'images/orange-light-bottom.png' %}" alt="">
-  <div class="relative container px-4 mx-auto">
-    <div class="max-w-7xl mx-auto">
-      <div class="pb-8 mb-15 border-b border-gray-100 text-center">
-        <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
-          وَصّلْتِك   
-        </a> 
-      </div>
-      <div class="flex flex-wrap -mb-5 -mx-6 items-center justify-center">
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Product</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Features</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Pricing</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Resources</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Careers</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Help</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Privacy</a></div>
-      </div>
+<!-- Footer -->
+<footer class="mt-auto">
+    <section class="py-20 overflow-hidden relative bg-[#F9FAFB] z-10">
+        <img class="absolute top-0 left-0" src="{% static 'images/blue-light-left.png' %}" alt="">
+        <img class="absolute bottom-0 left-1/2" src="{% static 'images/orange-light-bottom.png' %}" alt="">
+        <div class="relative container px-4 mx-auto">
+            <div class="max-w-7xl mx-auto">
+                <div class="pb-8 mb-15 border-b border-gray-100 text-center">
+                    <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
+                        وَصّلْتِك   
+                    </a> 
+                </div>
+                <div class="flex flex-wrap -mb-5 -mx-6 items-center justify-center">
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Product</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Features</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Pricing</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Resources</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Careers</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Help</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Privacy</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</footer>
 
-    </div>
-  </div>
-</section>
-    {% block extra_scripts %}
-
-    {% endblock %}
+{% block extra_scripts %}{% endblock %}
 </body>
 
 </html>
