@@ -2,131 +2,144 @@
 {% load static %}
 {% block content %}
 
-<div class="drawer lg:drawer-open h-screen">
-    <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content flex flex-col">
-
-
-        <!-- Chat Area -->
-        <div class="flex flex-col h-full">
-            <!-- Chat Header -->
-             <div class="flex justify-between items-center bg-base-300 p-4 border-b border-base-200 rounded-lg">
-
-                 <div>
-                     <h2 class="text-xl font-bold">المحادثة مع {{ sender_user.freelancer.user.first_name }} {{ sender_user.freelancer.user.last_name }}</h2>
-                    </div>
-
-                    <div class="lg:hidden">
-                        <label for="my-drawer" class="btn btn-primary drawer-button">
-                             جهات الاتصال    
-                        </label>
-                       
-                    </div>
-                </div>
-
-            <!-- Messages Area -->
-<div class="flex-grow p-4 overflow-y-auto bg-neutral light:bg-black rounded-lg" id="chat-log">
-    {% for messages in message %}
-    {% if messages.sender == request.user.account %}
-    <div class="chat chat-start mb-4">
-        <div class="chat-bubble chat-bubble-primary">{{ messages.content }}</div>
-    </div>
-    {% else %}
-    <div class="chat chat-end mb-4">
-        <div class="chat-bubble chat-bubble-secondary">
-            <p>{{ messages.content }}</p>
-        </div>
-    </div>
-    {% endif %}
-    {% endfor %}
-</div>
-
-            <!-- Message Input -->
-            <div class="bg-base-200 p-4">
-                <form class="flex items-center" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="content" id='chat-message-input' placeholder="اكتب رسالتك هنا..." class="input input-bordered flex-grow ml-2">
-                    <button type="submit" id="chat-message-submit" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                        </svg>
-                    </button>
-                </form>
-
-            </div>
-        </div>
-    </div>
-    <div class="drawer-side">
-        <label for="my-drawer" class="drawer-overlay"></label>
-        <div class="menu p-4 w-80 h-full bg-base-200 text-base-content">
-            <!-- Sidebar content here -->
-            <h2 class="text-2xl font-bold mb-4 text-center">جهات الاتصال</h2>
-            
-            <div class="divider"></div>
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-100 border-r border-gray-200 hidden lg:block">
+        <div class="p-4">
+            <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">جهات الاتصال</h2>
+            <div class="border-b border-gray-300 mb-4"></div>
             <ul class="space-y-2">
-                {%for users in user_chat%}
-                {% if user.account.user_type == 'Customer' %}
-                <a href="{% url 'chat:get_chat' users.id %}">
-                <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
-                    <span>{{ users.freelancer.user.first_name }} {{ users.freelancer.user.last_name }}</span>
-                </li>
-            </a>
-            {% else %}
-            <a href="{% url 'chat:get_chat' users.id %}">
-                <li class="p-3 hover:bg-base-300 rounded-lg cursor-pointer transition duration-300 flex items-center">
-                    <span>{{ users.user.user.first_name }} {{ users.user.user.last_name }}</span>
-                </li>
-            </a>
-            {% endif%}
+                {% for users in user_chat %}
+                    {% if user.account.user_type == 'Customer' %}
+                        <li>
+                            <a href="{% url 'chat:get_chat' users.id %}" class="block p-3 hover:bg-gray-200 rounded-lg transition duration-300">
+                                <span class="text-gray-700">{{ users.freelancer.user.first_name }} {{ users.freelancer.user.last_name }}</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{% url 'chat:get_chat' users.id %}" class="block p-3 hover:bg-gray-200 rounded-lg transition duration-300">
+                                <span class="text-gray-700">{{ users.user.first_name }} {{ users.user.last_name }}</span>
+                            </a>
+                        </li>
+                    {% endif %}
                 {% endfor %}
-                
             </ul>
         </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Chat Header -->
+        <div class="bg-white shadow-sm p-4 flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-800">
+                {% if sender_user %}
+                    المحادثة مع 
+                    {% if user.account.user_type == 'Customer' %}
+                        {{ sender_user.freelancer.user.first_name }} {{ sender_user.freelancer.user.last_name }}
+                    {% else %}
+                        {{ sender_user.user.first_name }} {{ sender_user.user.last_name }}
+                    {% endif %}
+                {% else %}
+                    الدردشات
+                {% endif %}
+            </h2>
+            <div class="flex items-center">
+                <a href="{% url 'chat:chat_list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2">قائمة الدردشات</a>
+                <button class="lg:hidden bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded" onclick="toggleSidebar()">
+                    جهات الاتصال
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="flex-1 overflow-y-auto p-4 bg-gray-50" id="chat-log">
+            {% if sender_user %}
+                {% for messages in message %}
+                    {% if messages.sender == request.user.account %}
+                        <div class="flex justify-end mb-4">
+                            <div class="bg-blue-500 text-white rounded-lg py-2 px-4 max-w-xs">
+                                {{ messages.content }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="flex justify-start mb-4">
+                            <div class="bg-gray-300 text-gray-800 rounded-lg py-2 px-4 max-w-xs">
+                                {{ messages.content }}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-gray-500">اختر محادثة للبدء</p>
+            {% endif %}
+        </div>
+
+        <!-- Message Input -->
+        {% if sender_user %}
+            <div class="bg-white border-t border-gray-200 p-4">
+                <form class="flex items-center" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="content" id='chat-message-input' placeholder="اكتب رسالتك هنا..." class="flex-grow border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" id="chat-message-submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-r-lg px-4 py-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+{% if sender_user %}
 <script type="text/javascript">
     let chatId = {{ sender_user.id }}; 
 
-    const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + chatId + '/'
-    );
-
-    chatSocket.onopen = function(e) {
-        console.log('WebSocket connection established.');
-    };
-
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.error) {
-            console.error('Error:', data.error);
-        } else {
-            const chatLog = document.querySelector('#chat-log');
-            chatLog.innerHTML += `<div class="chat-message">${data.message}</div>`;
-            chatLog.scrollTop = chatLog.scrollHeight; 
-        }
-    };
-
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly:', e);
-    };
-
-    chatSocket.onerror = function(e) {
-        console.error('Chat socket error:', e);
-    };
-
+    function fetchMessages() {
+        fetch('/chat/update/chat/' + chatId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                let chatBox = document.getElementById('chat-log');
+                chatBox.innerHTML = '';
+                data.forEach(message => {
+                    if (message.sender == "{{ request.user.account.id }}") {
+                        chatBox.innerHTML += `
+                            <div class="flex justify-end mb-4">
+                                <div class="bg-blue-500 text-white rounded-lg py-2 px-4 max-w-xs">${message.content}</div>
+                            </div>`;
+                    } else {
+                        chatBox.innerHTML += `
+                            <div class="flex justify-start mb-4">
+                                <div class="bg-gray-300 text-gray-800 rounded-lg py-2 px-4 max-w-xs">${message.content}</div>
+                            </div>`;
+                    }
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    }
+    
+    setInterval(fetchMessages, 1000);
+    
     document.querySelector('#chat-message-submit').onclick = function(e) {
         e.preventDefault(); 
-
+    
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
-
+    
         fetch(`/chat/send_message/${chatId}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') 
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
                 'content': message
@@ -134,13 +147,19 @@
         }).then(response => {
             if (response.ok) {
                 messageInputDom.value = '';
+                
+                let chatBox = document.getElementById('chat-log');
+                chatBox.innerHTML += `
+                    <div class="flex justify-end mb-4">
+                        <div class="bg-blue-500 text-white rounded-lg py-2 px-4 max-w-xs">${message}</div>
+                    </div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
             } else {
                 console.error('Failed to send message');
             }
         });
     };
-
-   
+    
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -155,6 +174,12 @@
         }
         return cookieValue;
     }
+
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.w-64');
+        sidebar.classList.toggle('hidden');
+    }
 </script>
+{% endif %}
 
 {% endblock %}

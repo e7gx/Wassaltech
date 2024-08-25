@@ -7,9 +7,9 @@
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-orange-700">تفاصيل الطلب #{{ order.id }}</h1>
-            <button class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+            <a href="{% url 'orders:export_pdf_from_html' order.id %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
                 طباعة PDF
-            </button>
+            </a>
         </div>
 
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">

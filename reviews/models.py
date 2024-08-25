@@ -1,5 +1,5 @@
 from django.db import models
-from orders.models import Offer, Order
+from orders.models import Offer
 
 class Review(models.Model):
     class RatingChoices(models.IntegerChoices):
@@ -15,4 +15,4 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order #{self.order.id} | {self.rating} Stars"
+        return f"Order #{self.offer.id} | {self.rating} Stars"

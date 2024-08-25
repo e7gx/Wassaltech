@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محضر تسليم واستلام عهدة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            line-height: 1.6;
+            padding: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .field {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .label {
+            font-weight: bold;
+            min-width: 200px;
+            color: #FF460B;
+        }
+        .value {
+            border-bottom: 1px solid #bdc3c7;
+            padding: 5px 10px;
+            flex-grow: 1;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+        }
+        .signature {
+            margin-top: 50px;
+            background-color: #e8f6f3;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .signature p {
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+        .header{
+          display: flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom: 30px;
+          border-bottom: 2px solid #FF460B;
+          padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <div class="header">
+
+        <h1>محضر تسليم واستلام عهدة</h1>
+        <h1>
+          وَصّلْتِك   
+        </h1>
+      </div>
+        
+        <div class="section">
+            <div class="field">
+                <span class="label">
+                   التاريخ الميلادي (اليوم):
+                </span>
+                <span class="value">{{order_date}}</span>
+            </div>
+        </div>
+
+        <h2>معلومات المستفيد (الطرف الأول)</h2>
+        <div class="section">
+            <div class="field">
+                <span class="label">الاسم الثنائي:</span>
+                <span class="value">{{customer_name}}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">رقم الهاتف المحمول:</span>
+                <span class="value">{{customer_phone_number}}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">البريد الإلكتروني:</span>
+                <span class="value">{{customer_email}}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">العنوان:</span>
+                <span class="value">{{customer_address}}</span>
+            </div>
+        </div>
+
+        <h2>معلومات مقدم الخدمة (الطرف الثاني)</h2>
+        <div class="section">
+            <div class="field">
+                <span class="label">اسم مقدم الخدمة:</span>
+                <span class="value">{{freelancer_name}}</span>
+            </div>
+            <div class="field">
+                <span class="label">عنوان مقدم الخدمة:</span>
+                <span class="value">{{freelancer_address}}</span>
+            </div>
+            <div class="field">
+                <span class="label">رقم شهادة مقدم الخدمة:</span>
+                <span class="value">{{freelancer_certificate}}</span>
+            </div>
+            <div class="field">
+                <span class="label">رقم الهاتف المحمول:</span>
+                <span class="value">{{freelancer_phone_number}}</span>
+            </div>
+            <div class="field">
+                <span class="label">البريد الإلكتروني:</span>
+                <span class="value">{{freelancer_email}}</span>
+            </div>
+        </div>
+
+        <h2>تفاصيل العهدة</h2>
+        <div class="section">
+            <div class="field">
+                <span class="label">نوع العهدة:</span>
+                <span class="value">{{order_category}}</span>
+            </div>
+            <div class="field">
+                <span class="label">وصف العهدة:</span>
+                <span class="value">{{order_description}}</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>رقم هوية مقدم الخدمة</h3>
+            <hr />     
+        </div>
+
+        <div class="signature">
+            <p>
+                أقر أنا الموقع أدناه بأنني استلمت العُهد الموضحة أعلاه في حالة صالحة للاستخدام وأتعهد بالمحافظة عليها وأن لا أتنازل عنها لأي شخص آخر وسأقوم بإعادتها عند طلبها أو عند ترك العمل أو دفع قيمة ما تسببت في تلفه وسأكون عرضة للمسائلة في حين مخالفتي للإقرار.
+            </p>
+            <div class="field" dir="rtl">
+                <span class="label">
+                  توقيع الموظف
+                  {{customer_name}} 
+             :
+                </span>
+                <span class="value"></span>
+            </div>
+            <div class="field" dir="rtl">
+                <span class="label">
+                توقيع  مقدم الخدمة
+                  {{freelancer_name}}
+                  :
+                </span>
+                <span class="value"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

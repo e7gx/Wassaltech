@@ -33,12 +33,19 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">#{{ offer.order.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${{ offer.price }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            {% if offer.status == 'Pending' %}bg-yellow-100 text-yellow-800
-                                            {% elif offer.status == 'Accepted' %}bg-green-100 text-green-800
-                                            {% else %}bg-red-100 text-red-800{% endif %}">
-                                            {{ offer.stage }}
-                                        </span>
+                                        {% if offer.stage == 'Pending' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                {{ offer.stage }}
+                                            </span>
+                                        {% elif offer.stage == 'Accepted' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                {{ offer.stage }}
+                                            </span>
+                                        {% else %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                {{ offer.stage }}
+                                            </span>
+                                        {% endif %}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ offer.proposed_service_date|date:"d/m/Y" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

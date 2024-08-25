@@ -21,4 +21,5 @@ urlpatterns = [
     path('freelancer/cancel_offer/<int:offer_id>/', views.freelancer_cancel_offer, name='freelancer_cancel_offer'),
     path('process_payments/', views.process_payments, name='process_payments'),
     path('deposit_payments/', views.deposit_payments, name='deposit_payments'),
+
 ]
