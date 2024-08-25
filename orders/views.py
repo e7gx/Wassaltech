@@ -22,6 +22,7 @@ from datetime import datetime
 ########################################################################################################################
 # CUSTOMER CREATE
 @login_required
+@user_type_required(['Customer'])
 def create_order(request):
     """
     Create a new order.
@@ -65,6 +66,7 @@ def create_order(request):
 ########################################################################################################################
 # CUSTOMER READ
 @login_required
+@user_type_required(['Customer'])
 def customer_orders(request):
     """
     Display all orders for the current user (customer).
@@ -117,6 +119,7 @@ def order_history(request):
 
 # FREELANCER READ
 @login_required
+@user_type_required(['Freelancer'])
 def freelancer_orders(request):
 
     """
@@ -263,6 +266,7 @@ def customer_discard_order(request, order_id):
 ########################################################################################################################
 # FREELANCER CREATE
 @login_required
+@user_type_required(['Freelancer'])
 def create_offer(request, order_id):
     """
     Create a new offer for an order.
@@ -351,6 +355,7 @@ def order_offers(request, order_id):
 
 # FREELANCER READ
 @login_required
+@user_type_required(['Freelancer'])
 def freelancer_offers(request):
     """
     Display all offers made by the current freelancer.

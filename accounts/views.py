@@ -31,9 +31,7 @@ def customer_account(request):
                 else:
                     messages.error(request, 'This account is not registered as a customer.')
             else:
-
                 messages.error(request, 'Invalid username or password. Please try again.')
-                
 
         elif 'signup' in request.POST:
             username = request.POST.get('username')
@@ -144,7 +142,6 @@ def freelancer_view_profile(request):
     """
     if request.user.is_authenticated:
         if request.user.account.user_type == 'Freelancer':
-        
             total_amount_pending_deposit = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
             total_amount_deposited = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & Q(status='Deposited')).aggregate(total_amount=Sum('amount'))['total_amount']
 
@@ -162,6 +159,7 @@ def freelancer_view_profile(request):
             rating = Review.objects.filter(offer__freelancer=request.user.freelancer).aggregate(avg_rating=Avg('rating'))['avg_rating']
             rating_count = Review.objects.filter(offer__freelancer=request.user.freelancer).count()
             orders_count = Offer.objects.filter(freelancer=request.user.freelancer).count()
+
 
 
             context = {

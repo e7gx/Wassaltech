@@ -36,8 +36,10 @@ def create_chat(request , id_order):
     get_chat = Chat.objects.filter(user = get_user , freelancer = get_freelancer)
     if get_chat:
         return redirect('chat:inbox' )
+    
     save_chat = Chat(user = get_user , freelancer = get_freelancer)
     save_chat.save()
+    
     return redirect('chat:inbox' )
 
 def get_chat(request , chat_id):
