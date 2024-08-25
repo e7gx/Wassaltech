@@ -145,7 +145,7 @@ def freelancer_view_profile(request):
     if request.user.is_authenticated:
         if request.user.account.user_type == 'Freelancer':
         
-            total_amount_unclaimed = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
+            total_amount_pending_deposit = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
             total_amount_deposited = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & Q(status='Deposited')).aggregate(total_amount=Sum('amount'))['total_amount']
 
 
@@ -165,7 +165,7 @@ def freelancer_view_profile(request):
 
 
             context = {
-                'total_amount_unclaimed': total_amount_unclaimed,
+                'total_amount_pending_deposit': total_amount_pending_deposit,
                 'total_amount_deposited': total_amount_deposited,
                 'orders_in_progress': orders_in_progress,
                 'orders_completed': orders_completed,
