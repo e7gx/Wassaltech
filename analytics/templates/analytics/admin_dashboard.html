@@ -11,8 +11,8 @@
             <h2 class="text-xl font-semibold text-center text-gray-700">الطلبات</h2>
             <p class="text-center text-gray-500">عدد الطلبات: {{ orders_count }}</p>
             <div class="mt-4">
-                <p class="text-sm text-gray-600">قيد التنفيذ: {{ In_progress_orders }}</p>
-                <p class="text-sm text-gray-600">مكتملة: {{ completed_orders }}</p>
+                <p class="text-sm text-gray-600">قيد التنفيذ: {{ orders_in_progress }}</p>
+                <p class="text-sm text-gray-600">مكتملة: {{ orders_closed }}</p>
             </div>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
@@ -28,8 +28,8 @@
             <h2 class="text-xl font-semibold text-center text-gray-700">المالية</h2>
             <p class="text-center text-gray-500">إجمالي المحفظة: {{ total_wallet|default:"0" }} ريال</p>
             <div class="mt-4">
-                <p class="text-sm text-gray-600">إجمالي الأسعار: {{ total_prices|default:"0" }} ريال</p>
-                <p class="text-sm text-gray-600">إجمالي المبالغ المستردة: {{ total_refunds|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">إجمالي الأسعار: {{ total_amount_deposited|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">إجمالي المبالغ المستردة: {{ total_refund_deposited|default:"0" }} ريال</p>
             </div>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
@@ -75,7 +75,7 @@
         data: {
             labels: ['قيد التنفيذ', 'مكتملة'],
             datasets: [{
-                data: [{{ In_progress_orders }}, {{ completed_orders }}],
+                data: [{{ orders_in_progress }}, {{ orders_closed }}],
                 backgroundColor: ['#FF6384', '#36A2EB'],
                 borderColor: ['#FF6384', '#36A2EB'],
                 borderWidth: 1
