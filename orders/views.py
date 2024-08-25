@@ -13,7 +13,6 @@ from reviews.forms import ReviewForm
 from .models import Order, OrderImage, OrderVideo, Offer
 from accounts.models import Account
 from datetime import datetime
-from django.utils import timezone
 
 
 ########################################################################################################################
@@ -181,13 +180,15 @@ def order_detail(request, order_id):
 # ORDER UPDATE
 ########################################################################################################################
 # MUTUAL UPDATE
+from django.utils import timezone
 
 @login_required
 def end_order(request, order_id):
     """
-    End (or complete) an order.
+    End (or complete) an order and submit a review.
 
-    This view manages the completion process for an order by the freelancer and the customer.
+    This view manages the completion process for an order by the freelancer and the customer,
+    as well as handling the review submission.
 
     Parameters:
         request (HttpRequest): The request object used to generate this response.
@@ -199,28 +200,52 @@ def end_order(request, order_id):
     
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
-
-    if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
-        order.freelancer_completed = True
-        order.save()
-        messages.success(request, 'You have successfully marked the order as closed. The customer can now finalize the order.')
-    
-    elif hasattr(request.user, 'account') and request.user.account == order.customer:
-        if order.freelancer_completed:
-            order.customer_completed = True
-            order.status = 'Closed'
+    if request.method == 'POST':
+        if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
+            order.freelancer_completed = True
             order.save()
-            offer.stage = 'Completed'
-            complete_on_time = (offer.proposed_service_date - timezone.now().date()).days >= 0
-            if complete_on_time:
-                offer.complete_on_time = True
-            offer.save()
-            messages.success(request, 'You have successfully closed the order.')
+            messages.success(request, 'You have successfully marked the order as closed. The customer can now finalize the order.')
+        
+        elif hasattr(request.user, 'account') and request.user.account == order.customer:
+            if order.freelancer_completed:
+                # Handle the review submission
+                rating = request.POST.get('rating')
+                comment = request.POST.get('comment')
+
+                if rating:
+                    review = Review.objects.create(
+                        offer=offer,
+                        rating=rating,
+                        comment=comment,
+                        created_at=timezone.now()
+                    )
+                    
+                    order.customer_completed = True
+                    order.status = 'Closed'
+                    order.save()
+                    
+                    offer.stage = 'Completed'
+                    
+                    # Logic for complete on time
+                    complete_on_time = (offer.proposed_service_date - timezone.now().date()).days >= 0
+                    if complete_on_time:
+                        offer.complete_on_time = True
+                    
+                    offer.save()
+                    messages.success(request, 'You have successfully submitted the review and closed the order.')
+                else:
+                    messages.error(request, 'Rating is required to close the order.')
+
+            else:
+                messages.error(request, 'The freelancer must close the order before you can finalize it.')
+
+        # Redirect based on user type
+        if request.user.account.user_type == 'Customer':
+            return redirect('orders:customer_orders')
         else:
-            messages.error(request, 'The freelancer must close the order before you can finalize it.')
+            return redirect('orders:freelancer_orders')
 
-    return redirect('orders:customer_orders' if request.user.account.user_type == 'Customer' else 'orders:freelancer_orders')
-
+    return render(request, 'some_template.html', {'order': order, 'offer': offer})
 
 
 
