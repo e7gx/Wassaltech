@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from accounts.models import Account, Freelancer
 
@@ -41,11 +42,6 @@ offer_stages = (
     ('Completed', 'Completed'),
 
 )
-payment_stages = (
-    ('On Hold', 'On Hold'),
-    # ('Ready To Deposit', 'Ready To Deposit'),
-    ('Deposited', 'Deposited'),
-)
 
 
 class Order(models.Model):
@@ -88,14 +84,12 @@ class OrderVideo(models.Model):
 class Offer(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     freelancer = models.ForeignKey(Freelancer, on_delete=models.PROTECT)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    refund = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
     complete_on_time = models.BooleanField(default=False)
     description = models.TextField()
     proposed_service_date = models.DateField()
     appointment = models.DateField()
     stage = models.CharField(max_length=100, choices=offer_stages, default='Pending')
-    payment = models.CharField(max_length=100, choices=payment_stages, default='On Hold')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

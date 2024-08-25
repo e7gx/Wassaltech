@@ -1,14 +1,16 @@
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
 from notifications.views import NotificationService as sendemail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from payments.models import Payment
 from accounts.decorators import user_type_required
 from .forms import OrderForm, OfferForm
 from reviews.forms import ReviewForm
 from .models import Order, OrderImage, OrderVideo, Offer
 from accounts.models import Account
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 ########################################################################################################################
@@ -20,6 +22,19 @@ from datetime import datetime, timedelta
 # CUSTOMER CREATE
 @login_required
 def create_order(request):
+    """
+    Create a new order.
+
+    This view handles the creation of a new order, associating it with the customer (current user),
+    and allows them to upload images and a video related to the order.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The response object containing the rendered order form page or a redirect.
+    """
+
     if request.method == 'POST':
 
         form = OrderForm(request.POST)
@@ -48,6 +63,16 @@ def create_order(request):
 # CUSTOMER READ
 @login_required
 def customer_orders(request):
+    """
+    Display all orders for the current user (customer).
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The response object containing the rendered customer orders page.
+    """
+
     orders = Order.objects.filter(customer=request.user.account)
     return render(request, 'orders/customer_orders.html', {'orders': orders})
 
@@ -56,6 +81,18 @@ def customer_orders(request):
 # ! edit  this function
 @login_required
 def order_history(request):
+    """
+    Display the order history for the current user.
+
+    This view displays completed and canceled orders for both customers and freelancers.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The response object containing the rendered order history page.
+    """
+
     user = request.user
     if hasattr(user, 'account'):
         orders = Order.objects.filter(customer=user.account).exclude(status='Open')
@@ -69,15 +106,43 @@ def order_history(request):
 # FREELANCER READ
 @login_required
 def freelancer_orders(request):
+    """
+    Display all orders available for freelancers.
+
+    This view displays orders with the status 'Open' that are not already associated with the current freelancer.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The response object containing the rendered freelancer orders page.
+    """
+
     freelancer = request.user.freelancer
-    orders = Order.objects.filter(status='Open')
-    orders = orders.exclude(offer__freelancer=freelancer)
+    orders = Order.objects.filter(status='Open').exclude(offer__freelancer=freelancer)
+    ##################
+    # orders = orders.exclude(offer__freelancer=freelancer)
+    ##################
     return render(request, 'orders/freelancer_orders.html', {'orders': orders})
 
 
 # MUTUAL READ
 @login_required
 def order_detail(request, order_id):
+    """
+    Display the details of a specific order.
+
+    This view shows the details of an order, including any accepted offer, associated images, and a review form for customers
+    to review the freelancer and provide feedback when the order is closed.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        order_id (int): The ID of the order to display.
+
+    Returns:
+        HttpResponse: The response object containing the rendered order detail page.
+    """
+
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order, stage='Accepted').first()
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
@@ -101,10 +166,22 @@ def order_detail(request, order_id):
 # MUTUAL UPDATE
 @login_required
 def end_order(request, order_id):
+    """
+    End (or complete) an order.
+
+    This view manages the completion process for an order by the freelancer and the customer.
+    Only the relevant party can mark the order as completed (closed) at a given time.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        order_id (int): The ID of the order to end.
+
+    Returns:
+        HttpResponse: The response object containing a redirect to the respective orders page.
+    """
+
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
-    if hasattr(request.user, 'freelancer'):
-        print(f"request.user.freelancer: {request.user.freelancer}")
     if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
         order.freelancer_completed = True
         order.save()
@@ -138,14 +215,29 @@ def end_order(request, order_id):
 # An order can be discarded if and only if its status is "Open".
 @login_required
 def customer_discard_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+    """
+    Discard an order.
 
-    if order.status == 'Open':
-        order.status = 'Discarded'
-        order.save()
-        messages.success(request, 'The order has been successfully discarded.')
+    This view allows a customer to discard an order, provided it is in the 'Open' status.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        order_id (int): The ID of the order to discard.
+
+    Returns:
+        HttpResponse: The response object containing a redirect to the customer orders page or a JSON response for error.
+    """
+
+    order = get_object_or_404(Order, id=order_id)
+    if hasattr(request.user, 'account') and request.user.account == order.customer:
+        if order.status == 'Open':
+            order.status = 'Discarded'
+            order.save()
+            messages.success(request, 'The order has been successfully discarded.')
+        else:
+            messages.error(request, 'This order cannot be discarded as it has already been linked with a freelancer.')
     else:
-        messages.error(request, 'This order cannot be discarded as it has already been linked with a freelancer.')
+        return HttpResponseForbidden("You don't have permission to discard this order.")
 
     return redirect('orders:customer_orders')
 
@@ -159,14 +251,34 @@ def customer_discard_order(request, order_id):
 # FREELANCER CREATE
 @login_required
 def create_offer(request, order_id):
+    """
+    Create a new offer for an order.
+
+    This view enables freelancers to create new offers for a specific order, provided they are verified and do not have
+    a pending offer for the order.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        order_id (int): The ID of the order for which the offer is being created.
+
+    Returns:
+        HttpResponse: The response object containing the rendered offer form page or a redirect.
+    """
+
     order = get_object_or_404(Order, id=order_id)
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
 
     freelancer = request.user.freelancer
-
-    if Offer.objects.filter(order=order, freelancer=freelancer).exists():
-        messages.error(request, "You have already made an offer for this order.")
-        return redirect('orders:freelancer_orders')
+    ##################
+    # Only verified freelancers should be able to make offers
+    # if not freelancer.is_verified:
+    #     messages.error(request, "Your account is not verified yet. You can't make offers.")
+    #     return redirect('accounts:profile')
+    ##################
+    # Should allow freelancers to submit another offer if their offer gets rejected
+    if Offer.objects.filter(order=order, stage='Pending', freelancer=freelancer).exists():
+        messages.error(request, "You already have a pending offer for this order.")
+        return redirect('orders:freelancer_offers')
 
     if request.method == 'POST':
         form = OfferForm(request.POST)
@@ -177,10 +289,10 @@ def create_offer(request, order_id):
             offer.save()
             sendemail.notify_new_offer(freelancer , order , offer.price )
             messages.success(request, "Your offer has been submitted successfully.")
-            return redirect('orders:freelancer_orders')
+            return redirect('orders:freelancer_offers')
     else:
         form = OfferForm()
-    return render(request, 'orders/create_offer.html', {'form': form, 'order': order,"order_images":order_images})
+    return render(request, 'orders/create_offer.html', {'form': form, 'order': order, "order_images": order_images})
 
 
 ########################################################################################################################
@@ -189,6 +301,19 @@ def create_offer(request, order_id):
 # CUSTOMER READ
 @login_required
 def order_offers(request, order_id):
+    """
+    Display all offers for a specific order.
+
+    This view displays all offers associated with a specific order, including freelancer details.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        order_id (int): The ID of the order for which offers are being displayed.
+
+    Returns:
+        HttpResponse: The response object containing the rendered order offers page.
+    """
+
     order = get_object_or_404(Order, id=order_id, customer=request.user.account)
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
     offers = Offer.objects.filter(order=order).select_related('freelancer', 'freelancer__user')
@@ -205,6 +330,16 @@ def order_offers(request, order_id):
 # FREELANCER READ
 @login_required
 def freelancer_offers(request):
+    """
+    Display all offers made by the current freelancer.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The response object containing the rendered freelancer offers page.
+    """
+
     offers = Offer.objects.filter(freelancer=request.user.freelancer)
     return render(request, 'orders/freelancer_offers.html', {'offers': offers})
 
@@ -215,22 +350,37 @@ def freelancer_offers(request):
 # CUSTOMER UPDATE
 @login_required
 def accept_offer(request, offer_id):
+    """
+    Accept an offer for an order.
+
+    This view allows a customer to accept an offer for their order, and updates the order and offer statuses accordingly.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        offer_id (int): The ID of the offer to accept.
+
+    Returns:
+        HttpResponse: The response object containing a redirect to the order detail page.
+    """
+
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-    if request.user.account != order.customer:
+    if hasattr(request.user, 'account') and request.user.account == order.customer:
+        with transaction.atomic():
+            try:
+                offer.stage = 'Accepted'
+                offer.save()
+                Payment.objects.create(offer=offer, price=offer.price)
+                order.status = 'In Progress'
+                order.assigned_to = offer.freelancer
+                order.save()
+                Offer.objects.filter(order=order).exclude(id=offer_id).update(stage='Declined')
+                sendemail.notify_order_accepted(offer, order)
+            except Exception as e:
+                print(e)
+    else:
         return HttpResponseForbidden("You don't have permission to accept this offer.")
-    offer.stage = 'Accepted'
-    offer.save()
-    order.status = 'In Progress'
-    order.assigned_to = offer.freelancer
-    order.save()
-    unaccepted_offers = Offer.objects.filter(order=order).exclude(id=offer_id)
-    for unaccepted_offer in unaccepted_offers:
-        unaccepted_offer.stage = 'Declined'
-        unaccepted_offer.save()
-
-    sendemail.notify_order_accepted(offer , order )
 
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -239,30 +389,38 @@ def accept_offer(request, offer_id):
 # An offer can be cancelled if and only if it is in the "Accepted" stage.
 @login_required
 def customer_cancel_offer(request, offer_id):
+    """
+    Cancel an accepted offer by the customer.
+
+    This view allows a customer to cancel an offer that is in the 'Accepted' stage and updates the payment refund
+    based on the refund policy. The offer's stage will become "Cancelled" and the order status will become "Open"
+    and the order will not be assigned to any particular freelancer.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        offer_id (int): The ID of the offer to cancel.
+
+    Returns:
+        HttpResponse: The response object containing a redirect to the order detail page or a JSON response for error.
+    """
+
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-    if request.user.account != order.customer:
+    if hasattr(request.user, 'account') and request.user.account == order.customer:
+        with transaction.atomic():
+            try:
+                offer.stage = 'Cancelled'
+                offer.save()
+                offer.payment.customer_cancel_refund()
+
+                order.status = 'Open'
+                order.assigned_to = None
+                order.save()
+            except Exception as e:
+                print(e)
+    else:
         return HttpResponseForbidden("You don't have permission to cancel this offer.")
-    full_refund = timedelta(hours=24)
-    half_refund = timedelta(hours=12)
-    time_until_visit = offer.appointment - datetime.now()
-    try:
-        if time_until_visit >= full_refund:
-            offer.refund = offer.price
-            offer.price = 0
-        elif time_until_visit >= half_refund:
-            offer.refund = offer.price / 2
-            offer.price = offer.price / 2
-
-        offer.stage = 'Cancelled'
-        offer.save()
-
-        order.status = 'Open'
-        order.assigned_to = None
-        order.save()
-    except Exception as e:
-        print(e)
 
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -271,23 +429,40 @@ def customer_cancel_offer(request, offer_id):
 # An offer can be cancelled if and only if it is in the "Accepted" stage.
 @login_required
 def freelancer_cancel_offer(request, offer_id):
+    """
+    Cancel an accepted offer by the freelancer.
+
+    This view allows a freelancer to cancel an offer that is in the 'Accepted' stage and updates the freelancer's
+    internal rating as well as the payment refund based on the refund policy.
+    The offer's stage will become "Cancelled" and the order status will become "Open" and the order will not be assigned
+    to any particular freelancer.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        offer_id (int): The ID of the offer to cancel.
+
+    Returns:
+        HttpResponse: The response object containing a redirect to the freelancer offers page or a JSON response for error.
+    """
+
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-    if request.user.account != order.assigned_to:
-        return HttpResponseForbidden("You don't have permission to cancel this offer.")
-    try:
-        offer.stage = 'Cancelled'
-        offer.refund = offer.price
-        offer.price = 0
-        offer.save()
-        offer.freelancer.update_internal_rating()
+    if hasattr(request.user, 'freelancer') and request.user == order.assigned_to:
+        with transaction.atomic():
+            try:
+                offer.stage = 'Cancelled'
+                offer.save()
+                offer.payment.freelancer_cancel_payment()
+                offer.freelancer.update_internal_rating()
 
-        order.status = 'Open'
-        order.assigned_to = None
-        order.save()
-    except Exception as e:
-        print(e)
+                order.status = 'Open'
+                order.assigned_to = None
+                order.save()
+            except Exception as e:
+                print(e)
+    else:
+        return HttpResponseForbidden("You don't have permission to cancel this offer.")
 
     return redirect('orders:freelancer_offers', freelancer_id=offer.freelancer.id)
 
@@ -299,19 +474,34 @@ def freelancer_cancel_offer(request, offer_id):
 # An offer can be discarded if and only if it is in the "Pending" stage.
 @login_required
 def freelancer_discard_offer(request, offer_id):
-    offer = get_object_or_404(Offer, id=offer_id)
+    """
+    Discard a pending offer.
 
-    if offer.stage == 'Pending':
-        offer.stage = 'Discarded'
-        offer.save()
-        messages.success(request, 'The offer has been successfully discarded.')
+    This view allows a freelancer to discard an offer that is in the 'Pending' stage.
+
+    Parameters:
+        request (HttpRequest): The request object used to generate this response.
+        offer_id (int): The ID of the offer to discard.
+
+    Returns:
+        HttpResponse: The response object containing a redirect to the freelancer orders page or a JSON response for error.
+    """
+
+    offer = get_object_or_404(Offer, id=offer_id)
+    if hasattr(request.user, 'freelancer') and request.user.freelancer == offer.freelancer:
+        if offer.stage == 'Pending':
+            offer.stage = 'Discarded'
+            offer.save()
+            messages.success(request, 'The offer has been successfully discarded.')
+        else:
+            messages.error(request, 'This offer cannot be discarded.')
     else:
-        messages.error(request, 'This offer cannot be discarded.')
+        return HttpResponseForbidden("You don't have permission to discard this offer.")
 
     return redirect('orders:freelancer_orders')
 
 
-# ! edit this function redirct to the order detail page after payment
+# ! edit this function redirect to the order detail page after payment
 @login_required
 def fake_payment(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
