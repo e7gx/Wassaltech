@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 ########################################################################################################################
 # CUSTOMER CREATE
 @login_required
+@user_type_required(['Customer'])
 def create_order(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -49,6 +50,7 @@ def create_order(request):
 ########################################################################################################################
 # CUSTOMER READ
 @login_required
+@user_type_required(['Customer'])
 def customer_orders(request):
     orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress'])
     for order in orders:
@@ -76,6 +78,7 @@ def order_history(request):
 
 # FREELANCER READ
 @login_required
+@user_type_required(['Freelancer'])
 def freelancer_orders(request):
     if hasattr(request.user, 'freelancer'):
         freelancer = request.user.freelancer
@@ -160,6 +163,7 @@ def discard_order(request, order_id):
 ########################################################################################################################
 # FREELANCER CREATE
 @login_required
+@user_type_required(['Freelancer'])
 def create_offer(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     order_images = OrderImage.objects.filter(order=order)
@@ -212,6 +216,7 @@ def order_offers(request, order_id):
 
 # FREELANCER READ
 @login_required
+@user_type_required(['Freelancer'])
 def freelancer_offers(request):
     if hasattr(request.user, 'freelancer'):
         offers = Offer.objects.filter(freelancer=request.user.freelancer)
