@@ -46,7 +46,7 @@ class Freelancer(models.Model):
         Returns:
             int: The count of offers in the 'Completed' stage.
         """
-        completion_count = self.offer_set.filter(stage='Completed').count()
+        completion_count = self.offer_set.filter(stage='Completed').count() or 0
         return completion_count
 
     def get_cancellation_count(self) -> int:
@@ -56,7 +56,7 @@ class Freelancer(models.Model):
         Returns:
             int: The count of offers in the 'Cancelled' stage.
         """
-        cancellation_count = self.offer_set.filter(stage='Cancelled').count()
+        cancellation_count = self.offer_set.filter(stage='Cancelled').count() or 0
         return cancellation_count
 
     def get_completion_rate(self) -> float:
