@@ -3,6 +3,11 @@
 
 {% block title %}الصفحة الرئيسية - وَصّلْتِك{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <style>
   @keyframes moveLeftRight {
@@ -21,24 +26,30 @@
   }
 </style>
 
-
-<img class="absolute top-0 right-0 w-52 md:w-auto" src="{% static 'images/star-background-header.png' %}" alt="">
-<img class="absolute top-0 right-0 mt-10 mr-10" src="{% static 'images/light-orange-blue-1.png' %}" alt="">
-<img style="transform: scaleX(-1);" class="absolute top-0 left-0 -mr-10 sm:-mr-0 mt-64 md:mt-125 lg:mt-88 xl:mt-112 h-32 md:h-60 lg:h-88 animate-moveLeftRight" src="{% static 'images/robot-hand-header.png' %}" alt="">
+<img class="absolute top-0 right-0 w-52 md:w-auto animate__animated animate__fadeIn" src="{% static 'images/star-background-header.png' %}" alt="">
+<img class="absolute top-0 right-0 mt-10 mr-10 animate__animated animate__fadeInTopRight" src="{% static 'images/light-orange-blue-1.png' %}" alt="">
+<img style="transform: scaleX(-1);" class="absolute top-0 left-0 -mr-10 sm:-mr-0 mt-64 md:mt-125 lg:mt-88 xl:mt-112 h-32 md:h-60 lg:h-88 animate-moveLeftRight animate__animated animate__fadeInLeft" src="{% static 'images/robot-hand-header.png' %}" alt="">
 
 <div class="relative container px-4 mx-auto mt-8 md:mt-20">
   <div class="max-w-7xl mx-auto">
     <div class="max-w-4xl mx-auto text-center">
-      <h1 class="font-heading text-5xl xs:text-6xl md:text-8xl xl:text-10xl font-bold text-gray-900 mb-8 sm:mb-14">
-        <span class=" block">وَصّلْتِك</span>
-        <span class="italic">
-          منصتك الوحيدة لتسهيل عملية الصيانة
+      <h1 class="font-heading text-5xl xs:text-6xl md:text-8xl xl:text-10xl font-bold text-gray-900 mb-8 sm:mb-14 animate__animated animate__fadeInDown">
+        <span class="block hover:text-orange-900 transition-colors duration-300">وَصّلْتِك</span>
+        <span class="italic text-4xl">
+           منصتك الوحيدة لتسهيل عملية الصيانة 
+           <span class="text-orange-900 border-b-2">
+            من باب لباب
+           </span>
         </span>
       </h1>
     </div>
-    <div style="justify-content: flex-end; text-align: right;" class="md:flex mb-14 max-w-xs sm:max-w-sm md:max-w-none">
+    <div class="md:flex mb-14 max-w-xs sm:max-w-sm md:max-w-none justify-end text-right animate__animated animate__fadeInRight">
       <div class="max-w-md">
-        <p class="md:text-xl text-gray-900 font-semibold mr-10">وَصّلْتِك هي شركة ناشئة تجعل العالم مكانًا أفضل! نحن نعمل على مهمتنا منذ عام 2021</p>
+        <p dir="rtl" class="md:text-xl text-gray-900 font-semibold mr-10 text-right">
+          نحن نربط فنيين محترفين بعملاء يحتاجون إصلاح الأجهزة في منازلهم بسرعة وراحة، هدفنا توفير أفضل تجربة من خلال خدمات سريعة وذات جودة عالية.
+
+
+        </p>
       </div>
 
       <div class="mb-6 md:mb-0 md:mr-8 pt-3">
@@ -50,7 +61,7 @@
     </div>
 
     <div style="justify-content: flex-end;" class="flex">
-      <a class="relative group inline-block w-full sm:w-auto py-4 px-6 mb-24 text-white font-semibold rounded-md bg-orange-900 overflow-hidden" href="#">
+      <a class="relative group inline-block w-full sm:w-auto py-4 px-6 mb-24 text-white font-semibold rounded-md bg-orange-900 overflow-hidden animate__animated animate__fadeInUp" href="#">
         <div class="absolute top-0 right-full w-full h-full bg-gray-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
         <div class="relative flex items-center justify-center">
           <span>
@@ -68,18 +79,20 @@
     <section class="relative py-20 overflow-hidden">
       <div class="container px-4 mx-auto">
         <div class="max-w-3xl mx-auto text-center">
-          <span class="inline-block py-1 px-3 mb-4 text-xs font-semibold text-orange-900 bg-orange-50 rounded-full">المميزات</span>
-          <h1 class="font-heading text-5xl xs:text-6xl md:text-7xl font-bold text-gray-900 mb-24">
-            <span>قم بالترقية لفتح جميع</span>
-            <span class="font-serif italic">المميزات</span>
+          <span class="inline-block py-1 px-3 mb-4 text-xs font-semibold text-orange-900 bg-orange-50 rounded-full animate__animated animate__fadeIn">المميزات</span>
+          <h1 class="font-heading text-5xl xs:text-6xl md:text-7xl font-bold text-gray-900 mb-24 animate__animated animate__fadeInDown">
+            <span class="block">
+              ما نقدمه لك من
+            </span>
+            <span class="italic underline text-orange-900 ">مميزات</span>
           </h1>
         </div>
         <div class="max-w-7xl mx-auto">
           <div class="flex flex-wrap -mx-4 items-center">
             <div class="w-full lg:w-2/5 xl:w-auto px-4 lg:pb-10 mb-16 lg:mb-0">
               <div class="mx-auto max-w-sm">
-                <div class="flex items-center pb-12 mb-12 border-b border-gray-100">
-                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-blue-100 rounded-full">
+                <div class="flex items-center pb-12 mb-12 border-b border-gray-100 wow fadeInLeft" data-wow-delay="0.2s">
+                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-blue-100 p-4 rounded-full">
                     <img src="{% static 'images/icon-element.svg' %}" alt="">
                   </div>
                   <div>
@@ -87,33 +100,33 @@
                     <span class="text-sm text-gray-400  text-center">تم إنشاؤه بواسطة مطورين محليين</span>
                   </div>
                 </div>
-                <div class="flex items-center pb-12 mb-12 border-b border-gray-100">
-                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-orange-100 rounded-full">
+                <div class="flex items-center pb-12 mb-12 border-b border-gray-100 wow fadeInLeft" data-wow-delay="0.4s">
+                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-orange-100 p-4 rounded-full">
                     <img src="{% static 'images/icon-hierarchy.svg' %}" alt="">
                   </div>
                   <div>
-                    <h3 class="text-lg font-semibold text-orange-900  text-center">تسهيل عملية الصيانة</h3>
+                    <h3 class="text-lg font-semibold text-orange-900 text-center">تسهيل عملية الصيانة</h3>
                     <span class="text-sm text-gray-400  text-center">توفير الوقت والجهد لجميع المستخدمين</span>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-gray-300 rounded-full">
+                <div class="flex items-center wow fadeInLeft" data-wow-delay="0.6s">
+                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-gray-300 p-4 rounded-full">
                     <img src="{% static 'images/icon-school-bag.svg' %}" alt="">
                   </div>
                   <div>
-                    <h3 class="text-lg font-semibold text-orange-900  text-center">تصميم واجهة مستخدم عالمية المستوى</h3>
+                    <h3 class="text-lg font-semibold text-orange-900 text-center">تصميم واجهة مستخدم عالمية المستوى</h3>
                     <span class="text-sm text-gray-400 text-center justify-center items-center flex">تسهيل عملية الوصول عبر واجهات سهلة الاستخدام</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="w-full lg:w-1/5 xl:w-auto mx-auto px-4 xl:-mr-10 mb-16 lg:mb-0">
+            <div class="w-full lg:w-1/5 xl:w-auto mx-auto px-4 xl:-mr-10 mb-16 lg:mb-0 p-4 wow fadeInUp" data-wow-delay="0.5s">
               <img class="block h-80 md:h-100 lg:h-auto xl:h-150 mx-auto" src="{% static 'images/phone-picture.png' %}" alt="">
             </div>
             <div class="w-full lg:w-2/5 xl:w-auto px-4 lg:pb-10">
               <div class="mx-auto max-w-sm">
-                <div class="flex items-center pb-12 mb-12 border-b border-gray-100">
-                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-red-200 rounded-full">
+                <div class="flex items-center pb-12 mb-12 border-b border-gray-100 wow fadeInRight" data-wow-delay="0.2s">
+                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center p-4 justify-center bg-red-200 rounded-full">
                     <img src="{% static 'images/icon-robot.svg' %}" alt="">
                   </div>
                   <div >
@@ -123,22 +136,22 @@
                     </span>
                   </div>
                 </div> 
-                <div class="flex items-center pb-12 mb-12 border-b border-gray-100">
-                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-yellow-200 rounded-full">
+                <div class="flex items-center pb-12 mb-12 border-b border-gray-100 wow fadeInRight" data-wow-delay="0.4s">
+                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center p-4 bg-yellow-200 rounded-full">
                     <img src="{% static 'images/icon-cam.svg' %}" alt="">
                   </div>
                   <div>
-                    <h3 class="text-lg font-semibold text-orange-900 text-center">تطبيقات هاتف محمول</h3>
+                    <h3 class="text-lg font-semibold text-orange-900  p-4 text-center">تطبيقات هاتف محمول</h3>
                     <span class="text-sm text-gray-400  text-center">تسهيل عملية الوصول عبر الهاتف و الويب </span>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center justify-center bg-green-200 rounded-full">
+                <div class="flex items-center wow fadeInRight" data-wow-delay="0.6s">
+                  <div class="flex flex-shrink-0 w-15 h-15 mr-6 items-center p-4 justify-center bg-green-200 rounded-full">
                     <img src="{% static 'images/icon-flask.svg' %}" alt="">
                   </div>
                   <div>
                     <h3 class="text-lg font-semibold text-orange-900 text-center">تمكين الكوادر المحلية</h3>
-                    <span class="text-sm text-gray-400  text-center">لدعم رؤية المملكة العربية السعودية 2030</span>
+                    <span class="text-sm text-gray-400 text-center">لدعم رؤية المملكة العربية السعودية 2030</span>
                   </div>
                 </div>
               </div>
@@ -150,9 +163,7 @@
   </div>
 </div>
 
-
 <style>
-
     .glow {
         animation: glow 2s ease-in-out infinite alternate;
     }
@@ -165,6 +176,17 @@
             text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #FF7F50, 0 0 40px #FF7F50, 0 0 70px #FF7F50, 0 0 80px #FF7F50, 0 0 100px #FF7F50;
         }
     }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        new WOW().init();
+        
+        setTimeout(() => {
+            const splashScreen = document.getElementById('splash-screen');
+            splashScreen.classList.add('animate__animated', 'animate__fadeOut');
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
     @keyframes fade-in {
         0% { opacity: 0; }
         100% { opacity: 1; }
