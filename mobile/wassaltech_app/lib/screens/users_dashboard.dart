@@ -62,7 +62,7 @@ class _UsersPageState extends State<UsersPage> {
                       PieChartData(
                         sections: [
                           PieChartSectionData(
-                            color: const Color(0xFFFFA500), 
+                            color: const Color(0xFFFFA500),
                             value: userCount.toDouble(),
                             title:
                                 '${userCount} (${(userCount / totalCount * 100).toStringAsFixed(0)}%)',
@@ -95,60 +95,70 @@ class _UsersPageState extends State<UsersPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.person,
-                        color: Color(0xFFFFA500), 
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.person,
+                            color: Color(0xFFFFA500),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Total Customers: ',
+                            style: TextStyle(
+                              color: Color(0xFFFFA500),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                          Text(
+                            '$userCount',
+                            style: const TextStyle(
+                              color: Color(0xFFFFA500),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Total Customers: ',
-                        style: TextStyle(
-                          color: Color(0xFFFFA500),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                      Text(
-                        '$userCount',
-                        style: const TextStyle(
-                          color: Color(0xFFFFA500), 
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.work,
-                        color: const Color(0xFF5E4F24),
-                      ), // Gold color
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Total Freelancers: ',
-                        style: TextStyle(
-                          color: const Color(0xFF5E4F24),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.work,
+                            color: const Color(0xFF5E4F24),
+                          ), // Gold color
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Total Freelancers: ',
+                            style: TextStyle(
+                              color: const Color(0xFF5E4F24),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                          Text(
+                            '$freelancerCount',
+                            style: const TextStyle(
+                              color: const Color(0xFF5E4F24),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '$freelancerCount',
-                        style: const TextStyle(
-                          color: const Color(0xFF5E4F24),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               );

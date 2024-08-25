@@ -3,18 +3,16 @@ import 'package:wassaltech_app/model/service/api_services.dart';
 import 'offer_details_page.dart';
 
 class Wallet extends StatefulWidget {
-  final Future<List<Offer>> _offersFuture;
-  final int _offerCount;
-  final double _totalPrice;
+  final Future<List<Offer>> offersFuture;
+  final int offerCount;
+  final double totalPrice;
 
   Wallet({
     super.key,
-    required Future<List<Offer>> offersFuture,
-    required int offerCount,
-    required double totalPrice,
-  })  : _offersFuture = offersFuture,
-        _offerCount = offerCount,
-        _totalPrice = totalPrice;
+    required this.offersFuture,
+    required this.offerCount,
+    required this.totalPrice,
+  });
 
   @override
   _WalletState createState() => _WalletState();
@@ -22,13 +20,13 @@ class Wallet extends StatefulWidget {
 
 class _WalletState extends State<Wallet> {
   late Future<int> _ordersCountFuture;
-  late Future<int> _fetchReviewsCount;
+  late Future<int> _reviewsCountFuture;
 
   @override
   void initState() {
     super.initState();
     _ordersCountFuture = fetchOrdersCount();
-    _fetchReviewsCount = fetchReviewsCount();
+    _reviewsCountFuture = fetchReviewsCount();
   }
 
   @override
@@ -39,42 +37,67 @@ class _WalletState extends State<Wallet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16.0),
+            Text(
+              'Orders & Offers',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.bold,
+                color: Colors.orange[800],
+                fontSize: 28.0,
+              ),
+            ),
+            _buildOffersRow(context),
             FutureBuilder<int>(
               future: _ordersCountFuture,
               builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final ordersCount = snapshot.data!;
-                  return FutureBuilder<int>(
-                    future: _fetchReviewsCount,
-                    builder: (context, reviewsSnapshot) {
-                      if (reviewsSnapshot.hasData) {
-                        final reviewsCount = reviewsSnapshot.data!;
-                        return _buildSummaryCard(ordersCount, reviewsCount);
-                      } else if (reviewsSnapshot.hasError) {
-                        return Center(
-                          child: Text('Error: ${reviewsSnapshot.error}'),
-                        );
-                      } else {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.orangeAccent,
-                          ),
-                        );
-                      }
-                    },
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child:
+                        CircularProgressIndicator(color: Colors.orangeAccent),
                   );
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  return const Center(
-                    child:
-                        CircularProgressIndicator(color: Colors.orangeAccent),
+                  final ordersCount = snapshot.data!;
+                  return FutureBuilder<int>(
+                    future: _reviewsCountFuture,
+                    builder: (context, reviewsSnapshot) {
+                      if (reviewsSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                              color: Colors.orangeAccent),
+                        );
+                      } else if (reviewsSnapshot.hasError) {
+                        return Center(
+                            child: Text('Error: ${reviewsSnapshot.error}'));
+                      } else {
+                        final reviewsCount = reviewsSnapshot.data!;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Summary',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange[800],
+                              ),
+                            ),
+                            const SizedBox(height: 16.0),
+                            _buildSummaryCard(ordersCount, reviewsCount)
+                          ],
+                        );
+                      }
+                    },
                   );
                 }
               },
             ),
             const SizedBox(height: 16.0),
-            _buildOffersRow(context),
           ],
         ),
       ),
@@ -93,15 +116,46 @@ class _WalletState extends State<Wallet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSummaryTile('Wassaltech Wallet',
-                '\$ SAR: ${widget._totalPrice.toStringAsFixed(2)}'),
+            const SizedBox(height: 16.0),
+            _buildSummaryTile(
+              'Wassaltech Wallet',
+              '\SAR: ${widget.totalPrice.toStringAsFixed(2)}',
+              Icon(
+                Icons.account_balance_wallet,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
             const SizedBox(height: 8.0),
-            _buildSummaryTile('Total Offers', 'Count: ${widget._offerCount}'),
+            _buildSummaryTile(
+              'Total Offers',
+              'Count: ${widget.offerCount}',
+              Icon(
+                Icons.local_offer,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
             const SizedBox(height: 8.0),
-            _buildSummaryTile('Total Orders', 'Count: $ordersCount'),
+            _buildSummaryTile(
+              'Total Orders',
+              'Count: $ordersCount',
+              Icon(
+                Icons.shopping_cart,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
             const SizedBox(height: 8.0),
-            _buildSummaryTile('Average Reviews',
-                'Rating: ${reviewsCount.toStringAsFixed(1)}'),
+            _buildSummaryTile(
+              'Average Reviews',
+              'Rating: ${reviewsCount.toStringAsFixed(1)}',
+              Icon(
+                Icons.star,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
           ],
         ),
       ),
@@ -109,39 +163,45 @@ class _WalletState extends State<Wallet> {
   }
 
   Widget _buildOffersRow(BuildContext context) {
-    return FutureBuilder<List<Offer>>(
-      future: widget._offersFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final offers = snapshot.data!;
-          return Container(
-            height: 200, // Adjust height as needed
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: offers.length,
-              itemBuilder: (context, index) {
-                final offer = offers[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OfferDetailsPage(offer: offer),
-                      ),
-                    );
-                  },
-                  child: _buildOfferCard(offer),
-                );
-              },
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          return const Center(
-              child: CircularProgressIndicator(color: Colors.orangeAccent));
-        }
-      },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FutureBuilder<List<Offer>>(
+        future: widget.offersFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.orangeAccent,
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final offers = snapshot.data!;
+            return SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: offers.length,
+                itemBuilder: (context, index) {
+                  final offer = offers[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OfferDetailsPage(offer: offer),
+                        ),
+                      );
+                    },
+                    child: _buildOfferCard(offer),
+                  );
+                },
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -149,14 +209,11 @@ class _WalletState extends State<Wallet> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        width: 280, // Adjust width as needed
+        width: 338,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          gradient: LinearGradient(
-            colors: [
-              Colors.orange,
-              Colors.deepOrangeAccent,
-            ],
+          gradient: const LinearGradient(
+            colors: [Colors.orange, Colors.orangeAccent],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -165,45 +222,99 @@ class _WalletState extends State<Wallet> {
           children: [
             Center(
               child: Opacity(
-                opacity: 0.4,
+                opacity: 0.5,
                 child: Image.asset(
                   'assets/images/user2.png',
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
+                  width: double.infinity,
+                  height: double.infinity,
                 ),
               ),
             ),
-            Icon(
-              Icons.attach_money,
-              size: 60.0,
-              color: Colors.white,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                color: Colors.orange.withOpacity(0.3),
+              ),
+            ),
+            // Icon at the Top
+            Positioned(
+              top: 8.0,
+              left: 8.0,
+              child: Container(
+                child: Image.asset(
+                  'assets/images/hhh.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
             Positioned(
-              bottom: 20.0,
+              bottom: 0.0,
               left: 16.0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Offer ID: ${offer.id}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cairo',
+              right: 16.0,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Order ID: ${offer.orderId}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                        Text(
+                          'Price: \$${offer.price.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Price: \$${offer.price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cairo',
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OfferDetailsPage(offer: offer),
+                          ),
+                        );
+                      },
+                      iconAlignment: IconAlignment.end,
+                      child: Text(
+                        'View Details',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange[800],
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 9.0,
+                          horizontal: 26.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20.0),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -212,7 +323,7 @@ class _WalletState extends State<Wallet> {
     );
   }
 
-  Widget _buildSummaryTile(String title, String subtitle) {
+  Widget _buildSummaryTile(String title, String subtitle, Icon icon) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -224,7 +335,7 @@ class _WalletState extends State<Wallet> {
             color: Colors.orange.withOpacity(0.99),
             spreadRadius: 2,
             blurRadius: 8,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -254,7 +365,7 @@ class _WalletState extends State<Wallet> {
             ],
           ),
           Icon(
-            Icons.monetization_on,
+            icon.icon,
             color: Colors.orange[800],
             size: 24.0,
           ),

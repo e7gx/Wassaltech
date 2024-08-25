@@ -239,19 +239,19 @@ class ReviewService {
   }
 }
 
-class Freelancer {
-  final int id;
-  final String username;
-  final bool isVerified;
+// class Freelancer {
+//   final int id;
+//   final String username;
+//   final bool isVerified;
 
-  Freelancer(
-      {required this.id, required this.username, required this.isVerified});
+//   Freelancer(
+//       {required this.id, required this.username, required this.isVerified});
 
-  factory Freelancer.fromJson(Map<String, dynamic> json) {
-    return Freelancer(
-      id: json['id'],
-      username: json['username'],
-      isVerified: json['is_verified'],
-    );
-  }
-}
+//   factory Freelancer.fromJson(Map<String, dynamic> json) {
+//     return Freelancer(
+//       id: json['id'],
+//       username: json['username'],
+//       isVerified: json['is_verified'],
+//     );
+//   }
+// }
