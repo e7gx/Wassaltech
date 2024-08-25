@@ -89,11 +89,12 @@ def admin_check_freelancers(request):
 @login_required
 def customer_profile(request, pk):
     try:
-        user = Account.objects.get(pk=pk)
+        customer_profile = Account.objects.get(pk=pk)
     except Account.DoesNotExist:
         return redirect('main:index')
     
-    if request.user.is_superuser and request.user.account.user_type == 'Admin':
-        return render(request, 'analytics/admin_view_customer_profile.html', {'user': user})
+    # Allow admins to view any profile and users to view their own profile
+    if request.user.is_superuser or request.user.account == customer_profile:
+        return render(request, 'analytics/admin_view_customer_profile.html', {'customer_profile': customer_profile})
     else:
         return redirect('main:index')
