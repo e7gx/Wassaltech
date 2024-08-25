@@ -29,7 +29,7 @@
                             {% for image in order_images %}
                                 <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                                     <img src="{{ image.image.url }}" alt="صورة الطلب"
-                                         class="w-full h-auto object-cover">
+                                        class="w-full h-auto object-cover">
                                 </div>
                             {% endfor %}
                         </div>
@@ -130,7 +130,23 @@
                     <form method="post" action="{% url 'orders:end_order' order.id %}" id="review_form">
                         {% csrf_token %}
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">تقييم الخدمة</h3>
-                        {{ review_form.as_p }}
+            
+                        <div>
+                            <label for="rating" class="block text-gray-700">تقييم:</label>
+                            <select name="rating" id="rating" class="block w-full p-2 mt-1 border rounded" required>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+            
+                        <div class="mt-4">
+                            <label for="comment" class="block text-gray-700">التعليق:</label>
+                            <textarea name="comment" id="comment" rows="4" class="block w-full p-2 mt-1 border rounded"></textarea>
+                        </div>
+            
                         <div class="flex justify-end mt-6">
                             <button type="submit"
                                     class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mx-2">
@@ -144,6 +160,19 @@
                     </form>
                 </div>
             </dialog>
+            
+            <script>
+                function showReviewModal() {
+                    document.getElementById('review_modal').style.display = 'block';
+                }
+            
+                function closeReviewModal() {
+                    document.getElementById('review_modal').style.display = 'none';
+                }
+            </script>            
+            
+            
+            
 
             <div class="mt-8 flex justify-between">
                 {% if user.account.user_type == 'Customer' and order.status == 'Open' %}
@@ -164,13 +193,5 @@
         </div>
     </div>
 
-    <script>
-        function showReviewModal() {
-            document.getElementById('review_modal').style.display = 'block';
-        }
 
-        function closeReviewModal() {
-            document.getElementById('review_modal').style.display = 'none';
-        }
-    </script>
 {% endblock %}
