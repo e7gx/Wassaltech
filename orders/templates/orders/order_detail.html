@@ -62,6 +62,18 @@
             <p class="font-semibold text-gray-700 mt-4"><span class="font-semibold text-gray-700">الوصف:</span> {{ offer.description }}</p>
         </div>
         {% endif %}
+                    {% if offer %}
+            <form action="{% url 'orders:customer_cancel_offer' offer.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit">customer_cancel_offer</button>
+            </form>
+            <form action="{% url 'orders:freelancer_cancel_offer' offer.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit">freelancer_cancel_offer</button>
+            </form>
+        {% else %}
+            <p>No accepted offer available.</p>
+        {% endif %}
 
         {% if offer %}
             {% if order.status != 'Completed' %}
@@ -83,7 +95,7 @@
         {% endif %}
 
         {% if not offer %}
-            <form method="post" action="{% url 'orders:discard_order' order.id %}">
+            <form method="post" action="{% url 'orders:customer_discard_order' order.id %}">
                 {% csrf_token %}
                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء الطلب</button>
             </form>
