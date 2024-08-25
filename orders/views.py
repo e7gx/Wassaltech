@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
 from notifications.views import NotificationService as sendemail
@@ -119,10 +120,7 @@ def freelancer_orders(request):
     """
 
     freelancer = request.user.freelancer
-    orders = Order.objects.filter(status='Open').exclude(offer__freelancer=freelancer)
-    ##################
-    # orders = orders.exclude(offer__freelancer=freelancer)
-    ##################
+    orders = Order.objects.filter(status='Open').exclude(Q(offer__freelancer=freelancer) & Q(offer__stage='Pending'))
     return render(request, 'orders/freelancer_orders.html', {'orders': orders})
 
 
@@ -316,7 +314,7 @@ def order_offers(request, order_id):
 
     order = get_object_or_404(Order, id=order_id, customer=request.user.account)
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
-    offers = Offer.objects.filter(order=order).select_related('freelancer', 'freelancer__user')
+    offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user')
 
     context = {
         'order': order,
@@ -365,17 +363,29 @@ def accept_offer(request, offer_id):
 
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
-
+    print(request.user.account)
+    print(order.customer)
+    print("1")
     if hasattr(request.user, 'account') and request.user.account == order.customer:
+        print("2")
         with transaction.atomic():
+            print("3")
             try:
+                print("4")
                 offer.stage = 'Accepted'
+                print("5")
                 offer.save()
-                Payment.objects.create(offer=offer, price=offer.price)
+                print("6")
+                Payment.objects.create(offer=offer, amount=offer.price)
+                print("7")
                 order.status = 'In Progress'
+                print("8")
                 order.assigned_to = offer.freelancer
+                print("9")
                 order.save()
+                print("10")
                 Offer.objects.filter(order=order).exclude(id=offer_id).update(stage='Declined')
+                print("11")
                 sendemail.notify_order_accepted(offer, order)
             except Exception as e:
                 print(e)
@@ -447,24 +457,36 @@ def freelancer_cancel_offer(request, offer_id):
 
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
-
-    if hasattr(request.user, 'freelancer') and request.user == order.assigned_to:
+    print(request.user.freelancer)
+    print(order.assigned_to)
+    print("1")
+    if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
+        print("2")
         with transaction.atomic():
+            print("3")
             try:
+                print("4")
                 offer.stage = 'Cancelled'
+                print("5")
                 offer.save()
+                print("6")
                 offer.payment.freelancer_cancel_payment()
-                offer.freelancer.update_internal_rating()
+                print("7")
+                # offer.freelancer.update_internal_rating()
+                print("8")
 
                 order.status = 'Open'
+                print("9")
                 order.assigned_to = None
+                print("10")
                 order.save()
+                print("11")
             except Exception as e:
                 print(e)
     else:
         return HttpResponseForbidden("You don't have permission to cancel this offer.")
 
-    return redirect('orders:freelancer_offers', freelancer_id=offer.freelancer.id)
+    return redirect('orders:freelancer_offers')
 
 
 ########################################################################################################################
@@ -499,6 +521,16 @@ def freelancer_discard_offer(request, offer_id):
         return HttpResponseForbidden("You don't have permission to discard this offer.")
 
     return redirect('orders:freelancer_orders')
+
+@login_required
+def process_payments(request):
+    Payment.process_payments()
+    return redirect('accounts:freelancer_profile', freelancer_id=request.user.freelancer.id)
+
+@login_required
+def deposit_payments(request):
+    Payment.deposit_payments()
+    return redirect('accounts:freelancer_profile', freelancer_id=request.user.freelancer.id)
 
 
 # ! edit this function redirect to the order detail page after payment
