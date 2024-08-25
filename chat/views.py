@@ -6,6 +6,7 @@ from notifications.views import NotificationService as sendemail
 from accounts.models import Freelancer, Account
 from django.http import JsonResponse, HttpResponseBadRequest
 import json
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -13,13 +14,12 @@ def chat(request):
     return HttpResponse("Hello, World!")
 
 def get_chat_messages(request, chat_id):
-    # تأكد من أنك تحقق من صلاحيات المستخدم، وتقوم بفلترة الرسائل بناءً على الدردشة المطلوبة
+    
     messages = Message.objects.filter(chat_id=chat_id).values('content','sender')
 
-    # تحويل الرسائل إلى قائمة من القواميس
+    
     messages_list = list(messages)
     
-    # إرجاع البيانات كـ JSON
     return JsonResponse(messages_list, safe=False)
 
 def inbox(request):
@@ -33,14 +33,17 @@ def create_chat(request , id_order):
     get_order = Order.objects.get(pk = id_order)
     get_user = Account.objects.get(pk = get_order.customer.id)
     get_freelancer = Freelancer.objects.get(user = request.user)
-    get_chat = Chat.objects.filter(user = get_user , freelancer = get_freelancer)
+    try:
+        get_chat = Chat.objects.get(user = get_user , freelancer = get_freelancer)
+    except:
+        get_chat = None
     if get_chat:
-        return redirect('chat:inbox' )
+        return redirect(reverse('chat:get_chat', kwargs={'chat_id': get_chat.id}) )
     
-    save_chat = Chat(user = get_user , freelancer = get_freelancer)
-    save_chat.save()
+    get_chat = Chat(user = get_user , freelancer = get_freelancer)
+    get_chat.save()
     
-    return redirect('chat:inbox' )
+    return redirect(reverse('chat:get_chat', kwargs={'chat_id': get_chat.id}) )
 
 def get_chat(request , chat_id):
     get_chat = Chat.objects.get(pk = chat_id)

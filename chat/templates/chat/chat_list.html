@@ -12,7 +12,7 @@
                         {% if user.account.user_type == 'Customer' %}
                             {{ chat.freelancer.user.first_name }} {{ chat.freelancer.user.last_name }}
                         {% else %}
-                            {{ chat.user.first_name }} {{ chat.user.last_name }}
+                            {{ chat.user.user.first_name }} {{ chat.user.user.last_name }}
                         {% endif %}
                     </h2>
                     <span class="text-sm text-gray-500">

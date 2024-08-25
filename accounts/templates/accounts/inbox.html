@@ -38,7 +38,7 @@
                     {% if user.account.user_type == 'Customer' %}
                         {{ sender_user.freelancer.user.first_name }} {{ sender_user.freelancer.user.last_name }}
                     {% else %}
-                        {{ sender_user.user.first_name }} {{ sender_user.user.last_name }}
+                        {{ sender_user.user.user.first_name }} {{ sender_user.user.user.last_name }}
                     {% endif %}
                 {% else %}
                     الدردشات
