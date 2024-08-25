@@ -19,7 +19,7 @@
                     {% else %}
                         <li>
                             <a href="{% url 'chat:get_chat' users.id %}" class="block p-3 hover:bg-gray-200 rounded-lg transition duration-300">
-                                <span class="text-gray-700">{{ users.user.first_name }} {{ users.user.last_name }}</span>
+                                <span class="text-gray-700">{{ users.user.user.first_name }} {{ users.user.user.last_name }}</span>
                             </a>
                         </li>
                     {% endif %}
