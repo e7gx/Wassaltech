@@ -1,14 +1,14 @@
 from django.shortcuts import redirect, render
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
-from accounts.models import Account, Freelancer
-from support.models import Ticket
 from django.db.models import Count, Sum, Avg, Q
-from orders.models import Order, Offer
+from django.contrib import messages
+
 from accounts.models import Account, Freelancer
-from reviews.models import Review
-from orders.models import Offer
 from support.models import Ticket
+from orders.models import Order, Offer
+from reviews.models import Review
+
 # Create your views here.
 @login_required
 def admin_dashboard(request):
@@ -93,22 +93,51 @@ def admin_check_customers(request):
 def admin_check_freelancers(request):
     if request.user.is_superuser:
         manage_freelancers = Freelancer.objects.all()
-        context = {'manage_freelancers': manage_freelancers}
+        
+        context = {
+            'manage_freelancers': manage_freelancers, 
+            }
+        
+        
         return render(request, 'analytics/admin_check_freelancers.html', context)
     else:
         return redirect('main:index')
 
 
 
-#!5555555555555here we stop 
 @login_required
 def customer_profile(request, pk):
     try:
-        user = Account.objects.get(pk=pk)
+        customer_profile = Account.objects.get(pk=pk)
     except Account.DoesNotExist:
         return redirect('main:index')
     
-    if request.user.is_superuser and request.user.account.user_type == 'Admin':
-        return render(request, 'analytics/admin_view_customer_profile.html', {'user': user})
+    if request.user.is_superuser or request.user.account == customer_profile:
+        return render(request, 'analytics/admin_view_customer_profile.html', {'customer_profile': customer_profile})
     else:
         return redirect('main:index')
+    
+    
+@login_required
+def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
+    try:
+        freelancer = Freelancer.objects.get(pk=pk)
+    except Freelancer.DoesNotExist:
+        return redirect('main:index')
+    
+    if request.user.is_superuser or request.user.account == freelancer.user:
+        if request.method == 'POST':
+            is_verified = request.POST.get('is_verified', 'False') == 'True'
+            certificate_expiration = request.POST.get('certificate_expiration') 
+
+            freelancer.is_verified = is_verified
+            freelancer.certificate_expiration = certificate_expiration
+            freelancer.save()
+
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('analytics:edit_freelancer_profile', pk=freelancer.pk)
+
+        return render(request, 'analytics/edit_freelancer_info.html', {'freelancer': freelancer})
+    else:
+        return redirect('main:index')
+    
