@@ -142,38 +142,39 @@ def freelancer_view_profile(request):
     Returns:
         HttpResponse: The response object containing the rendered profile page or a redirect.
     """
+    Payment.process_payments()
     if request.user.is_authenticated:
         if request.user.account.user_type == 'Freelancer':
         
-        total_amount_unclaimed = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
-        total_amount_deposited = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & Q(status='Deposited')).aggregate(total_amount=Sum('amount'))['total_amount']
+            total_amount_unclaimed = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
+            total_amount_deposited = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & Q(status='Deposited')).aggregate(total_amount=Sum('amount'))['total_amount']
 
-  
-        orders_in_progress = Order.objects.filter(assigned_to=request.user.freelancer, status='In Progress').count()
-        orders_completed = Order.objects.filter(assigned_to=request.user.freelancer, status='Closed').count()
 
-        
-        best_catgorie = Order.objects.filter(assigned_to=request.user.freelancer, status='Closed').values('category').annotate(Count('category')).order_by('-category__count').first()
+            orders_in_progress = Order.objects.filter(assigned_to=request.user.freelancer, status='In Progress').count()
+            orders_completed = Order.objects.filter(assigned_to=request.user.freelancer, status='Closed').count()
 
-        if best_catgorie is not None:
-            best_catgorie = best_catgorie['category']
 
-        
-        rating = Review.objects.filter(offer__freelancer=request.user.freelancer).aggregate(avg_rating=Avg('rating'))['avg_rating']
-        rating_count = Review.objects.filter(offer__freelancer=request.user.freelancer).count()
-        orders_count = Offer.objects.filter(freelancer=request.user.freelancer).count()
+            best_catgorie = Order.objects.filter(assigned_to=request.user.freelancer, status='Closed').values('category').annotate(Count('category')).order_by('-category__count').first()
 
-        
-        context = {
-            'total_amount_unclaimed': total_amount_unclaimed,
-            'total_amount_deposited': total_amount_deposited,
-            'orders_in_progress': orders_in_progress,
-            'orders_completed': orders_completed,
-            'best_catgorie': best_catgorie,
-            'rating': rating,
-            'rating_count': rating_count,
-            'orders_count': orders_count,
-        }
+            if best_catgorie is not None:
+                best_catgorie = best_catgorie['category']
+
+
+            rating = Review.objects.filter(offer__freelancer=request.user.freelancer).aggregate(avg_rating=Avg('rating'))['avg_rating']
+            rating_count = Review.objects.filter(offer__freelancer=request.user.freelancer).count()
+            orders_count = Offer.objects.filter(freelancer=request.user.freelancer).count()
+
+
+            context = {
+                'total_amount_unclaimed': total_amount_unclaimed,
+                'total_amount_deposited': total_amount_deposited,
+                'orders_in_progress': orders_in_progress,
+                'orders_completed': orders_completed,
+                'best_catgorie': best_catgorie,
+                'rating': rating,
+                'rating_count': rating_count,
+                'orders_count': orders_count,
+            }
             # total_sum_finalized_offers = Offer.objects.filter(stage='Finalized').aggregate(total_price=Sum('price'))['total_price']
             # In_progress_orders = Order.objects.filter(status='In Progress').count()
             # completed_orders = Order.objects.filter(status='Completed').count()
