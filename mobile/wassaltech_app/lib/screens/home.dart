@@ -96,24 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: _buildAppBar(),
       body: pages[_selectedIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Colors.orange,
-      //   shape: RoundedRectangleBorder(
-      //     borderRadius: BorderRadius.circular(15),
-      //   ),
-      //   onPressed: () {
-      //     Navigator.of(context).push(
-      //       MaterialPageRoute(
-      //         builder: (context) => const AiChatPage(),
-      //       ),
-      //     );
-      //   },
-      //   child: Container(
-      //     child: Lottie.asset('assets/animation/Whatsapp.json',
-      //         width: 500, height: 500),
-      //   ),
-      // ),
     );
   }
 
@@ -122,16 +104,23 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          CircleAvatar(
+            backgroundImage: AssetImage('assets/images/test.png'),
+            radius: 22,
+            backgroundColor: Colors.transparent,
+          ),
+          const SizedBox(width: 8),
           Text(
             'Welcome $_firstName 👋',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Cairo',
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: Colors.grey.shade800,
-              fontSize: 25.0,
+              fontSize: 20.0,
             ),
           ),
         ],

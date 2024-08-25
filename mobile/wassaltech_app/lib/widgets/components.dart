@@ -14,8 +14,8 @@ Widget stackBacground() => Stack(
         Lottie.asset(
           'assets/animation/p2p.json',
           fit: BoxFit.fill,
-          height: double.infinity,
-          width: double.infinity,
+          // height: double.infinity,
+          // width: double.infinity,
         ),
         Positioned.fill(
           child: BackdropFilter(
@@ -25,6 +25,3 @@ Widget stackBacground() => Stack(
         ),
       ],
     );
-
-
-

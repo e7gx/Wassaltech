@@ -75,7 +75,7 @@ class _MainPageState extends State<AiChatPage> {
         _reviewsAverage = _reviewsAverage;
       });
     } catch (e) {
-      print("Error fetching counts: $e"); 
+      print("Error fetching counts: $e");
     }
   }
 
@@ -162,6 +162,12 @@ class _MainPageState extends State<AiChatPage> {
     make sure to provide the best answer for the user's question.
 
     Make sure that your respond is well structured and readable
+
+    Make sure that your response is clear and helpful.
+
+    Make sure that your response is relevant to the user's question.
+
+    Make sure that your response is clear and short when the user asks for it.
     
 
     """;
@@ -208,7 +214,7 @@ class _MainPageState extends State<AiChatPage> {
 
   Widget _buildMessage(Message message, bool isLatestMessage) {
     String imagePath =
-        message.isMe ? 'assets/images/person.png' : 'assets/images/ai.png';
+        message.isMe ? 'assets/images/test.png' : 'assets/images/ai.png';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -247,18 +253,22 @@ class _MainPageState extends State<AiChatPage> {
                       ),
                     )
                   : isLatestMessage
-                      // ignore: deprecated_member_use
-                      ? TypeWriterText(
-                          text: Text(
-                            message.text,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontFamily: 'Cairo',
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ? TypeWriter(
+                          controller: TypeWriterController(
+                            text: message.text,
+                            duration: const Duration(milliseconds: 25),
                           ),
-                          duration: const Duration(milliseconds: 5),
+                          builder: (context, value) {
+                            return Text(
+                              value.text,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          },
                         )
                       : Text(
                           message.text,
@@ -373,7 +383,7 @@ class _MainPageState extends State<AiChatPage> {
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: Colors.orange[100],
-          border: Border.all(color: Colors.white),
+          border: Border.all(color: Colors.orange[300]!),
         ),
         child: Row(
           children: [

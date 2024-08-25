@@ -28,38 +28,46 @@ class OfferDetailsPage extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              width: double.infinity,
-              height: 200.0,
+              height: 325.0,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
                 image: DecorationImage(
                   image: AssetImage('assets/images/user2.png'),
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
             const SizedBox(height: 16.0), // Add spacing
-            _buildDetailCard('Offer ID', offer.id.toString()),
-            _buildDetailCard('Order ID', offer.orderId.toString()),
-            _buildDetailCard('Freelancer ID', offer.freelancerId.toString()),
-            _buildDetailCard('Price', '\$${offer.price.toStringAsFixed(2)}'),
-            _buildDetailCard('Refund', '\$${offer.refund.toStringAsFixed(2)}'),
             _buildDetailCard(
-                'Complete On Time', offer.completeOnTime ? 'Yes' : 'No'),
-            _buildDetailCard('Description', offer.description),
-            _buildDetailCard('Proposed Service Date',
+                Icons.insert_drive_file, 'Offer ID', offer.id.toString()),
+            _buildDetailCard(
+                Icons.card_travel, 'Order ID', offer.orderId.toString()),
+            _buildDetailCard(
+                Icons.person, 'Freelancer ID', offer.freelancerId.toString()),
+            _buildDetailCard(Icons.attach_money, 'Price',
+                '\$${offer.price.toStringAsFixed(2)}'),
+            _buildDetailCard(Icons.attach_money, 'Refund',
+                '\$${offer.refund.toStringAsFixed(2)}'),
+            _buildDetailCard(Icons.check, 'Complete On Time',
+                offer.completeOnTime ? 'Yes' : 'No'),
+            _buildDetailCard(
+                Icons.description, 'Description', offer.description),
+            _buildDetailCard(Icons.calendar_today, 'Proposed Service Date',
                 _formatDate(offer.proposedServiceDate)),
-            _buildDetailCard('Appointment', _formatDate(offer.appointment)),
-            _buildDetailCard('Stage', offer.stage),
-            _buildDetailCard('Created At', _formatDate(offer.createdAt)),
-            _buildDetailCard('Updated At', _formatDate(offer.updatedAt)),
+            _buildDetailCard(Icons.calendar_today, 'Appointment',
+                _formatDate(offer.appointment)),
+            _buildDetailCard(Icons.flag, 'Stage', offer.stage),
+            _buildDetailCard(
+                Icons.access_time, 'Created At', _formatDate(offer.createdAt)),
+            _buildDetailCard(
+                Icons.access_time, 'Updated At', _formatDate(offer.updatedAt)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailCard(String title, String value) {
+  Widget _buildDetailCard(IconData icon, String title, String value) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
@@ -68,6 +76,10 @@ class OfferDetailsPage extends StatelessWidget {
       elevation: 4.0,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
+        leading: Icon(
+          icon,
+          color: Colors.orange[800],
+        ),
         title: Text(
           title,
           style: TextStyle(
