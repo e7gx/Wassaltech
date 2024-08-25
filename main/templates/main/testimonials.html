@@ -1,0 +1,159 @@
+{% load static %}
+
+<style>
+    .testimonial-container {
+        overflow: hidden;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        padding: 20px 0;
+    }
+    .testimonial-track {
+        display: flex;
+        flex-direction: column;
+    }
+    .testimonial-row {
+        display: flex;
+        animation: scroll 40s linear infinite;
+    }
+    .testimonial-card {
+        flex: 0 0 300px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin: 10px;
+        color: black;
+        transform: translateY(var(--y-offset));
+        text-align: right;
+        direction: rtl;
+        display: flex;
+        flex-direction: column;
+    }
+    .testimonial-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-left: 15px;
+        background-color: #FF460D;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+    }
+    .testimonial-info {
+        flex: 1;
+    }
+    .testimonial-name {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .testimonial-role {
+        font-size: 14px;
+        color: #666;
+    }
+    .testimonial-content {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    .testimonial-rating {
+        margin-top: 10px;
+        color: #FFD700;
+    }
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+</style>
+
+<div class="testimonial-container">
+    <div class="testimonial-track">
+        <div class="testimonial-row">
+            {% for i in "12345"|make_list %}
+                <div class="testimonial-card" style="--y-offset: {{ forloop.counter }}px;">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            {{ forloop.counter|make_list|random }}
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">عميل سعيد {{ forloop.counter }}</div>
+                            <div class="testimonial-role">عميل منتظم</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>لقد كانت تجربتي مع هذه الخدمة رائعة! أنا سعيد جدًا بالنتائج وأوصي بها بشدة.</p>
+                    </div>
+                    <div class="testimonial-rating">★★★★★</div>
+                </div>
+            {% endfor %}
+            {% for i in "12345"|make_list %}
+                <div class="testimonial-card" style="--y-offset: {{ forloop.counter }}px;">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            {{ forloop.counter|add:5|make_list|random }}
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">عميل راضٍ {{ forloop.counter|add:5 }}</div>
+                            <div class="testimonial-role">عميل جديد</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>خدمة استثنائية! لقد تجاوزت كل توقعاتي. سأستخدمها مرة أخرى بالتأكيد.</p>
+                    </div>
+                    <div class="testimonial-rating">★★★★☆</div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="testimonial-row" style="animation-direction: reverse;">
+            {% for i in "12345"|make_list %}
+                <div class="testimonial-card" style="--y-offset: {{ forloop.counter }}px;">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            {{ forloop.counter|add:10|make_list|random }}
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">عميل متحمس {{ forloop.counter|add:10 }}</div>
+                            <div class="testimonial-role">عميل متكرر</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>خدمة ممتازة! لقد تجاوزت توقعاتي بكثير. شكرًا جزيلاً على العمل الرائع.</p>
+                    </div>
+                    <div class="testimonial-rating">★★★★★</div>
+                </div>
+            {% endfor %}
+            {% for i in "12345"|make_list %}
+                <div class="testimonial-card" style="--y-offset: {{ forloop.counter }}px;">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            {{ forloop.counter|add:15|make_list|random }}
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">عميل مقتنع {{ forloop.counter|add:15 }}</div>
+                            <div class="testimonial-role">عميل لأول مرة</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>تجربة رائعة! الخدمة كانت سريعة وفعالة. سأوصي بها لأصدقائي بالتأكيد.</p>
+                    </div>
+                    <div class="testimonial-rating">★★★★☆</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
