@@ -13,8 +13,8 @@ from django.contrib.auth.decorators import login_required
 
 
 def customer_account(request):
-    # if there is a user, redirect to main page
     if request.user.is_authenticated:
+        messages.info(request, 'You are already logged in.')
         return redirect('main:index')
 
     if request.method == 'POST':
@@ -25,11 +25,12 @@ def customer_account(request):
             if user is not None:
                 if hasattr(user, 'account') and user.account.user_type == 'Customer':
                     login(request, user)
-                    return redirect('main:index')  # Redirect to customer dashboard
+                    messages.success(request, f'Welcome back, {user.first_name}!')
+                    return redirect('main:index')
                 else:
-                    messages.error(request, 'Invalid credentials for customer account.')
+                    messages.error(request, 'This account is not registered as a customer.')
             else:
-                messages.error(request, 'Invalid username or password.')
+                messages.error(request, 'Invalid username or password. Please try again.')
                 
         elif 'signup' in request.POST:
             username = request.POST.get('username')
@@ -59,7 +60,7 @@ def customer_account(request):
                     )
 
                 login(request, user)
-                messages.success(request, 'Account created successfully')
+                messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your account has been created successfully.')
                 return redirect('main:index')
             except IntegrityError:
                 messages.error(request, 'Account creation failed. Please try a different username or phone number.')
@@ -71,8 +72,10 @@ def freelancer_account(request):
     form = FreelancerSignUpForm()
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect('analytics:dashboard')  #! Redirect to the admin page we need to change this
+            messages.info(request, 'You are already logged in as an admin.')
+            return redirect('analytics:dashboard')
         else:
+            messages.info(request, 'You are already logged in.')
             return redirect('main:index')
 
     if request.method == 'POST':
@@ -81,22 +84,18 @@ def freelancer_account(request):
             password = request.POST.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
-                #! Check if the user "user_type" is an Admin
                 if user.is_superuser:
                     login(request, user)
-                    messages.success(request, 'Logged in as Admin.')
-                    return redirect('analytics:dashboard')  #! Redirect to the admin page we need to change this
-
-                #! Check if the user is a Freelancer
+                    messages.success(request, 'Logged in successfully as Admin.')
+                    return redirect('analytics:dashboard')
                 elif hasattr(user, 'account') and user.account.user_type == 'Freelancer':
                     login(request, user)
-                    messages.success(request, 'Logged in as Freelancer.')
-                    return redirect('main:index')  #! Redirect to freelancer dashboard
-
+                    messages.success(request, f'Welcome back, {user.first_name}!')
+                    return redirect('main:index')
                 else:
-                    messages.error(request, 'Invalid credentials for freelancer or admin account.')
+                    messages.error(request, 'This account is not registered as a freelancer or admin.')
             else:
-                messages.error(request, 'Invalid username or password.')
+                messages.error(request, 'Invalid username or password. Please try again.')
 
         elif 'signup' in request.POST:
             form = FreelancerSignUpForm(request.POST, request.FILES)
@@ -105,7 +104,7 @@ def freelancer_account(request):
                     with transaction.atomic():
                         user = form.save()
                         login(request, user)
-                        messages.success(request, 'Account created successfully.')
+                        messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your freelancer account has been created successfully.')
                         return redirect('main:index')
                 except IntegrityError:
                     messages.error(request, 'Account creation failed. Please try a different username or phone number.')
@@ -119,6 +118,8 @@ def freelancer_account(request):
     return render(request, 'accounts/freelancer_account.html', {'form': form})
 
 def logout_view(request):
+    if request.user.is_authenticated:
+        messages.success(request, 'You have been logged out successfully.')
     logout(request)
     return redirect('main:index')
 
@@ -126,7 +127,6 @@ def logout_view(request):
 def freelancer_view_profile(request):
     if request.user.is_authenticated:
         if request.user.account.user_type == 'Freelancer':
-            # total_sum_finalized_offers = Offer.objects.filter(stage='Finalized').aggregate(total_price=Sum('price'))['total_price']
             In_progress_orders = Order.objects.filter(status='In Progress').count()
             completed_orders = Order.objects.filter(status='Completed').count()
             best_catgorie = Order.objects.filter(status='Completed').values('category').annotate(Count('category')).order_by('-category__count').first()
@@ -137,7 +137,6 @@ def freelancer_view_profile(request):
             orders_count = Offer.objects.all().count()
         
             context = {
-                # 'total_sum_finalized_offers': total_sum_finalized_offers,
                 'rating': rating,
                 'rating_count': rating_count,
                 'orders_count': orders_count,
@@ -149,8 +148,10 @@ def freelancer_view_profile(request):
             
             return render(request, 'accounts/freelancer_profile.html', context)
         else:
+            messages.error(request, 'You do not have permission to view this profile.')
             return redirect('main:index')
     else:
+        messages.error(request, 'You need to be logged in to view this profile.')
         return redirect('main:index')
 
 
@@ -160,11 +161,12 @@ def customer_view_profile(request):
         if request.user.account.user_type == 'Customer':
             return render(request, 'accounts/customer_profile.html', {'user': request.user})
         else:
+            messages.error(request, 'You do not have permission to view this profile.')
             return redirect('main:index')
     else:
+        messages.error(request, 'You need to be logged in to view this profile.')
         return redirect('main:index')
     
-
 
 @login_required
 def freelancer_profile(request, freelancer_id):
@@ -172,17 +174,14 @@ def freelancer_profile(request, freelancer_id):
     best_catgorie = Order.objects.filter(status='Finalized').values('category').annotate(Count('category')).order_by('-category__count').first()
     if best_catgorie is not None:
         best_catgorie = best_catgorie['category']
-        
     else:
         best_catgorie = 'لايوجد'
     In_progress_orders = Order.objects.filter(status='In Progress').count()
     rating_count = Review.objects.all().count()
     rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
 
-
-
     context = {
-        'rating':rating,
+        'rating': rating,
         'rating_count': rating_count,
         'In_progress_orders': In_progress_orders,
         'best_catgorie': best_catgorie,
@@ -192,6 +191,3 @@ def freelancer_profile(request, freelancer_id):
 
 def inbox(request):
     return render(request, 'accounts/inbox.html')
-
-
-

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="ar">
+<html lang="ar" class="h-full">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}وَصّلْتِك{% endblock %}</title>
-
+    <!-- favicon -->
+    <link rel="icon" type="image/ico" href="{% static 'images/screwdriver.ico' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
@@ -69,12 +70,39 @@
         .form-cancel {
             @apply px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300 font-semibold;
         }
+        /* New styles for form pages */
+        .form-page {
+            @apply relative min-h-screen;
+            background-image: url('{% static "images/background-pattern-1.svg" %}'), url('{% static "images/background-pattern-2.svg" %}');
+            background-position: top left, bottom right;
+            background-repeat: no-repeat;
+            background-size: 50% auto, 50% auto;
+        }
+        .form-container {
+            @apply bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto my-10;
+        }
+        /* Message styles */
+        .message {
+            @apply mb-4 p-4 rounded-lg text-white text-center;
+        }
+        .message-success {
+            @apply bg-green-500;
+        }
+        .message-error {
+            @apply bg-red-500;
+        }
+        .message-info {
+            @apply bg-blue-500;
+        }
+        .message-warning {
+            @apply bg-yellow-500;
+        }
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
 
-<body x-data="{ mobileNavOpen: false }" class="antialiased bg-gray-50 text-body">
+<body x-data="{ mobileNavOpen: false }" class="antialiased bg-gray-50 text-body flex flex-col min-h-screen">
 
 <nav class="relative py-6 bg-transparent z-50">
   <div class="container px-4 mx-auto">
@@ -186,7 +214,7 @@
 </nav>
 
 {% if user.is_authenticated %}
-  <div class="bottom-4 right-4 fixed rounded-full bg-gradient-to-r flex items-center justify-center from-orange-500 to-orange-900 w-28 h-28 cursor-pointer hover:scale-125 transition-all duration-200">
+  <div class="bottom-4 right-4 fixed rounded-full bg-gradient-to-r flex items-center justify-center from-orange-500 to-orange-900 w-28 h-28 cursor-pointer hover:scale-125 transition-all duration-200 z-[1000]">
     <a href="{%url 'support:display_tickets'%}">
       <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.008 19.003L14.014 17a1.001 1.001 0 0 1 2.005 0v1.977c0 .481 0 .722.154.87c.155.147.39.137.863.117c1.863-.079 3.008-.33 3.814-1.136c.81-.806 1.061-1.951 1.14-3.817c.015-.37.023-.556-.046-.679c-.07-.123-.345-.277-.897-.586a1.999 1.999 0 0 1 0-3.492c.552-.308.828-.463.897-.586s.061-.308.045-.679c-.078-1.866-.33-3.01-1.139-3.817c-.877-.876-2.155-1.097-4.322-1.153a.497.497 0 0 0-.51.497V7a1.001 1.001 0 0 1-2.005 0l-.007-2.501a.5.5 0 0 0-.5-.499H9.994c-3.78 0-5.67 0-6.845 1.172c-.81.806-1.061 1.951-1.14 3.817c-.015.37-.023.556.046.679c.07.123.345.278.897.586a1.999 1.999 0 0 1 0 3.492c-.552.309-.828.463-.897.586s-.061.308-.045.678c.078 1.867.33 3.012 1.139 3.818C4.324 20 6.214 20 9.995 20h3.01c.472 0 .707 0 .854-.146s.148-.38.149-.851M16.018 13v-2a1.001 1.001 0 0 0-2.005 0v2a1.002 1.002 0 0 0 2.006 0" clip-rule="evenodd"/></svg>
     </a>
@@ -240,6 +268,11 @@
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'accounts:profile' %}">الملف الشخصي</a></li>
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'chat:chat_list' %}">الدردشة</a></li>
+            {% elif user.account.user_type == 'Admin' %}
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:dashboard' %}">لوحة التحكم</a></li>
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:customers' %}">جميع المستخدمين</a></li>
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_check_freelancers' %}">جميع مقدمي الخدمة</a></li>  
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_tickets' %}">جميع التذاكر</a></li>
           {% endif %}
         {% endif %}
       </ul>
@@ -271,36 +304,54 @@
  
 </div>
 
-{% block content %}{% endblock %}
+<!-- Messages -->
+<div class="container mx-auto px-4 mt-6">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message message-{{ message.tags }} flex items-center justify-between" x-data="{ show: true }" x-show="show">
+                <p>{{ message }}</p>
+                <button @click="show = false" class="text-white hover:text-gray-200 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
 
+<!-- Main content wrapper -->
+<div class="flex-grow">
+    {% block content %}{% endblock %}
+</div>
 
-<!-- footer -->
-<section class="relative py-20 overflow-hidden mt-auto">
-  <img class="absolute top-0 left-0" src="{% static 'images/blue-light-left.png' %}" alt="">
-  <img class="absolute bottom-0 left-1/2" src="{% static 'images/orange-light-bottom.png' %}" alt="">
-  <div class="relative container px-4 mx-auto">
-    <div class="max-w-7xl mx-auto">
-      <div class="pb-8 mb-15 border-b border-gray-100 text-center">
-        <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
-          وَصّلْتِك   
-        </a> 
-      </div>
-      <div class="flex flex-wrap -mb-5 -mx-6 items-center justify-center">
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Product</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Features</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Pricing</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Resources</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Careers</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Help</a></div>
-        <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Privacy</a></div>
-      </div>
+<!-- Footer -->
+<footer class="mt-auto">
+    <section class="py-20 overflow-hidden relative bg-[#F9FAFB] z-10">
+        <img class="absolute top-0 left-0" src="{% static 'images/blue-light-left.png' %}" alt="">
+        <img class="absolute bottom-0 left-1/2" src="{% static 'images/orange-light-bottom.png' %}" alt="">
+        <div class="relative container px-4 mx-auto">
+            <div class="max-w-7xl mx-auto">
+                <div class="pb-8 mb-15 border-b border-gray-100 text-center">
+                    <a class="inline-block text-5xl text-black font-bold ml-auto transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
+                        وَصّلْتِك   
+                    </a> 
+                </div>
+                <div class="flex flex-wrap -mb-5 -mx-6 items-center justify-center">
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Product</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Features</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Pricing</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Resources</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Careers</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Help</a></div>
+                    <div class="px-6 mb-5"><a class="inline-block text-gray-900 hover:text-gray-600" href="#">Privacy</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</footer>
 
-    </div>
-  </div>
-</section>
-    {% block extra_scripts %}
-
-    {% endblock %}
+{% block extra_scripts %}{% endblock %}
 </body>
 
 </html>

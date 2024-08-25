@@ -1,58 +1,72 @@
 from django.shortcuts import redirect, render
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
-from accounts.models import Account, Freelancer
-from support.models import Ticket
 from django.db.models import Count, Sum, Avg, Q
-from orders.models import Order, Offer
-from accounts.models import Account, Freelancer
 from django.contrib import messages
 
-
+from accounts.models import Account, Freelancer
+from support.models import Ticket
+from orders.models import Order, Offer
+from reviews.models import Review
 
 # Create your views here.
 @login_required
 def admin_dashboard(request):
     if request.user.is_superuser:
-
-        # Order statistics
-        order_stats = Order.objects.aggregate(
-            total_orders=Count('id'),
-            open_orders=Count('id', filter=Q(status='Open')),
-            completed_orders=Count('id', filter=Q(status='Closed'))
-        )
-
-        # User statistics
-        user_stats = Account.objects.aggregate(
-            total_users=Count('id'),
-            customers=Count('id', filter=Q(user_type='Customer')),
-            freelancers=Count('id', filter=Q(user_type='Freelancer'))
-        )
+        In_progress_orders = Order.objects.filter(status='In Progress').count()
+        completed_orders = Order.objects.filter(status='Completed').count()
+        best_catgorie = Order.objects.filter(status='Completed').values('category').annotate(Count('category')).order_by('-category__count').first()
+        if best_catgorie is not None:
+            best_catgorie = best_catgorie['category']
+        rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
+        orders_count = Offer.objects.all().count()
+        total_users = Account.objects.all().count()
+        wallet = Offer.objects.filter(stage="Accepted", order__status="Completed").all()
+        total_wallet = wallet.aggregate(Sum('price'))['price__sum']#! we need to check the wallet of the Project Wassaltech
+        total_customers = Account.objects.all().filter(user_type='Customer').count()
+        total_freelancers = Account.objects.all().filter(user_type='Freelancer').count()
+        total_admins = Account.objects.all().filter(user_type='Admin').count()
         
-        # Freelancer statistics
-        freelancer_stats = Freelancer.objects.aggregate(
-            avg_rating=Avg('internal_rating'),
-            verified_freelancers=Count('id', filter=Q(is_verified=True))
-        )
+        total_prices = Offer.objects.all().filter(stage='Completed').aggregate(Sum('price'))['price__sum']
+        total_refunds = Offer.objects.all().filter(stage='Completed').aggregate(Sum('refund'))['refund__sum']
         
-        # Offer statistics
-        offer_stats = Offer.objects.aggregate(
-            total_offers=Count('id'),
-            avg_price=Avg('price'),
-            total_revenue=Sum('price', filter=Q(stage='Completed'))
-        )
+        tickets_count = Ticket.objects.all().count()
+        ticket_status_count = Ticket.objects.values('ticket_status').annotate(Count('ticket_status')).order_by('-ticket_status__count').first()
+        if ticket_status_count is not None:
+            ticket_status_count = ticket_status_count['ticket_status']
+        
+        tickets_completed = Ticket.objects.all().filter(ticket_status='closed').count()
+        tickets_in_progress = Ticket.objects.all().filter(ticket_status='in_progress').count()
+        tickets_open = Ticket.objects.all().filter(ticket_status='open').count()
+        
+        most_category_tickets = Ticket.objects.values('ticket_category').annotate(Count('ticket_category')).order_by('-ticket_category__count').first()
+        if most_category_tickets is not None:
+            most_category_tickets = most_category_tickets['ticket_category']
         
         context = {
-            'order_stats': order_stats,
-            'user_stats': user_stats,
-            'freelancer_stats': freelancer_stats,
-            'offer_stats': offer_stats
+            'rating': rating,
+            'orders_count': orders_count,
+            'best_catgorie': best_catgorie,
+            'completed_orders': completed_orders,
+            'In_progress_orders': In_progress_orders,
+            'user': request.user,
+            'total_users': total_users,
+            'total_wallet': total_wallet,
+            'total_customers': total_customers,
+            'total_freelancers': total_freelancers,
+            'total_admins': total_admins,
+            'total_prices': total_prices,
+            'total_refunds': total_refunds,
+            'tickets_count': tickets_count,
+            'ticket_status_count': ticket_status_count,
+            'tickets_completed': tickets_completed,
+            'tickets_in_progress': tickets_in_progress,
+            'tickets_open': tickets_open,
+            'most_category_tickets': most_category_tickets,
         }
-        
         return render(request, 'analytics/admin_dashboard.html', context)
     else:
         return redirect('main:index')
-
 
 @login_required
 def admin_tickets(request):

@@ -1,130 +1,122 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mx-auto p-6">
-    <h1 class="text-4xl font-extrabold text-center text-gray-800">مرحبا انت في صفحة مدير النظام </h1>
+<div class="container mx-auto p-6" dir="rtl">
+    <h1 class="text-4xl font-extrabold text-center text-gray-800">مرحبا انت في صفحة مدير النظام</h1>
     
     <!-- Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold text-center text-gray-700">الطلبات</h2>
-            <p class="text-center text-gray-500">عدد الطلبات: 150</p>
+            <p class="text-center text-gray-500">عدد الطلبات: {{ orders_count }}</p>
+            <div class="mt-4">
+                <p class="text-sm text-gray-600">قيد التنفيذ: {{ In_progress_orders }}</p>
+                <p class="text-sm text-gray-600">مكتملة: {{ completed_orders }}</p>
+            </div>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold text-center text-gray-700">المستخدمون</h2>
-            <p class="text-center text-gray-500">عدد المستخدمين: 450</p>
+            <p class="text-center text-gray-500">إجمالي المستخدمين: {{ total_users }}</p>
+            <div class="mt-4">
+                <p class="text-sm text-gray-600">العملاء: {{ total_customers }}</p>
+                <p class="text-sm text-gray-600">مقدمي الخدمات: {{ total_freelancers }}</p>
+                <p class="text-sm text-gray-600">المشرفون: {{ total_admins }}</p>
+            </div>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-xl font-semibold text-center text-gray-700">الأرباح</h2>
-            <p class="text-center text-gray-500">إجمالي الأرباح: 50000 ريال</p>
+            <h2 class="text-xl font-semibold text-center text-gray-700">المالية</h2>
+            <p class="text-center text-gray-500">إجمالي المحفظة: {{ total_wallet|default:"0" }} ريال</p>
+            <div class="mt-4">
+                <p class="text-sm text-gray-600">إجمالي الأسعار: {{ total_prices|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">إجمالي المبالغ المستردة: {{ total_refunds|default:"0" }} ريال</p>
+            </div>
+        </div>
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-center text-gray-700">التذاكر</h2>
+            <p class="text-center text-gray-500">عدد التذاكر: {{ tickets_count }}</p>
+            <div class="mt-4">
+                <p class="text-sm text-gray-600">مفتوحة: {{ tickets_open }}</p>
+                <p class="text-sm text-gray-600">قيد التنفيذ: {{ tickets_in_progress }}</p>
+                <p class="text-sm text-gray-600">مغلقة: {{ tickets_completed }}</p>
+            </div>
         </div>
     </div>
 
     <!-- Charts -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
         <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-2xl font-bold text-center text-gray-800">احصائيات الطلبات</h2>
-            <canvas id="barChart" class="mt-4"></canvas>
+            <h2 class="text-2xl font-bold text-center text-gray-800">توزيع حالة الطلبات</h2>
+            <canvas id="orderStatusChart" class="mt-4"></canvas>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-2xl font-bold text-center text-gray-800">توزيع المستخدمين</h2>
-            <canvas id="pieChart" class="mt-4"></canvas>
+            <canvas id="userDistributionChart" class="mt-4"></canvas>
         </div>
     </div>
 
     <div class="bg-white shadow-lg rounded-lg p-6 mt-10">
-        <h2 class="text-2xl font-bold text-center text-gray-800">نمو الأرباح</h2>
-        <canvas id="lineChart" class="mt-4"></canvas>
+        <h2 class="text-2xl font-bold text-center text-gray-800">معلومات إضافية</h2>
+        <div class="mt-4 text-center">
+            <p class="text-lg text-gray-700">أفضل فئة: {{ best_catgorie|default:"غير متوفر" }}</p>
+            <p class="text-lg text-gray-700">متوسط التقييم: {{ rating|default:"0"|floatformat:2 }} / 5</p>
+            <p class="text-lg text-gray-700">حالة التذكرة الأكثر شيوعًا: {{ ticket_status_count|default:"غير متوفر" }}</p>
+            <p class="text-lg text-gray-700">الفئة الأكثر شيوعًا للتذاكر: {{ most_category_tickets|default:"غير متوفر" }}</p>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Bar Chart
-    var barCtx = document.getElementById('barChart').getContext('2d');
-    var barChart = new Chart(barCtx, {
-        type: 'bar',
+    // Order Status Chart
+    var orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+    var orderStatusChart = new Chart(orderStatusCtx, {
+        type: 'pie',
         data: {
-            labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+            labels: ['قيد التنفيذ', 'مكتملة'],
             datasets: [{
-                label: 'عدد الطلبات',
-                data: [15, 29, 40, 20, 25, 60],
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-                ],
-                borderColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-                ],
+                data: [{{ In_progress_orders }}, {{ completed_orders }}],
+                backgroundColor: ['#FF6384', '#36A2EB'],
+                borderColor: ['#FF6384', '#36A2EB'],
                 borderWidth: 1
             }]
         },
         options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: '#4B5563',
-                    }
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
                 },
-                x: {
-                    ticks: {
-                        color: '#4B5563',
-                    }
+                title: {
+                    display: true,
+                    text: 'توزيع حالة الطلبات'
                 }
             }
         }
     });
 
-    // Pie Chart
-    var pieCtx = document.getElementById('pieChart').getContext('2d');
-    var pieChart = new Chart(pieCtx, {
-        type: 'pie',
+    // User Distribution Chart
+    var userDistributionCtx = document.getElementById('userDistributionChart').getContext('2d');
+    var userDistributionChart = new Chart(userDistributionCtx, {
+        type: 'doughnut',
         data: {
-            labels: ['مستخدمين', 'مزودين الخدمات' , 'مدير النظام'  ],
+            labels: ['العملاء', 'مقدمي الخدمات', 'المشرفون'],
             datasets: [{
-                label: 'توزيع المستخدمين',
-                data: [500, 150, 25],
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56'
-                ],
-                borderColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56'
-                ],
+                data: [{{ total_customers }}, {{ total_freelancers }}, {{ total_admins }}],
+                backgroundColor: ['#FFCE56', '#4BC0C0', '#9966FF'],
+                borderColor: ['#FFCE56', '#4BC0C0', '#9966FF'],
                 borderWidth: 1
-            }]
-        }
-    });
-
-    // Line Chart
-    var lineCtx = document.getElementById('lineChart').getContext('2d');
-    var lineChart = new Chart(lineCtx, {
-        type: 'line',
-        data: {
-            labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
-            datasets: [{
-                label: 'الأرباح',
-                data: [5000, 7000, 8000, 6000, 9000, 12000],
-                fill: false,
-                borderColor: '#4BC0C0',
-                backgroundColor: '#4BC0C0',
-                tension: 0.3,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#4BC0C0',
-                pointRadius: 5,
-                pointHoverRadius: 7
             }]
         },
         options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: '#4B5563',
-                    }
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
                 },
-                x: {
-                    ticks: {
-                        color: '#4B5563',
-                    }
+                title: {
+                    display: true,
+                    text: 'توزيع المستخدمين'
                 }
             }
         }

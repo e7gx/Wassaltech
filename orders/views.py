@@ -21,7 +21,6 @@ from datetime import datetime, timedelta
 @login_required
 def create_order(request):
     if request.method == 'POST':
-
         form = OrderForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
@@ -36,7 +35,10 @@ def create_order(request):
             if video:
                 OrderVideo.objects.create(order=order, video=video)
 
+            messages.success(request, 'Your order has been created successfully.')
             return redirect('orders:order_detail', order_id=order.id)
+        else:
+            messages.error(request, 'There was an error creating your order. Please check the form and try again.')
     else:
         form = OrderForm()
     return render(request, 'orders/create_order.html', {'form': form})
@@ -56,27 +58,33 @@ def customer_orders(request):
 
 
 # CUSTOMER READ
-# ! UPDATE THIS FUNCTION TO SHOW ONLY COMPLETED ORDERS IN THE HISTORY
 @login_required
 def order_history(request):
     user = request.user
     if hasattr(user, 'account'):
-        if hasattr(user, 'account'):
-            orders = Order.objects.filter(customer=user.account).exclude(status__in=['Open', 'In Progress'])
-        elif hasattr(user, 'freelancer'):
-            orders = Order.objects.filter(customer=user.account).exclude(status__in=['Open', 'In Progress'])
+        if user.account.user_type == 'Customer':
+            orders = Order.objects.filter(customer=user.account, status='Completed')
+        elif user.account.user_type == 'Freelancer':
+            orders = Order.objects.filter(assigned_to=user.freelancer, status='Completed')
+        else:
+            orders = []
+        return render(request, 'orders/order_history.html', {'orders': orders})
     else:
-        orders = []
-    return render(request, 'orders/order_history.html', {'orders': orders})
+        messages.error(request, 'You do not have the necessary permissions to view order history.')
+        return redirect('main:index')
 
 
 # FREELANCER READ
 @login_required
 def freelancer_orders(request):
-    freelancer = request.user.freelancer
-    orders = Order.objects.filter(status='Open')
-    orders = orders.exclude(offer__freelancer=freelancer)
-    return render(request, 'orders/freelancer_orders.html', {'orders': orders})
+    if hasattr(request.user, 'freelancer'):
+        freelancer = request.user.freelancer
+        orders = Order.objects.filter(status='Open')
+        orders = orders.exclude(offer__freelancer=freelancer)
+        return render(request, 'orders/freelancer_orders.html', {'orders': orders})
+    else:
+        messages.error(request, 'You do not have the necessary permissions to view available orders.')
+        return redirect('main:index')
 
 
 # MUTUAL READ
@@ -84,7 +92,7 @@ def freelancer_orders(request):
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order, stage='Accepted').first()
-    order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
+    order_images = OrderImage.objects.filter(order=order)
     review_form = None
 
     if request.user == order.customer and not order.customer_completed:
@@ -110,15 +118,11 @@ def end_order(request, order_id):
     if request.user.account.user_type == 'Freelancer':
         order.freelancer_completed = True
         order.save()
-        messages.success(request,
-                         'You have successfully marked the order as completed. The customer can now finalize the order.')
+        messages.success(request, 'You have successfully marked the order as completed. The customer can now finalize the order.')
     elif request.user.account.user_type == 'Customer':
         if order.freelancer_completed:
             order.customer_completed = True
             order.status = 'Completed'
-
-            # Logic for complete on time
-
             order.save()
             messages.success(request, 'You have successfully completed the order.')
         else:
@@ -158,7 +162,11 @@ def discard_order(request, order_id):
 @login_required
 def create_offer(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
+    order_images = OrderImage.objects.filter(order=order)
+
+    if not hasattr(request.user, 'freelancer'):
+        messages.error(request, "You do not have permission to create offers.")
+        return redirect('main:index')
 
     freelancer = request.user.freelancer
 
@@ -173,12 +181,14 @@ def create_offer(request, order_id):
             offer.order = order
             offer.freelancer = freelancer
             offer.save()
-            sendemail.notify_new_offer(freelancer , order , offer.price )
+            sendemail.notify_new_offer(freelancer, order, offer.price)
             messages.success(request, "Your offer has been submitted successfully.")
             return redirect('orders:freelancer_orders')
+        else:
+            messages.error(request, "There was an error submitting your offer. Please check the form and try again.")
     else:
         form = OfferForm()
-    return render(request, 'orders/create_offer.html', {'form': form, 'order': order,"order_images":order_images})
+    return render(request, 'orders/create_offer.html', {'form': form, 'order': order, "order_images": order_images})
 
 
 ########################################################################################################################
@@ -188,7 +198,7 @@ def create_offer(request, order_id):
 @login_required
 def order_offers(request, order_id):
     order = get_object_or_404(Order, id=order_id, customer=request.user.account)
-    order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
+    order_images = OrderImage.objects.filter(order=order)
     offers = Offer.objects.filter(order=order).select_related('freelancer', 'freelancer__user')
 
     context = {
@@ -203,8 +213,12 @@ def order_offers(request, order_id):
 # FREELANCER READ
 @login_required
 def freelancer_offers(request):
-    offers = Offer.objects.filter(freelancer=request.user.freelancer)
-    return render(request, 'orders/freelancer_offers.html', {'offers': offers})
+    if hasattr(request.user, 'freelancer'):
+        offers = Offer.objects.filter(freelancer=request.user.freelancer)
+        return render(request, 'orders/freelancer_offers.html', {'offers': offers})
+    else:
+        messages.error(request, "You do not have permission to view offers.")
+        return redirect('main:index')
 
 
 ########################################################################################################################
@@ -217,31 +231,34 @@ def accept_offer(request, offer_id):
     order = offer.order
 
     if request.user.account != order.customer:
-        return HttpResponseForbidden("You don't have permission to accept this offer.")
+        messages.error(request, "You don't have permission to accept this offer.")
+        return redirect('main:index')
 
     offer.stage = 'Accepted'
     offer.save()
     unaccepted_offers = Offer.objects.filter(order=order).exclude(id=offer_id)
-    for offer in unaccepted_offers:
-        offer.stage = 'Declined'
-        offer.save()
+    for unaccepted_offer in unaccepted_offers:
+        unaccepted_offer.stage = 'Declined'
+        unaccepted_offer.save()
 
     order.status = 'In Progress'
     order.assigned_to = offer.freelancer
     order.save()
-    sendemail.notify_order_accepted(offer , order )
+    sendemail.notify_order_accepted(offer, order)
+    messages.success(request, "The offer has been accepted successfully.")
     return redirect('orders:order_detail', order_id=order.id)
 
 
 # CUSTOMER UPDATE
-# An offer can be cancelled if and only if it is in the "Accepted" stage.
 @login_required
 def customer_cancel_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
     if request.user.account != order.customer:
-        return HttpResponseForbidden("You don't have permission to cancel this offer.")
+        messages.error(request, "You don't have permission to cancel this offer.")
+        return redirect('main:index')
+
     full_refund = timedelta(hours=24)
     half_refund = timedelta(hours=12)
     time_until_visit = offer.appointment - datetime.now()
@@ -249,9 +266,13 @@ def customer_cancel_offer(request, offer_id):
         if time_until_visit >= full_refund:
             offer.refund = offer.price
             offer.price = 0
+            messages.info(request, "You will receive a full refund.")
         elif time_until_visit >= half_refund:
             offer.refund = offer.price / 2
             offer.price = offer.price / 2
+            messages.info(request, "You will receive a 50% refund.")
+        else:
+            messages.info(request, "No refund will be issued due to short notice cancellation.")
 
         offer.stage = 'Cancelled'
         offer.save()
@@ -259,21 +280,22 @@ def customer_cancel_offer(request, offer_id):
         order.status = 'Open'
         order.assigned_to = None
         order.save()
+        messages.success(request, "The offer has been cancelled successfully.")
     except Exception as e:
-        print(e)
+        messages.error(request, f"An error occurred while cancelling the offer: {str(e)}")
 
     return redirect('orders:order_detail', order_id=order.id)
 
 
 # FREELANCER UPDATE
-# An offer can be cancelled if and only if it is in the "Accepted" stage.
 @login_required
 def freelancer_cancel_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
     if request.user.account != order.assigned_to:
-        return HttpResponseForbidden("You don't have permission to cancel this offer.")
+        messages.error(request, "You don't have permission to cancel this offer.")
+        return redirect('main:index')
     try:
         offer.stage = 'Cancelled'
         offer.refund = offer.price
@@ -284,17 +306,17 @@ def freelancer_cancel_offer(request, offer_id):
         order.status = 'Open'
         order.assigned_to = None
         order.save()
+        messages.success(request, "The offer has been cancelled successfully.")
     except Exception as e:
-        print(e)
+        messages.error(request, f"An error occurred while cancelling the offer: {str(e)}")
 
-    return redirect('orders:freelancer_offers', freelancer_id=offer.freelancer.id)
+    return redirect('orders:freelancer_offers')
 
 
 ########################################################################################################################
 # OFFER DELETE
 ########################################################################################################################
 # FREELANCER DELETE
-# An offer can be discarded if and only if it is in the "Pending" stage.
 @login_required
 def freelancer_discard_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
@@ -304,12 +326,11 @@ def freelancer_discard_offer(request, offer_id):
         offer.save()
         messages.success(request, 'The offer has been successfully discarded.')
     else:
-        messages.error(request, 'This offer cannot be discarded.')
+        messages.error(request, 'This offer cannot be discarded as it is no longer in the pending stage.')
 
     return redirect('orders:freelancer_orders')
 
 
-# ! edit this function redirct to the order detail page after payment
 @login_required
 def fake_payment(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
