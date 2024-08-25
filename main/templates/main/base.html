@@ -241,6 +241,11 @@
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:order_history' %}">سجل الطلبات</a></li>
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'accounts:profile' %}">الملف الشخصي</a></li>
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'chat:chat_list' %}">الدردشة</a></li>
+            {% elif user.account.user_type == 'Admin' %}
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:dashboard' %}">لوحة التحكم</a></li>
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:customers' %}">جميع المستخدمين</a></li>
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_check_freelancers' %}">جميع مقدمي الخدمة</a></li>  
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_tickets' %}">جميع التذاكر</a></li>
           {% endif %}
         {% endif %}
       </ul>
