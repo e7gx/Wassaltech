@@ -220,15 +220,13 @@ class _WalletState extends State<Wallet> {
         ),
         child: Stack(
           children: [
-            Center(
-              child: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  'assets/images/user2.png',
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
+            Opacity(
+              opacity: 0.3,
+              child: Image.asset(
+                'assets/images/user2.png',
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
               ),
             ),
             Container(
