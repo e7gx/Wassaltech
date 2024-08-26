@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'package:wassaltech_app/screens/offer_details_page.dart';
 

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:typewritertext/typewritertext.dart';
 import 'package:flutter/services.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'package:wassaltech_app/model/service/shared_preferences_service.dart';
 

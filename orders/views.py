@@ -7,11 +7,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from payments.models import Payment
 from accounts.decorators import user_type_required
+from reviews.models import Review
 from .forms import OrderForm, OfferForm
 from reviews.forms import ReviewForm
 from .models import Order, OrderImage, OrderVideo, Offer
 from accounts.models import Account
 from datetime import datetime
+from django.urls import reverse
 
 
 ########################################################################################################################
@@ -177,13 +179,15 @@ def order_detail(request, order_id):
 # ORDER UPDATE
 ########################################################################################################################
 # MUTUAL UPDATE
+from django.utils import timezone
+
 @login_required
 def end_order(request, order_id):
     """
-    End (or complete) an order.
+    End (or complete) an order and submit a review.
 
-    This view manages the completion process for an order by the freelancer and the customer.
-    Only the relevant party can mark the order as completed (closed) at a given time.
+    This view manages the completion process for an order by the freelancer and the customer,
+    as well as handling the review submission.
 
     Parameters:
         request (HttpRequest): The request object used to generate this response.
@@ -192,34 +196,56 @@ def end_order(request, order_id):
     Returns:
         HttpResponse: The response object containing a redirect to the respective orders page.
     """
-
+    
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
-    if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
-        order.freelancer_completed = True
-        order.save()
-
-        messages.success(request,
-                         'You have successfully marked the order as closed. The customer can now finalize the order.')
-    elif hasattr(request.user, 'account') and request.user.account == order.customer:
-        if order.freelancer_completed:
-            order.customer_completed = True
-            order.status = 'Closed'
+    if request.method == 'POST':
+        if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
+            order.freelancer_completed = True
             order.save()
-            offer.stage = 'Completed'
-            # Logic for complete on time
-            complete_on_time = (offer.proposed_service_date - datetime.now().date()).days >= 0
-            if complete_on_time:
-                offer.complete_on_time = True
-            offer.save()
-            messages.success(request, 'You have successfully closed the order.')
-        else:
-            messages.error(request, 'The freelancer must close the order before you can finalize it.')
+            messages.success(request, 'You have successfully marked the order as closed. The customer can now finalize the order.')
+        
+        elif hasattr(request.user, 'account') and request.user.account == order.customer:
+            if order.freelancer_completed:
+                #! Handle the review submission and order closure here
+                rating = request.POST.get('rating')
+                comment = request.POST.get('comment')
 
-    if request.user.account.user_type == 'Customer':
-        return redirect('orders:customer_orders')
-    else:
-        return redirect('orders:freelancer_orders')
+                if rating:
+                    review = Review.objects.create(
+                        offer=offer,
+                        rating=rating,
+                        comment=comment,
+                        created_at=timezone.now()
+                    )
+                    
+                    order.customer_completed = True
+                    order.status = 'Closed'
+                    order.save()
+                    
+                    offer.stage = 'Completed'
+                    
+                    # Logic for complete on time
+                    complete_on_time = (offer.proposed_service_date - timezone.now().date()).days >= 0
+                    if complete_on_time:
+                        offer.complete_on_time = True
+                    
+                    offer.save()
+                    messages.success(request, 'You have successfully submitted the review and closed the order.')
+                else:
+                    messages.error(request, 'Rating is required to close the order.')
+
+            else:
+                messages.error(request, 'The freelancer must close the order before you can finalize it.')
+
+        # Redirect based on user type
+        if request.user.account.user_type == 'Customer':
+            return redirect('orders:customer_orders')
+        else:
+            return redirect('orders:freelancer_orders')
+
+    return render(request, 'some_template.html', {'order': order, 'offer': offer})
+
 
 
 ########################################################################################################################
@@ -565,30 +591,30 @@ def fake_payment(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     return render(request, 'orders/fake_payment.html', {'offer': offer})
 
-# @login_required
-# def export_pdf_from_html(request, order_id):
-#     order = get_object_or_404(Order, id=order_id)
-#     offer = get_object_or_404(Offer, order=order, stage='Accepted')
-#
-#     customer = order.customer
-#     customer_user = customer.user if customer else None
-#     freelancer = offer.freelancer
-#     freelancer_user = freelancer.user if freelancer else None
-#
-#     context = {
-#         'order': order,
-#         'customer_name': f"{customer_user.first_name} {customer_user.last_name}" if customer_user else "N/A",
-#         'freelancer_name': f"{freelancer_user.first_name} {freelancer_user.last_name}" if freelancer_user else "N/A",
-#         'freelancer_certificate': freelancer.certificate_id if freelancer else "N/A",
-#         'order_date': datetime.now().strftime("%Y-%m-%d"),
-#         'order_category': order.category,
-#         'order_description': order.issue_description,
-#         'customer_phone_number': customer.phone_number if customer else "N/A",
-#         'customer_email': customer_user.email if customer_user else "N/A",
-#         'freelancer_phone_number': freelancer.user.account.phone_number if freelancer and freelancer.user and hasattr(freelancer.user, 'account') else "N/A",
-#         'freelancer_email': freelancer_user.email if freelancer_user else "N/A",
-#         'freelancer_address': freelancer.user.account.address if freelancer and freelancer.user and hasattr(freelancer.user, 'account') else "N/A",
-#         'customer_address': customer.address if customer else "N/A",
-#     }
-#
-#     return render(request, 'orders/export_pdf_from_html.html', context)
+@login_required
+def export_pdf_from_html(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    offer = get_object_or_404(Offer, order=order, stage='Accepted')
+
+    customer = order.customer
+    customer_user = customer.user if customer else None
+    freelancer = offer.freelancer
+    freelancer_user = freelancer.user if freelancer else None
+
+    context = {
+        'order': order,
+        'customer_name': f"{customer_user.first_name} {customer_user.last_name}" if customer_user else "N/A",
+        'freelancer_name': f"{freelancer_user.first_name} {freelancer_user.last_name}" if freelancer_user else "N/A",
+        'freelancer_certificate': freelancer.certificate_id if freelancer else "N/A",
+        'order_date': datetime.now().strftime("%Y-%m-%d"),
+        'order_category': order.category,
+        'order_description': order.issue_description,
+        'customer_phone_number': customer.phone_number if customer else "N/A",
+        'customer_email': customer_user.email if customer_user else "N/A",
+        'freelancer_phone_number': freelancer.user.account.phone_number if freelancer and freelancer.user and hasattr(freelancer.user, 'account') else "N/A",
+        'freelancer_email': freelancer_user.email if freelancer_user else "N/A",
+        'freelancer_address': freelancer.user.account.address if freelancer and freelancer.user and hasattr(freelancer.user, 'account') else "N/A",
+        'customer_address': customer.address if customer else "N/A",
+    }
+
+    return render(request, 'orders/export_pdf_from_html.html', context)

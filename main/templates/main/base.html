@@ -181,6 +181,8 @@
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:customers' %}">جميع المستخدمين</a></li>
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_check_freelancers' %}">جميع مقدمي الخدمة</a></li>  
             <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_tickets' %}">جميع التذاكر</a></li>
+            <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_payment' %}">عمليات الدفع</a></li>
+
               {% comment %}
               <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:all_orders' %}">جميع الطلبات</a></li>
               <li><a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="{% url 'orders:all_offers' %}">جميع العروض</a></li>
@@ -273,6 +275,8 @@
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:customers' %}">جميع المستخدمين</a></li>
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_check_freelancers' %}">جميع مقدمي الخدمة</a></li>  
             <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_tickets' %}">جميع التذاكر</a></li>
+            <li><a class="text-right block py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'analytics:admin_payment' %}">عمليات الدفع</a></li>
+
           {% endif %}
         {% endif %}
       </ul>
@@ -328,7 +332,7 @@
 
 <!-- Footer -->
 
-<footer class="px-4 divide-y dark:bg-gray-100 dark:text-gray-800" dir='rtl'>
+<footer class="px-4 divide-y bg-transparent dark:text-gray-800" dir='rtl'>
 	<div class="container flex flex-col justify-between py-10 mx-auto space-y-8 lg:flex-row lg:space-y-0">
 		<div class="lg:w-1/3">
 			<a rel="noopener noreferrer" href="#" class="flex justify-center space-x-3 lg:justify-start">

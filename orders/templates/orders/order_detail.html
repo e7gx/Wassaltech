@@ -3,65 +3,63 @@
 {% block title %}تفاصيل الطلب #{{ order.id }}{% endblock %}
 
 {% block content %}
-    <div class="bg-gray-100 min-h-screen" dir="rtl">
-        <div class="container mx-auto px-4 py-8">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-orange-700">تفاصيل الطلب #{{ order.id }}</h1>
-{#                    <a href="{% url 'orders:export_pdf_from_html' order.id %}"#}
-{#                       class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">#}
-{#                        طباعة PDF#}
-{#                    </a>#}
-{#                {% else %}#}
-{#                    <a href="{% url 'orders:export_pdf_from_html' order.id %}"#}
-{#                       class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">#}
-{#                        طباعة PDF#}
-{#                    </a>#}
+<div class="bg-gray-100 min-h-screen" dir="rtl">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-orange-700">تفاصيل الطلب #{{ order.id }}</h1>
+            <a href="{% url 'orders:export_pdf_from_html' order.id %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+                طباعة PDF
+            </a>
+        </div>
 
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Order Information -->
+            <div class="md:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-2xl font-semibold text-orange-600 mb-4">معلومات الطلب</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="mb-2 text-black"><span class="font-semibold text-gray-700">الفئة:</span> {{ order.category }}</p>
+                            <p class="mb-2 text-black"><span class="font-semibold text-gray-700">تاريخ الإنشاء:</span> {{ order.created_at|date:"d M, Y" }}</p>
+                        </div>
+                        <div>
+                            <p class="mb-2 text-black">
+                                <span class="font-semibold text-gray-700">الحالة:</span>
+                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full
+                                {% if order.status == 'Open' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'In Progress' %}bg-blue-100 text-blue-800
+                                {% elif order.status == 'Completed' %}bg-green-100 text-green-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ order.status }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-black"><span class="font-semibold text-gray-700">الوصف:</span> {{ order.issue_description }}</p>
+                </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h2 class="text-2xl font-semibold text-orange-600 mb-4">معلومات الطلب</h2>
-
+                <!-- Order Images -->
                 {% if order_images %}
+
                     <div class="mb-6">
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">الصور:</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {% for image in order_images %}
                                 <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                                     <img src="{{ image.image.url }}" alt="صورة الطلب"
-                                         class="w-full h-auto object-cover">
+                                        class="w-full h-auto object-cover">
                                 </div>
                             {% endfor %}
-                        </div>
-                    </div>
-                {% else %}
-                    <p class="text-black-600 mb-4 text-black">لا توجد صور متاحة لهذا الطلب.</p>
-                {% endif %}
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="mb-2 text-black"><span
-                                class="font-semibold text-gray-700">الفئة:</span> {{ order.category }}</p>
-                        <p class="mb-2 text-black"><span
-                                class="font-semibold text-gray-700">تاريخ الإنشاء:</span> {{ order.created_at|date:"d M, Y" }}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="mb-2 text-black">
-                            <span class="font-semibold text-gray-700">الحالة:</span>
-                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full
-                            {% if order.status == 'Open' %}bg-yellow-100 text-yellow-800
-                            {% elif order.status == 'In Progress' %}bg-blue-100 text-blue-800
-                            {% elif order.status == 'Completed' %}bg-green-100 text-green-800
-                            {% else %}bg-red-100 text-red-800{% endif %}">
-                            {{ order.status }}
-                        </span>
-                        </p>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <p class="mt-4 text-black"><span
-                        class="font-semibold text-gray-700">الوصف:</span> {{ order.issue_description }}</p>
+                {% else %}
+                <p class="text-black-600 mb-4 text-black">لا توجد صور متاحة لهذا الطلب.</p>
+                {% endif %}
             </div>
+
 
             {% if offer %}
                 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -100,10 +98,13 @@
                                     class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
                                 إتمام الطلب
                             </button>
+
                         </form>
                     {% endif %}
-                {% endif %}
-            {% endif %}
+                </div>
+            </div>
+        </div>
+
 
             {% if order %}
                 {% if user.account.user_type == "Customer" and order.customer == user.account %}
@@ -120,7 +121,7 @@
                             {% csrf_token %}
                             <button type="submit"
                                     class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
-                                إلغاء الطلب
+                                إلغاء العرض
                             </button>
                         </form>
                     {% endif %}
@@ -167,14 +168,40 @@
                         </form>
                     {% endif %}
                 {% endfor %}
+
             {% endif %}
+            {% if user.account.user_type == 'Customer' %}
+                <a href="{% url 'orders:customer_orders' %}" class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">العودة إلى طلباتي</a>
+            {% else %}
+                <a href="{% url 'orders:freelancer_orders' %}" class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">العودة إلى الطلبات المتاحة</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
 
             <dialog id="review_modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
                 <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                     <form method="post" action="{% url 'orders:end_order' order.id %}" id="review_form">
                         {% csrf_token %}
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">تقييم الخدمة</h3>
-                        {{ review_form.as_p }}
+            
+                        <div>
+                            <label for="rating" class="block text-gray-700">تقييم:</label>
+                            <select name="rating" id="rating" class="block w-full p-2 mt-1 border rounded" required>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+            
+                        <div class="mt-4">
+                            <label for="comment" class="block text-gray-700">التعليق:</label>
+                            <textarea name="comment" id="comment" rows="4" class="block w-full p-2 mt-1 border rounded"></textarea>
+                        </div>
+            
                         <div class="flex justify-end mt-6">
                             <button type="submit"
                                     class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mx-2">
@@ -188,6 +215,19 @@
                     </form>
                 </div>
             </dialog>
+            
+            <script>
+                function showReviewModal() {
+                    document.getElementById('review_modal').style.display = 'block';
+                }
+            
+                function closeReviewModal() {
+                    document.getElementById('review_modal').style.display = 'none';
+                }
+            </script>            
+            
+            
+            
 
             <div class="mt-8 flex justify-between">
                 {% if user.account.user_type == 'Customer' and order.status == 'Open' %}
@@ -204,17 +244,21 @@
                        class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">العودة
                         إلى الطلبات المتاحة</a>
                 {% endif %}
+
             </div>
-        </div>
+        </form>
     </div>
+</dialog>
 
-    <script>
-        function showReviewModal() {
-            document.getElementById('review_modal').style.display = 'block';
-        }
 
-        function closeReviewModal() {
-            document.getElementById('review_modal').style.display = 'none';
-        }
-    </script>
+<script>
+    function showReviewModal() {
+        document.getElementById('review_modal').style.display = 'block';
+    }
+
+    function closeReviewModal() {
+        document.getElementById('review_modal').style.display = 'none';
+    }
+</script>
+
 {% endblock %}
