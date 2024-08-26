@@ -106,9 +106,9 @@ def order_history(request):
     user = request.user
     if hasattr(user, 'account'):
         if user.account.user_type == 'Customer':
-            orders = Order.objects.filter(customer=user.account, status='Closed').order_by('-created_at')
+            orders = Order.objects.filter(Q(customer=user.account) & (Q(status='Closed') | Q(status='Discarded'))).order_by('-created_at')
         elif user.account.user_type == 'Freelancer':
-            orders = Order.objects.filter(assigned_to=user.freelancer, status='Closed')
+            orders = Order.objects.filter(Q(assigned_to=user.freelancer) & Q(status='Closed')).order_by('-created_at')
         else:
             orders = []
         return render(request, 'orders/order_history.html', {'orders': orders})
@@ -160,6 +160,7 @@ def order_detail(request, order_id):
 
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order, stage='Accepted').first()
+    pending_offers = Offer.objects.filter(order=order, stage='Pending')
     order_images = OrderImage.objects.filter(order=order)
     review_form = None
 
@@ -169,6 +170,7 @@ def order_detail(request, order_id):
     context = {
         'order': order,
         'offer': offer,
+        'pending_offers': pending_offers,
         'review_form': review_form,
         'order_images': order_images,
     }
@@ -249,11 +251,12 @@ def customer_discard_order(request, order_id):
         if order.status == 'Open':
             order.status = 'Discarded'
             order.save()
+            Offer.objects.filter(order=order, stage="Pending").update(stage='Declined')
             messages.success(request, 'The order has been successfully discarded.')
         else:
             messages.error(request, 'This order cannot be discarded as it has already been linked with a freelancer.')
     else:
-        return HttpResponseForbidden("You don't have permission to discard this order.")
+        return messages.error(request,"You don't have permission to discard this order.")
 
     return redirect('orders:customer_orders')
 
@@ -398,8 +401,6 @@ def accept_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-    print(request.user.account)
-    print(order.customer)
 
     if hasattr(request.user, 'account') and request.user.account == order.customer:
 
@@ -419,7 +420,7 @@ def accept_offer(request, offer_id):
 
                 order.save()
 
-                Offer.objects.filter(order=order).exclude(id=offer_id).update(stage='Declined')
+                Offer.objects.filter(order=order, stage="Pending").exclude(id=offer_id).update(stage='Declined')
 
                 sendemail.notify_order_accepted(offer, order)
             except Exception as e:
@@ -560,12 +561,12 @@ def freelancer_discard_offer(request, offer_id):
 @login_required
 def process_payments(request):
     Payment.process_payments()
-    return redirect('accounts:freelancer_profile', freelancer_id=request.user.freelancer.id)
+    return redirect('accounts:profile')
 
 @login_required
 def deposit_payments(request):
     Payment.deposit_payments()
-    return redirect('accounts:freelancer_profile', freelancer_id=request.user.freelancer.id)
+    return redirect('accounts:profile')
 
 
 

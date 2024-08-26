@@ -79,50 +79,78 @@
                             class="font-semibold text-gray-700">الوصف:</span> {{ offer.description }}</p>
                 </div>
             {% endif %}
-            {% if offer %}
-                <form action="{% url 'orders:customer_cancel_offer' offer.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">customer_cancel_offer</button>
-                </form>
-                <form action="{% url 'orders:freelancer_cancel_offer' offer.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">freelancer_cancel_offer</button>
-                </form>
-            {% endif %}
 
-            {% if offer %}
-                {% if order.status != 'Completed' %}
-                    {% if user.account.user_type == 'Customer' and not order.customer_completed %}
+            {% if order %}
+                {% if order.status == 'In Progress' %}
+                    {% if user.account.user_type == 'Customer' and order.customer == user.account and not order.customer_completed %}
                         {% if order.freelancer_completed %}
                             <button class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out"
-                                    onclick="showReviewModal()">إنهاء الطلب
+                                    onclick="showReviewModal()">إتمام الطلب
                             </button>
                         {% else %}
                             <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6"
                                  role="alert">
-                                <p>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إنهائه.</p>
+                                <p>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إتمامه.</p>
                             </div>
                         {% endif %}
-                    {% elif user.account.user_type == 'Freelancer' and not order.freelancer_completed %}
+                    {% elif user.account.user_type == 'Freelancer' and order.assigned_to == user.freelancer and not order.freelancer_completed %}
                         <form method="post" action="{% url 'orders:end_order' order.id %}">
                             {% csrf_token %}
                             <button type="submit"
                                     class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
-                                إنهاء الطلب
+                                إتمام الطلب
                             </button>
                         </form>
                     {% endif %}
                 {% endif %}
             {% endif %}
 
-            {% if not offer %}
-                <form method="post" action="{% url 'orders:customer_discard_order' order.id %}">
-                    {% csrf_token %}
-                    <button type="submit"
-                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
-                        إلغاء الطلب
-                    </button>
-                </form>
+            {% if order %}
+                {% if user.account.user_type == "Customer" and order.customer == user.account %}
+                    {% if order.status == "Open" %}
+                        <form method="post" action="{% url 'orders:customer_discard_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                حذف الطلب
+                            </button>
+                        </form>
+                    {% elif order.status == "In Progress" %}
+                        <form method="post" action="{% url 'orders:customer_cancel_offer' offer.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                إلغاء الطلب
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            {% if user.account.user_type == "Freelancer" %}
+                {% if offer %}
+                    {% if offer.freelancer == user.freelancer %}
+                        <form method="post" action="{% url 'orders:freelancer_cancel_offer' offer.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                إلغاء العرض
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            {% if pending_offers %}
+                {% for pending_offer in pending_offers %}
+                    {% if pending_offer.freelancer == user.freelancer %}
+                        <form method="post" action="{% url 'orders:freelancer_discard_offer' pending_offer.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                حذف العرض
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
 
             <dialog id="review_modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
