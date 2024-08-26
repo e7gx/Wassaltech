@@ -110,6 +110,7 @@ class Payment(models.Model):
         """
         processed_payments = Payment.objects.filter(
             Q(status=Payment.Status.PROCESSING) &
+            (Q(offer__stage='Completed') | Q(offer__stage='Cancelled')) &
             Q(payment_date__lte=datetime.now() - timedelta(hours=Payment.PROCESSING_HOURS))
         ).update(status=Payment.Status.PROCESSED)
         

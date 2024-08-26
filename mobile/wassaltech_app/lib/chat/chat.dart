@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:typewritertext/typewritertext.dart';
 import 'package:flutter/services.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'package:wassaltech_app/model/service/shared_preferences_service.dart';
 
@@ -24,6 +25,7 @@ class _MainPageState extends State<AiChatPage> {
   int _orderCount = 0;
   double _totalPrice = 0.0;
   double _reviewsAverage = 0.0;
+  double _depositedAmount = 0.0;
 
   @override
   void initState() {
@@ -32,39 +34,37 @@ class _MainPageState extends State<AiChatPage> {
     _fetchAllCounts();
   }
 
-  Future<List<Offer>> fetchOffers() async {
-    try {
-      final response =
-          await http.get(Uri.parse('http://127.0.0.1:8000/api/offers/'));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> offersList = json.decode(response.body);
-        final List<Offer> offers =
-            offersList.map((json) => Offer.fromJson(json)).toList();
-        _calculateTotals(offers);
-        return offers;
-      } else {
-        throw Exception('Failed to load offers');
-      }
-    } catch (e) {
-      throw Exception('Failed to load offers: $e');
+  Future<List<Offer>> fetchAllOffers() async {
+    final response =
+        await http.get(Uri.parse('http://127.0.0.1:8000/api/offers/all/'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Offer.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load offers');
     }
   }
 
-  void _calculateTotals(List<Offer> offers) {
-    setState(() {
-      _offerCount = offers.length;
-      _totalPrice = offers.fold(0.0, (sum, offer) => sum + offer.price);
-    });
+  Future<double> fetchDepositedAmount() async {
+    final response =
+        await http.get(Uri.parse('http://127.0.0.1:8000/api/amount/'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return double.parse(data['total_amount'] as String);
+    } else {
+      throw Exception('Failed to load deposited amount');
+    }
   }
 
   Future<void> _fetchAllCounts() async {
     try {
       _userCount = await fetchUserCount();
       _freelancerCount = await fetchFreelancerCount();
-      List<Offer> offers = await fetchOffers();
+      List<Offer> offers = await fetchAllOffers();
       _orderCount = await fetchOrdersCount();
       _reviewsAverage = await fetchReviewsAverage();
+      _depositedAmount = await fetchDepositedAmount();
 
       setState(() {
         _userCount = _userCount;
@@ -73,9 +73,10 @@ class _MainPageState extends State<AiChatPage> {
         _orderCount = _orderCount;
         _totalPrice = _totalPrice;
         _reviewsAverage = _reviewsAverage;
+        _depositedAmount = _depositedAmount;
       });
     } catch (e) {
-      print("Error fetching counts: $e");
+      // print("Error fetching counts: $e");
     }
   }
 
@@ -146,7 +147,7 @@ class _MainPageState extends State<AiChatPage> {
       2- Current freelancer count: $_freelancerCount
       3- Current offer count: $_offerCount
       4- Current order count: $_orderCount
-      5- totalPrice: $_totalPrice
+      5- totalPrice: $_depositedAmount
       6- Reviews Average: $_reviewsAverage
 
     only this data is available for now. do not ask for any other data.
@@ -163,11 +164,9 @@ class _MainPageState extends State<AiChatPage> {
 
     Make sure that your respond is well structured and readable
 
-    Make sure that your response is clear and helpful.
+    Make sure that your respond is clear and helpful.
 
-    Make sure that your response is relevant to the user's question.
 
-    Make sure that your response is clear and short when the user asks for it.
     
 
     """;

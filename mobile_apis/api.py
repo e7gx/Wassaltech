@@ -3,10 +3,12 @@ from ninja import NinjaAPI
 from typing import Dict, List
 from accounts.models import Account, Freelancer
 from orders.models import Order, Offer
+from payments.models import Payment
 from reviews.models import Review
 from django.db.models import Avg
-from .schemas import AuthResponseSchema, OfferSchema,LoginSchema, ReviewSchema
+from .schemas import AuthResponseSchema,  LoginSchema, OfferSchema, ReviewSchema
 from django.contrib.auth import authenticate
+from django.db.models import Count, Sum, Avg, Q
 
 api = NinjaAPI()
 
@@ -30,7 +32,8 @@ def login(request, data: LoginSchema):
 
 @api.get("/offers/", response=List[OfferSchema])
 def list_offers(request):
-    return Offer.objects.filter(stage="Accepted", order__status="Completed").all()
+    return Offer.objects.filter(stage="Closed", order__status="Completed").all() #! check this query
+
 
 
 @api.get("/users/count", response=Dict[str, int])
@@ -55,7 +58,7 @@ def get_order_count(request):
     return {"order_count": order_count}
 
 
-@api.get("/reviews/rating_avg/", response=Dict[str, int])
+@api.get("/reviews/rating_avg/", response=Dict[str, float])
 def get_reviews_count(request):
     rating_avg = Review.objects.aggregate(Avg('rating'))['rating__avg']
     return {"rating_avg": rating_avg}
@@ -68,25 +71,14 @@ def get_reviews_all(request):
     return {"reviews": reviews_data}
 
 
-# @api.put("/freelancers/{freelancer_id}/verify/", response=FreelancerSchema)
-# def verify_freelancer(request, freelancer_id: int, data: VerifyFreelancerSchema):
-#     freelancer = get_object_or_404(Freelancer, id=freelancer_id)
-#     freelancer.is_verified = data.is_verified
-#     freelancer.save()
-    
-#     account = Account.objects.get(user=freelancer.user)
-    
-#     return FreelancerSchema(
-#         id=freelancer.id,
-#         username=freelancer.user.username,
-#         first_name=freelancer.user.first_name,
-#         last_name=freelancer.user.last_name,
-#         email=freelancer.user.email,
-#         phone_number=account.phone_number,
-#         address=account.address,
-#         certificate_id=freelancer.certificate_id,
-#         certificate_expiration=freelancer.certificate_expiration,
-#         internal_rating=freelancer.internal_rating,
-#         is_verified=freelancer.is_verified,
-#         created_at=account.created_at
-#     )
+@api.get("/amount/", response=dict)
+def get_amount(request):
+    total_amount = Payment.objects.filter(status=Payment.Status.DEPOSITED).aggregate(total_amount=Sum('amount'))['total_amount']
+    return {'total_amount': total_amount}
+
+
+
+@api.get("/offers/all/", response=List[OfferSchema])
+def all_offers(request):
+    offers = Offer.objects.filter(stage="Completed", order__status="Closed").all()
+    return offers

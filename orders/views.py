@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from payments.models import Payment
 from accounts.decorators import user_type_required
+from reviews.models import Review
 from .forms import OrderForm, OfferForm
 from reviews.forms import ReviewForm
 from .models import Order, OrderImage, OrderVideo, Offer
@@ -79,8 +80,6 @@ def customer_orders(request):
         HttpResponse: The response object containing the rendered customer orders page.
     """
 
-
-
     orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress'])
     for order in orders:
         pending_offers = Offer.objects.filter(order=order, stage='Pending').count()
@@ -107,9 +106,10 @@ def order_history(request):
     user = request.user
     if hasattr(user, 'account'):
         if user.account.user_type == 'Customer':
-            orders = Order.objects.filter(customer=user.account, status='Closed').order_by('-created_at')
+            orders = Order.objects.filter(
+                Q(customer=user.account) & (Q(status='Closed') | Q(status='Discarded'))).order_by('-created_at')
         elif user.account.user_type == 'Freelancer':
-            orders = Order.objects.filter(assigned_to=user.freelancer, status='Closed')
+            orders = Order.objects.filter(Q(assigned_to=user.freelancer) & Q(status='Closed')).order_by('-created_at')
         else:
             orders = []
         return render(request, 'orders/order_history.html', {'orders': orders})
@@ -122,7 +122,6 @@ def order_history(request):
 @login_required
 @user_type_required(['Freelancer'])
 def freelancer_orders(request):
-
     """
     Display all orders available for freelancers.
 
@@ -138,8 +137,6 @@ def freelancer_orders(request):
     freelancer = request.user.freelancer
     orders = Order.objects.filter(status='Open').exclude(Q(offer__freelancer=freelancer) & Q(offer__stage='Pending'))
     return render(request, 'orders/freelancer_orders.html', {'orders': orders})
-
-   
 
 
 # MUTUAL READ
@@ -161,6 +158,7 @@ def order_detail(request, order_id):
 
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order, stage='Accepted').first()
+    pending_offers = Offer.objects.filter(order=order, stage='Pending')
     order_images = OrderImage.objects.filter(order=order)
     review_form = None
 
@@ -170,6 +168,7 @@ def order_detail(request, order_id):
     context = {
         'order': order,
         'offer': offer,
+        'pending_offers': pending_offers,
         'review_form': review_form,
         'order_images': order_images,
     }
@@ -180,13 +179,15 @@ def order_detail(request, order_id):
 # ORDER UPDATE
 ########################################################################################################################
 # MUTUAL UPDATE
+from django.utils import timezone
+
 @login_required
 def end_order(request, order_id):
     """
-    End (or complete) an order.
+    End (or complete) an order and submit a review.
 
-    This view manages the completion process for an order by the freelancer and the customer.
-    Only the relevant party can mark the order as completed (closed) at a given time.
+    This view manages the completion process for an order by the freelancer and the customer,
+    as well as handling the review submission.
 
     Parameters:
         request (HttpRequest): The request object used to generate this response.
@@ -195,34 +196,56 @@ def end_order(request, order_id):
     Returns:
         HttpResponse: The response object containing a redirect to the respective orders page.
     """
-
+    
     order = get_object_or_404(Order, id=order_id)
     offer = Offer.objects.filter(order=order_id, stage='Accepted').first()
-    if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
-        order.freelancer_completed = True
-        order.save()
-
-        messages.success(request,
-                         'You have successfully marked the order as closed. The customer can now finalize the order.')
-    elif hasattr(request.user, 'account') and request.user.account == order.customer:
-        if order.freelancer_completed:
-            order.customer_completed = True
-            order.status = 'Closed'
+    if request.method == 'POST':
+        if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
+            order.freelancer_completed = True
             order.save()
-            offer.stage = 'Completed'
-            # Logic for complete on time
-            complete_on_time = (offer.proposed_service_date - datetime.now().date()).days >= 0
-            if complete_on_time:
-                offer.complete_on_time = True
-            offer.save()
-            messages.success(request, 'You have successfully closed the order.')
-        else:
-            messages.error(request, 'The freelancer must close the order before you can finalize it.')
+            messages.success(request, 'You have successfully marked the order as closed. The customer can now finalize the order.')
+        
+        elif hasattr(request.user, 'account') and request.user.account == order.customer:
+            if order.freelancer_completed:
+                #! Handle the review submission and order closure here
+                rating = request.POST.get('rating')
+                comment = request.POST.get('comment')
 
-    if request.user.account.user_type == 'Customer':
-        return redirect('orders:customer_orders')
-    else:
-        return redirect('orders:freelancer_orders')
+                if rating:
+                    review = Review.objects.create(
+                        offer=offer,
+                        rating=rating,
+                        comment=comment,
+                        created_at=timezone.now()
+                    )
+                    
+                    order.customer_completed = True
+                    order.status = 'Closed'
+                    order.save()
+                    
+                    offer.stage = 'Completed'
+                    
+                    # Logic for complete on time
+                    complete_on_time = (offer.proposed_service_date - timezone.now().date()).days >= 0
+                    if complete_on_time:
+                        offer.complete_on_time = True
+                    
+                    offer.save()
+                    messages.success(request, 'You have successfully submitted the review and closed the order.')
+                else:
+                    messages.error(request, 'Rating is required to close the order.')
+
+            else:
+                messages.error(request, 'The freelancer must close the order before you can finalize it.')
+
+        # Redirect based on user type
+        if request.user.account.user_type == 'Customer':
+            return redirect('orders:customer_orders')
+        else:
+            return redirect('orders:freelancer_orders')
+
+    return render(request, 'some_template.html', {'order': order, 'offer': offer})
+
 
 
 ########################################################################################################################
@@ -250,11 +273,12 @@ def customer_discard_order(request, order_id):
         if order.status == 'Open':
             order.status = 'Discarded'
             order.save()
+            Offer.objects.filter(order=order, stage="Pending").update(stage='Declined')
             messages.success(request, 'The order has been successfully discarded.')
         else:
             messages.error(request, 'This order cannot be discarded as it has already been linked with a freelancer.')
     else:
-        return HttpResponseForbidden("You don't have permission to discard this order.")
+        return messages.error(request, "You don't have permission to discard this order.")
 
     return redirect('orders:customer_orders')
 
@@ -346,7 +370,6 @@ def order_offers(request, order_id):
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
     offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user')
 
-
     context = {
         'order': order,
         'offers': offers,
@@ -378,7 +401,6 @@ def freelancer_offers(request):
         return redirect('main:index')
 
 
-
 ########################################################################################################################
 # OFFER UPDATE
 ########################################################################################################################
@@ -401,9 +423,6 @@ def accept_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-    print(request.user.account)
-    print(order.customer)
-
     if hasattr(request.user, 'account') and request.user.account == order.customer:
 
         with transaction.atomic():
@@ -413,7 +432,7 @@ def accept_offer(request, offer_id):
                 offer.stage = 'Accepted'
 
                 offer.save()
-        
+
                 Payment.objects.create(offer=offer, amount=offer.price)
 
                 order.status = 'In Progress'
@@ -422,14 +441,13 @@ def accept_offer(request, offer_id):
 
                 order.save()
 
-                Offer.objects.filter(order=order).exclude(id=offer_id).update(stage='Declined')
+                Offer.objects.filter(order=order, stage="Pending").exclude(id=offer_id).update(stage='Declined')
 
                 sendemail.notify_order_accepted(offer, order)
             except Exception as e:
                 print(e)
     else:
         return HttpResponseForbidden("You don't have permission to accept this offer.")
-
 
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -455,7 +473,6 @@ def customer_cancel_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-
     if hasattr(request.user, 'account') and request.user.account == order.customer:
         with transaction.atomic():
             try:
@@ -471,7 +488,6 @@ def customer_cancel_offer(request, offer_id):
                 print(e)
     else:
         return HttpResponseForbidden("You don't have permission to cancel this offer.")
-
 
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -498,7 +514,6 @@ def freelancer_cancel_offer(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
     order = offer.order
 
-
     if hasattr(request.user, 'freelancer') and request.user.freelancer == order.assigned_to:
 
         with transaction.atomic():
@@ -510,15 +525,14 @@ def freelancer_cancel_offer(request, offer_id):
                 offer.save()
 
                 offer.payment.freelancer_cancel_payment()
-                # offer.freelancer.update_internal_rating()
-
+                offer.freelancer.update_internal_rating()
 
                 order.status = 'Open'
 
                 order.assigned_to = None
 
                 order.save()
- 
+
             except Exception as e:
                 print(e)
     else:
@@ -555,22 +569,22 @@ def freelancer_discard_offer(request, offer_id):
         else:
             messages.error(request, 'This offer cannot be discarded.')
     else:
-# please change it
+        # please change it
         return HttpResponseForbidden("You don't have permission to discard this offer.")
 
-
     return redirect('orders:freelancer_orders')
+
 
 @login_required
 def process_payments(request):
     Payment.process_payments()
-    return redirect('accounts:freelancer_profile', freelancer_id=request.user.freelancer.id)
+    return redirect('accounts:profile')
+
 
 @login_required
 def deposit_payments(request):
     Payment.deposit_payments()
-    return redirect('accounts:freelancer_profile', freelancer_id=request.user.freelancer.id)
-
+    return redirect('accounts:profile')
 
 
 # ! edit this function redirect to the order detail page after payment

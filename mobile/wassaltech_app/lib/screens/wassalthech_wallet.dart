@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'offer_details_page.dart';
 
 class Wallet extends StatefulWidget {
   final Future<List<Offer>> offersFuture;
-  final int offerCount;
   final double totalPrice;
 
   Wallet({
     super.key,
     required this.offersFuture,
-    required this.offerCount,
     required this.totalPrice,
   });
 
@@ -20,13 +19,15 @@ class Wallet extends StatefulWidget {
 
 class _WalletState extends State<Wallet> {
   late Future<int> _ordersCountFuture;
-  late Future<int> _reviewsCountFuture;
+  late Future<double> _depositedAmountFuture;
+  late Future<double> _reviewsCountFuture;
 
   @override
   void initState() {
     super.initState();
     _ordersCountFuture = fetchOrdersCount();
     _reviewsCountFuture = fetchReviewsCount();
+    _depositedAmountFuture = fetchDepositedAmount();
   }
 
   @override
@@ -60,7 +61,7 @@ class _WalletState extends State<Wallet> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   final ordersCount = snapshot.data!;
-                  return FutureBuilder<int>(
+                  return FutureBuilder<double>(
                     future: _reviewsCountFuture,
                     builder: (context, reviewsSnapshot) {
                       if (reviewsSnapshot.connectionState ==
@@ -74,22 +75,44 @@ class _WalletState extends State<Wallet> {
                             child: Text('Error: ${reviewsSnapshot.error}'));
                       } else {
                         final reviewsCount = reviewsSnapshot.data!;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16.0),
-                            Text(
-                              'Summary',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange[800],
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            _buildSummaryCard(ordersCount, reviewsCount)
-                          ],
+                        return FutureBuilder<double>(
+                          future: _depositedAmountFuture,
+                          builder: (context, depositedSnapshot) {
+                            if (depositedSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                    color: Colors.orangeAccent),
+                              );
+                            } else if (depositedSnapshot.hasError) {
+                              return Center(
+                                  child: Text(
+                                      'Error: ${depositedSnapshot.error}'));
+                            } else {
+                              final depositedAmount = depositedSnapshot.data!;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 16.0),
+                                  Text(
+                                    'Summary',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orange[800],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16.0),
+                                  _buildSummaryCard(
+                                    ordersCount,
+                                    reviewsCount,
+                                    depositedAmount,
+                                  ),
+                                ],
+                              );
+                            }
+                          },
                         );
                       }
                     },
@@ -104,7 +127,8 @@ class _WalletState extends State<Wallet> {
     );
   }
 
-  Widget _buildSummaryCard(int ordersCount, int reviewsCount) {
+  Widget _buildSummaryCard(
+      int ordersCount, double reviewsCount, double depositedAmount) {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(
@@ -119,19 +143,9 @@ class _WalletState extends State<Wallet> {
             const SizedBox(height: 16.0),
             _buildSummaryTile(
               'Wassaltech Wallet',
-              '\SAR: ${widget.totalPrice.toStringAsFixed(2)}',
+              '\SAR: ${depositedAmount.toStringAsFixed(2)}',
               Icon(
                 Icons.account_balance_wallet,
-                color: Colors.orange[800],
-                size: 24.0,
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            _buildSummaryTile(
-              'Total Offers',
-              'Count: ${widget.offerCount}',
-              Icon(
-                Icons.local_offer,
                 color: Colors.orange[800],
                 size: 24.0,
               ),
@@ -162,21 +176,23 @@ class _WalletState extends State<Wallet> {
     );
   }
 
+//! 234567890234567890
+
   Widget _buildOffersRow(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder<List<Offer>>(
-        future: widget.offersFuture,
+        future: widget.offersFuture, // Use the passed future
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.orangeAccent,
-              ),
+              child: CircularProgressIndicator(color: Colors.orangeAccent),
             );
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return Center(child: Text('No offers available'));
+          } else if (snapshot.hasData) {
             final offers = snapshot.data!;
             return SizedBox(
               height: 200,
@@ -199,6 +215,8 @@ class _WalletState extends State<Wallet> {
                 },
               ),
             );
+          } else {
+            return Center(child: Text('No offers available'));
           }
         },
       ),
@@ -272,7 +290,7 @@ class _WalletState extends State<Wallet> {
                           ),
                         ),
                         Text(
-                          'Price: \$${offer.price.toStringAsFixed(2)}',
+                          'Price: \$${offer.price}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -292,22 +310,25 @@ class _WalletState extends State<Wallet> {
                           ),
                         );
                       },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.orange[800],
+                        backgroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 4.0,
+                          horizontal: 16.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
                       iconAlignment: IconAlignment.end,
                       child: Text(
                         'View Details',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.orange[800],
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 9.0,
-                          horizontal: 26.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),
@@ -320,6 +341,8 @@ class _WalletState extends State<Wallet> {
       ),
     );
   }
+
+  //! ttttt1234567890
 
   Widget _buildSummaryTile(String title, String subtitle, Icon icon) {
     return Container(

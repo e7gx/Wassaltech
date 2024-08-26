@@ -69,37 +69,79 @@
 
                 <!-- Action Buttons -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    {% if offer %}
-                        {% if order.status != 'Completed' %}
-                            {% if user.account.user_type == 'Customer' and not order.customer_completed %}
+                    {% if order %}
+                        {% if order.status == 'In Progress' %}
+                            {% if user.account.user_type == 'Customer' and order.customer == user.account and not order.customer_completed %}
                                 {% if order.freelancer_completed %}
-                                    <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4" onclick="showReviewModal()">إنهاء الطلب</button>
+                                    <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4" onclick="showReviewModal()">إتمام الطلب</button>
                                 {% else %}
                                     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-                                        <p>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إنهائه.</p>
+                                        <p>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إتمامه.</p>
                                     </div>
                                 {% endif %}
-                            {% elif user.account.user_type == 'Freelancer' and not order.freelancer_completed %}
+                            {% elif user.account.user_type == 'Freelancer' and order.assigned_to == user.freelancer and not order.freelancer_completed %}
                                 <form method="post" action="{% url 'orders:end_order' order.id %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4">إنهاء الطلب</button>
+                                    <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4">إتمام الطلب</button>
                                 </form>
                             {% endif %}
                         {% endif %}
+                    {% endif %}
+
+                    {% if order %}
+                        {% if user.account.user_type == "Customer" and order.customer == user.account %}
+                            {% if order.status == "Open" %}
+                                <form action="{% url 'orders:customer_discard_order' order.id %}" method="post" class="mb-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">حذف الطلب</button>
+                                </form>
+                    {% elif order.status == "In Progress" %}
                         <form action="{% url 'orders:customer_cancel_offer' offer.id %}" method="post" class="mb-2">
                             {% csrf_token %}
-                            <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض (العميل)</button>
-                        </form>
-                        <form action="{% url 'orders:freelancer_cancel_offer' offer.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض (المستقل)</button>
-                        </form>
-                    {% else %}
-                        <form method="post" action="{% url 'orders:customer_discard_order' order.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء الطلب</button>
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض</button>
                         </form>
                     {% endif %}
+                {% endif %}
+            {% endif %}
+            {% if user.account.user_type == "Freelancer" %}
+                {% if offer %}
+                    {% if offer.freelancer == user.freelancer %}
+                        <form action="{% url 'orders:freelancer_cancel_offer' offer.id %}" method="post" class="mb-2">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            {% if pending_offers %}
+                {% for pending_offer in pending_offers %}
+                    {% if pending_offer.freelancer == user.freelancer %}
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                            <h2 class="text-2xl font-semibold text-orange-600 mb-4">حالة العرض: قيد الانتظار</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <p class="font-semibold text-gray-700"><span
+                                        class="font-semibold text-gray-700">المستقل:</span> {{ pending_offer.freelancer.user.username }}
+                                </p>
+                                <p class="font-semibold text-gray-700"><span
+                                        class="font-semibold text-gray-700">السعر:</span>
+                                    ${{ pending_offer.price }}</p>
+                                <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">تاريخ الخدمة المقترح:</span> {{ pending_offer.proposed_service_date|date:"d M, Y" }}
+                                </p>
+                            </div>
+                            <p class="font-semibold text-gray-700 mt-4"><span
+                                    class="font-semibold text-gray-700">الوصف:</span> {{ pending_offer.description }}</p>
+                        </div>
+
+                        <form method="post" action="{% url 'orders:freelancer_discard_offer' pending_offer.id %}">
+                        {% csrf_token %}
+                            <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                حذف العرض
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
                 </div>
             </div>
         </div>
