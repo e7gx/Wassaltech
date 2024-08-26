@@ -30,7 +30,7 @@ class AuthResponseSchema(Schema):
 
 class ReviewSchema(Schema):
     id: int
-    rating: int
+    rating: float
     comment: str
     created_at: datetime
     
