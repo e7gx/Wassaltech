@@ -65,7 +65,7 @@
 
             {% if offer %}
                 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 class="text-2xl font-semibold text-orange-600 mb-4">العرض المقبول</h2>
+                    <h2 class="text-2xl font-semibold text-orange-600 mb-4">حالة العرض: مقبول</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <p class="font-semibold text-gray-700"><span
                                 class="font-semibold text-gray-700">المستقل:</span> {{ offer.freelancer.user.username }}
@@ -142,8 +142,24 @@
             {% if pending_offers %}
                 {% for pending_offer in pending_offers %}
                     {% if pending_offer.freelancer == user.freelancer %}
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                            <h2 class="text-2xl font-semibold text-orange-600 mb-4">حالة العرض: قيد الانتظار</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <p class="font-semibold text-gray-700"><span
+                                        class="font-semibold text-gray-700">المستقل:</span> {{ pending_offer.freelancer.user.username }}
+                                </p>
+                                <p class="font-semibold text-gray-700"><span
+                                        class="font-semibold text-gray-700">السعر:</span>
+                                    ${{ pending_offer.price }}</p>
+                                <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">تاريخ الخدمة المقترح:</span> {{ pending_offer.proposed_service_date|date:"d M, Y" }}
+                                </p>
+                            </div>
+                            <p class="font-semibold text-gray-700 mt-4"><span
+                                    class="font-semibold text-gray-700">الوصف:</span> {{ pending_offer.description }}</p>
+                        </div>
+
                         <form method="post" action="{% url 'orders:freelancer_discard_offer' pending_offer.id %}">
-                            {% csrf_token %}
+                        {% csrf_token %}
                             <button type="submit"
                                     class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
                                 حذف العرض
