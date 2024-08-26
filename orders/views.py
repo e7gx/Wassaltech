@@ -208,7 +208,7 @@ def end_order(request, order_id):
         
         elif hasattr(request.user, 'account') and request.user.account == order.customer:
             if order.freelancer_completed:
-                # Handle the review submission
+                #! Handle the review submission and order closure here
                 rating = request.POST.get('rating')
                 comment = request.POST.get('comment')
 
