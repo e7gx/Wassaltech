@@ -1,0 +1,108 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}الصفحة الرئيسية - وَصّلْتِك{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    .collapsible {
+        background-color: #ffffff;
+        color: rgb(0, 0, 0);
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        text-align: right;
+        font-size: 15px;
+        border-bottom: 1px solid #fe500e;
+      }
+      
+      .active, .collapsible:hover {
+        background-color: #ffffff;
+        border-bottom: 1px solid #fe500e;
+      }
+      
+      .collapsible:after {
+        content: '\002B';
+        color: #fe500e;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+      }
+      
+      .active:after {
+        content: "\2212";
+      }
+      
+      .content {
+        padding: 0 18px;
+        max-height: 0;
+        text-align: right;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+        background-color: #f1f1f1;
+      }
+      p{
+        color: #000;
+      }
+      ul{
+        color: #000;
+      }
+</style>
+<div dir="rtl">
+<h1 class="font-bold text-2xl">
+    سياسة الأستخدام 
+</h1>
+<button class="collapsible">لماذا  "وصلتك"</button>
+<div class="content">
+    <p>في "وصلتك"، نحن لا نقدم فقط خدمات إصلاح الأجهزة الإلكترونية؛ بل نقدم تجربة استثنائية تجمع بين الراحة والكفاءة العالية. إليك لماذا يجب عليك اختيارنا:</p>
+    <ul>
+        <li><strong>خدمة سريعة ومباشرة:</strong> نحن نعلم أن الوقت ثمين، لذا نضمن لك خدمة سريعة وفعالة تصل إلى باب منزلك، مما يوفر عليك عناء الذهاب إلى مراكز الصيانة.</li>
+        <li><strong>فريق فني محترف:</strong> يتألف فريقنا من فنيين مدربين ومؤهلين لضمان تقديم أعلى مستويات الجودة في إصلاح وصيانة أجهزتك. نحن نعتني بجميع التفاصيل لضمان أفضل أداء لجهازك.</li>
+        <li><strong>راحة البال:</strong> بفضل خدماتنا التي تأتي إلى منزلك، يمكنك الاستمتاع بالراحة وعدم القلق بشأن نقل أجهزتك الثقيلة إلى أماكن الصيانة. نحن نقدم خدماتنا في الوقت والمكان الذي يناسبك.</li>
+        <li><strong>جودة عالية وبأسعار معقولة:</strong> نلتزم بتقديم خدمات ذات جودة عالية وبأسعار شفافة ومعقولة، دون أي مفاجآت غير سارة. نحرص على رضا عملائنا الكامل من خلال تقديم قيمة حقيقية مقابل كل درهم تدفعه.</li>
+        <li><strong>سهولة التواصل:</strong> نقدم لك قناة تواصل مباشرة وسهلة للتنسيق مع فريقنا ومتابعة حالة طلبك بكل يسر وسلاسة.</li>
+    </ul>
+    <p>في "وصلتك"، هدفنا هو جعل تجربة إصلاح الأجهزة الإلكترونية أكثر سهولة وراحة، ونحن هنا لضمان أن كل عملية إصلاح تتم بأعلى جودة وأقصى سرعة. اخترنا لتكون شريكك في هذا المجال، ونعدك بأنك ستكون دائمًا في أيدٍ أمينة.</p>
+
+</div>
+<button class="collapsible">ما هي عمولة "وصلتك"؟</button>
+<div class="content">
+    <p> عمولة "وصلتك" هي 2.5%.</p></div>
+<button class="collapsible">سياسة الأستخدام </button>
+<div class="content">
+    <p>توضح سياسة الإلغاء التالية كيفية استرداد المبالغ بناءً على وقت إلغاء العرض:</p>
+    <ul>
+        <li><strong>إلغاء العرض بعد 24 ساعة من القبول:</strong> سيتم استرداد المبلغ بالكامل.</li>
+        <li><strong>إلغاء العرض في أقل من 24 ساعة وأكثر من 12 ساعة:</strong> سيتم استرداد نصف المبلغ.</li>
+        <li><strong>إلغاء العرض في أقل من 12 ساعة:</strong> لن يتم استرداد أي مبلغ.</li>
+    </ul></div>
+<button class="collapsible">هل تقبل "وصلتك" وثيقة العمل الحر للعاملين؟ </button>
+<div class="content">
+    <p> نعم، نحن في "وصلتك" نرحب بفخر بكل العاملين المستقلين الذين يمتلكون وثيقة العمل الحر. نحن نؤمن بأن المستقلين هم قلب الابتكار وروح الحرفية العالية، ولذلك نقدم لهم منصة مثالية لتعزيز مهاراتهم والتواصل مع العملاء بكل سهولة. من خلال قبول وثيقة العمل الحر، نهدف إلى دعم المستقلين وتمكينهم من تحقيق النجاح في مسيرتهم المهنية. انضم إلينا وكن جزءاً من شبكة عملائنا المتميزة التي تقدر الخبرات وتحتفل بالإبداع والتميز!</p>
+</div>
+</div>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } 
+      });
+    }
+    </script>
+{% endblock %}
