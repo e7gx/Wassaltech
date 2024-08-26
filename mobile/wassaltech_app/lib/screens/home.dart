@@ -7,6 +7,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:wassaltech_app/auth/login.dart';
 import 'package:wassaltech_app/chat/chat.dart';
 import 'package:wassaltech_app/model/offer_model.dart';
+import 'package:wassaltech_app/model/service/api_services.dart';
 import 'package:wassaltech_app/model/service/shared_preferences_service.dart';
 import 'package:wassaltech_app/screens/order_offers_chart.dart';
 import 'package:wassaltech_app/screens/reviews.dart';
@@ -22,8 +23,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<Offer>> _offersFuture;
-  int _offerCount = 0;
   double _totalPrice = 0.0;
   int _selectedIndex = 0;
   String _firstName = '';
@@ -38,16 +37,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _offersFuture = fetchOffers();
     _startPolling();
     _loadUserData();
   }
 
   void _startPolling() {
     Timer.periodic(const Duration(seconds: 1000), (Timer timer) {
-      setState(() {
-        _offersFuture = fetchOffers();
-      });
+      setState(() {});
     });
   }
 
@@ -67,8 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _calculateTotals(List<Offer> offers) {
     setState(() {
-      _offerCount = offers.length;
-      _totalPrice = offers.fold(0.0, (sum, offer) => sum + offer.price);
+      _totalPrice = offers.fold(0.0, (sum, offer) {
+        double offerPrice = double.tryParse(offer.price) ?? 0.0;
+        return sum + offerPrice;
+      });
     });
   }
 
@@ -82,8 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       Wallet(
-        offersFuture: _offersFuture,
-        offerCount: _offerCount,
+        offersFuture: fetchAllOffers(),
         totalPrice: _totalPrice,
       ),
       const OffersOrdersPage(),
@@ -215,34 +212,6 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.grey.shade100,
             thickness: 12,
           ),
-          // ListTile(
-          //   title: Text(
-          //     'Freelancers',
-          //     textAlign: TextAlign.center,
-          //     style: TextStyle(
-          //       fontFamily: 'Cairo',
-          //       fontWeight: FontWeight.bold,
-          //       fontSize: 24,
-          //       color: Colors.orange,
-          //     ),
-          //   ),
-          //   onTap: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => VerifyFreelancerPage(),
-          //       ),
-          //     );
-          //   },
-          //   leading: Icon(
-          //     Icons.rate_review_sharp,
-          //     color: Colors.orange,
-          //   ),
-          // ),
-          // Divider(
-          //   color: Colors.grey.shade100,
-          //   thickness: 12,
-          // ),
           _buildDrawerItem(
             'Chat',
             3,

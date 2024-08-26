@@ -37,17 +37,14 @@ class OfferDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16.0), // Add spacing
+            const SizedBox(height: 16.0), 
             _buildDetailCard(
                 Icons.insert_drive_file, 'Offer ID', offer.id.toString()),
             _buildDetailCard(
                 Icons.card_travel, 'Order ID', offer.orderId.toString()),
             _buildDetailCard(
                 Icons.person, 'Freelancer ID', offer.freelancerId.toString()),
-            _buildDetailCard(Icons.attach_money, 'Price',
-                '\$${offer.price.toStringAsFixed(2)}'),
-            _buildDetailCard(Icons.attach_money, 'Refund',
-                '\$${offer.refund.toStringAsFixed(2)}'),
+            _buildDetailCard(Icons.attach_money, 'Price', '\$${offer.price}'),
             _buildDetailCard(Icons.check, 'Complete On Time',
                 offer.completeOnTime ? 'Yes' : 'No'),
             _buildDetailCard(

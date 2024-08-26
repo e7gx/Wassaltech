@@ -32,7 +32,7 @@ def login(request, data: LoginSchema):
 
 @api.get("/offers/", response=List[OfferSchema])
 def list_offers(request):
-    return Offer.objects.filter(stage="Closed", order__status="Completed").all()
+    return Offer.objects.filter(stage="Closed", order__status="Completed").all() #! check this query
 
 
 
@@ -75,3 +75,10 @@ def get_reviews_all(request):
 def get_amount(request):
     total_amount = Payment.objects.filter(status=Payment.Status.DEPOSITED).aggregate(total_amount=Sum('amount'))['total_amount']
     return {'total_amount': total_amount}
+
+
+
+@api.get("/offers/all/", response=List[OfferSchema])
+def all_offers(request):
+    offers = Offer.objects.filter(stage="Completed", order__status="Closed").all()
+    return offers
