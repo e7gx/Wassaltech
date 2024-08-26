@@ -154,9 +154,15 @@ def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
     
 @login_required
 def admin_payment(request):
+    Payment.process_payments()
     if request.user.is_superuser:
         payments = Payment.objects.all()
         context = {'payments': payments}
         return render(request, 'analytics/admin_payment.html', context)
     else:
         return redirect('main:index')
+    
+    
+def admin_deposit(request):
+    Payment.deposit_payments()
+    return redirect('analytics:admin_payment')

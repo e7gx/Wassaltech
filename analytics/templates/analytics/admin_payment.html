@@ -6,11 +6,16 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-orange-700">عمليات الدفع</h1>
         </div>
+       <form action="{% url 'analytics:admin_deposit' %}">
+
         <div class="p-4 my-4">
-            <a href=""
-                class="bg-teal-700 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors duration-200">إضافة
-                عملية دفع</a>
+            <button type="submit"         class="bg-teal-700 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors duration-200">
+                عملية دفع
+        إضافة
+             </button>
         </div>
+
+       </form>
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
 
             <div class="overflow-x-auto">
@@ -18,17 +23,20 @@
                     <thead class="bg-orange-100">
                         <tr>
                             <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">رقم الطلب</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">المبلغ</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">مستردات العميل</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">مبالغ مزود الخدمة</th>
                             <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">العملة</th>
                             <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">الحالة</th>
                             <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">تاريخ الإنشاء</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">تحرير</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">تاريخ الايداع</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">ايداع</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         {% for payment in payments %}
                             <tr class="hover:bg-orange-50 transition-colors duration-200 text-center">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ payment.id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ payment.refund_amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ payment.amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ payment.currency }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -47,9 +55,11 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ payment.created_at }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ payment.deposit_date }}</td>
+
                                 <td class="px-6 py-4 text-sm font-medium">
-                                    <a href=""
-                                        class="text-yellow-600 hover:text-yellow-900 transition-colors duration-200 ml-2">تحرير</a>
+                                    <a href="{% url 'analytics:admin_deposit' %}"
+                                        class="text-yellow-600 hover:text-yellow-900 transition-colors duration-200 ml-2">إيداع</a>
                                 </td>
                             </tr>
                         {% endfor %}
