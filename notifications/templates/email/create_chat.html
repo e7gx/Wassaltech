@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir='rlt'>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            color: #333;
+            color: #fff;
             margin: 0;
             padding: 0;
         }
@@ -63,7 +63,7 @@
         }
     </style>
 </head>
-<body>
+<body dir="rtl">
     <div class="email-container">
         <div class="header">
             <h1>New Chat Created</h1>
@@ -72,7 +72,7 @@
             <h2>Hello, {{ user }}!</h2>
             <p>A new chat has been created for your order <strong>#{{ name_order }}</strong> with freelancer <strong>{{ freelancer }}</strong>.</p>
             <p><strong>Order Description:</strong> {{ description_order }}</p>
-            <a href="#" class="button">View Chat</a>
+            <a href="" class="button">View Chat</a>
         </div>
         <div class="footer">
             <p>&copy; 2024 Your Company. All rights reserved.</p>
