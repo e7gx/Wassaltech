@@ -305,11 +305,13 @@ def create_offer(request, order_id):
     if request.method == 'POST':
         form = OfferForm(request.POST)
         if form.is_valid():
+            
             offer = form.save(commit=False)
             offer.order = order
             offer.freelancer = freelancer
+            sendemail.notify_new_offer(freelancer, order, price=offer.price)
             offer.save()
-            sendemail.notify_new_offer(freelancer, order, offer.price)
+
             messages.success(request, "Your offer has been submitted successfully.")
 
             return redirect('orders:freelancer_orders')
@@ -464,6 +466,7 @@ def customer_cancel_offer(request, offer_id):
                 order.status = 'Open'
                 order.assigned_to = None
                 order.save()
+                sendemail.notify_cancel_offer(offer , order)
             except Exception as e:
                 print(e)
     else:

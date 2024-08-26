@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir='rlt'>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Offer on Your Order</title>
+    <title>عرض جديد على طلبك</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            color: #333;
+            color: #fff;
             margin: 0;
             padding: 0;
         }
@@ -21,7 +21,7 @@
             padding: 20px;
         }
         .header {
-            background-color: #ff7f50; /* Orange color */
+            background-color: #ff7f50; /* لون برتقالي */
             padding: 10px;
             border-radius: 5px 5px 0 0;
             color: #ffffff;
@@ -31,12 +31,12 @@
             padding: 20px;
         }
         .content h2 {
-            color: #ff7f50; /* Orange color */
+            color: #ff7f50; /* لون برتقالي */
         }
         .button {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #ff7f50; /* Orange color */
+            background-color: #ff7f50; /* لون برتقالي */
             color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
@@ -50,20 +50,20 @@
         }
     </style>
 </head>
-<body>
+<body dir="rtl">
     <div class="email-container">
         <div class="header">
-            <h1>New Offer on Your Order</h1>
+            <h1>عرض جديد على طلبك!</h1>
         </div>
         <div class="content">
-            <h2>Hello, {{ name_customer }}!</h2>
-            <p>You have received a new offer on your order <strong>#{{ number_order }}</strong>.</p>
-            <p><strong>Description:</strong> {{ description }}</p>
-            <p><strong>Offer Price:</strong> ${{ price }}</p>
-            <a href="#" class="button">View Offer</a>
+            <h2>مرحباً، {{ name_customer }}!</h2>
+            <p>لقد تلقيت عرضًا جديدًا على طلبك <strong>#{{ number_order }}</strong>.</p>
+            <p><strong>الوصف:</strong> {{ description }}</p>
+            <p><strong>سعر العرض:</strong> ${{ price }}</p>
+            <a href="#" class="button">عرض العرض</a>
         </div>
         <div class="footer">
-            <p>&copy; 2024 Your Company. All rights reserved.</p>
+            <p>&copy; 2024 شركتك. جميع الحقوق محفوظة.</p>
         </div>
     </div>
 </body>
