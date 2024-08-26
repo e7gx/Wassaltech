@@ -204,10 +204,10 @@ def end_order(request, order_id):
             order.freelancer_completed = True
             order.save()
             messages.success(request, 'You have successfully marked the order as closed. The customer can now finalize the order.')
-        
+
         elif hasattr(request.user, 'account') and request.user.account == order.customer:
             if order.freelancer_completed:
-                #! Handle the review submission and order closure here
+                # Handle the review submission
                 rating = request.POST.get('rating')
                 comment = request.POST.get('comment')
 
@@ -231,6 +231,7 @@ def end_order(request, order_id):
                         offer.complete_on_time = True
                     
                     offer.save()
+                    # offer.freelancer.update_internal_rating()
                     messages.success(request, 'You have successfully submitted the review and closed the order.')
                 else:
                     messages.error(request, 'Rating is required to close the order.')
@@ -369,6 +370,7 @@ def order_offers(request, order_id):
 
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
     offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user')
+    # offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user').order_by('-freelancer__internal_rating')
 
     context = {
         'order': order,
@@ -525,13 +527,14 @@ def freelancer_cancel_offer(request, offer_id):
                 offer.save()
 
                 offer.payment.freelancer_cancel_payment()
-                offer.freelancer.update_internal_rating()
 
                 order.status = 'Open'
 
                 order.assigned_to = None
 
                 order.save()
+
+                offer.freelancer.update_internal_rating()
 
             except Exception as e:
                 print(e)

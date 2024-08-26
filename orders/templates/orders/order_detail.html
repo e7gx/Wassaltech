@@ -5,12 +5,14 @@
 {% block content %}
 <div class="bg-gray-100 min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
+        {% if offer %}
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-orange-700">تفاصيل الطلب #{{ order.id }}</h1>
             <a href="{% url 'orders:export_pdf_from_html' order.id %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
                 طباعة PDF
             </a>
         </div>
+        {% endif %}
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Order Information -->
@@ -162,26 +164,48 @@
 
 <!-- Review Modal -->
 <dialog id="review_modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <form method="post" action="{% url 'orders:end_order' order.id %}" id="review_form">
-            {% csrf_token %}
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">تقييم الخدمة</h3>
-            {{ review_form.as_p }}
-            <div class="flex justify-end mt-6">
-                <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mx-2">تقديم التقييم وإكمال الطلب</button>
-                <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out" onclick="closeReviewModal()">إلغاء</button>
-            </div>
-        </form>
-    </div>
-</dialog>
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <form method="post" action="{% url 'orders:end_order' order.id %}" id="review_form">
+                        {% csrf_token %}
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">تقييم الخدمة</h3>
 
-<script>
-    function showReviewModal() {
-        document.getElementById('review_modal').style.display = 'block';
-    }
+                        <div>
+                            <label for="rating" class="block text-gray-700">تقييم:</label>
+                            <select name="rating" id="rating" class="block w-full p-2 mt-1 border rounded" required>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
 
-    function closeReviewModal() {
-        document.getElementById('review_modal').style.display = 'none';
-    }
-</script>
+                        <div class="mt-4">
+                            <label for="comment" class="block text-gray-700">التعليق:</label>
+                            <textarea name="comment" id="comment" rows="4" class="block w-full p-2 mt-1 border rounded"></textarea>
+                        </div>
+
+                        <div class="flex justify-end mt-6">
+                            <button type="submit"
+                                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mx-2">
+                                تقديم التقييم وإكمال الطلب
+                            </button>
+                            <button type="button"
+                                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out"
+                                    onclick="closeReviewModal()">إلغاء
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+
+            <script>
+                function showReviewModal() {
+                    document.getElementById('review_modal').style.display = 'block';
+                }
+
+                function closeReviewModal() {
+                    document.getElementById('review_modal').style.display = 'none';
+                }
+            </script>
 {% endblock %}
