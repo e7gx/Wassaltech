@@ -7,9 +7,24 @@ Future<List<Offer>> fetchOffers() async {
   final response =
       await http.get(Uri.parse('http://127.0.0.1:8000/api/offers/'));
 
+  // print('API Response Data: ${json.decode(response.body)}');
+
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body);
-    print('API Response Data: $data');
+    return data.map((json) => Offer.fromJson(json)).toList();
+  } else {
+    throw Exception('Failed to load offers');
+  }
+}
+
+Future<List<Offer>> fetchAllOffers() async {
+  final response =
+      await http.get(Uri.parse('http://127.0.0.1:8000/api/offers/all/'));
+
+  // print('API Response Data: ${json.decode(response.body)}');
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
     return data.map((json) => Offer.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load offers');
@@ -34,7 +49,6 @@ Future<double> fetchDepositedAmount() async {
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = json.decode(response.body);
-    // Convert the string to double
     return double.parse(data['total_amount'] as String);
   } else {
     throw Exception('Failed to load deposited amount');
@@ -83,9 +97,9 @@ Future<double> fetchReviewsCount() async {
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = json.decode(response.body);
-    print('Received data: $data');
+    // print('Received data: $data');
     final ratingAvg = data['rating_avg'];
-    print('Type of rating_avg: ${ratingAvg.runtimeType}');
+    // print('Type of rating_avg: ${ratingAvg.runtimeType}');
     if (ratingAvg is num) {
       return ratingAvg.toDouble();
     } else if (ratingAvg is String) {

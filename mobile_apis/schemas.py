@@ -11,7 +11,6 @@ class OfferSchema(Schema):
     order_id: int
     freelancer_id: int
     price: Decimal
-    refund: Decimal
     complete_on_time: bool
     description: str
     proposed_service_date: datetime
