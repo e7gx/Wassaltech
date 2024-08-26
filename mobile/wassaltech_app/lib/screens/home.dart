@@ -6,11 +6,11 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 // import 'package:lottie/lottie.dart';
 import 'package:wassaltech_app/auth/login.dart';
 import 'package:wassaltech_app/chat/chat.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/shared_preferences_service.dart';
 import 'package:wassaltech_app/screens/order_offers_chart.dart';
 import 'package:wassaltech_app/screens/reviews.dart';
 import 'package:wassaltech_app/screens/users_dashboard.dart';
-import 'package:wassaltech_app/model/service/api_services.dart';
 // import 'package:wassaltech_app/screens/verify_freelancer_screen.dart';
 import 'package:wassaltech_app/screens/wassalthech_wallet.dart';
 

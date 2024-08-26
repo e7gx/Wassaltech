@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:wassaltech_app/model/reviews_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'package:intl/intl.dart';
 import 'package:wassaltech_app/screens/review_detail_page.dart';

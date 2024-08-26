@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'offer_details_page.dart';
 
@@ -20,13 +21,16 @@ class Wallet extends StatefulWidget {
 
 class _WalletState extends State<Wallet> {
   late Future<int> _ordersCountFuture;
-  late Future<int> _reviewsCountFuture;
+  late Future<double> _depositedAmountFuture;
+  late Future<double> _reviewsCountFuture;
 
   @override
   void initState() {
     super.initState();
     _ordersCountFuture = fetchOrdersCount();
     _reviewsCountFuture = fetchReviewsCount();
+    _depositedAmountFuture =
+        fetchDepositedAmount(); // Fetch the deposited amount
   }
 
   @override
@@ -60,7 +64,7 @@ class _WalletState extends State<Wallet> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   final ordersCount = snapshot.data!;
-                  return FutureBuilder<int>(
+                  return FutureBuilder<double>(
                     future: _reviewsCountFuture,
                     builder: (context, reviewsSnapshot) {
                       if (reviewsSnapshot.connectionState ==
@@ -74,22 +78,44 @@ class _WalletState extends State<Wallet> {
                             child: Text('Error: ${reviewsSnapshot.error}'));
                       } else {
                         final reviewsCount = reviewsSnapshot.data!;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16.0),
-                            Text(
-                              'Summary',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange[800],
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            _buildSummaryCard(ordersCount, reviewsCount)
-                          ],
+                        return FutureBuilder<double>(
+                          future: _depositedAmountFuture,
+                          builder: (context, depositedSnapshot) {
+                            if (depositedSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                    color: Colors.orangeAccent),
+                              );
+                            } else if (depositedSnapshot.hasError) {
+                              return Center(
+                                  child: Text(
+                                      'Error: ${depositedSnapshot.error}'));
+                            } else {
+                              final depositedAmount = depositedSnapshot.data!;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 16.0),
+                                  Text(
+                                    'Summary',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orange[800],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16.0),
+                                  _buildSummaryCard(
+                                    ordersCount,
+                                    reviewsCount,
+                                    depositedAmount,
+                                  ),
+                                ],
+                              );
+                            }
+                          },
                         );
                       }
                     },
@@ -104,7 +130,8 @@ class _WalletState extends State<Wallet> {
     );
   }
 
-  Widget _buildSummaryCard(int ordersCount, int reviewsCount) {
+  Widget _buildSummaryCard(
+      int ordersCount, double reviewsCount, double depositedAmount) {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(
@@ -119,7 +146,7 @@ class _WalletState extends State<Wallet> {
             const SizedBox(height: 16.0),
             _buildSummaryTile(
               'Wassaltech Wallet',
-              '\SAR: ${widget.totalPrice.toStringAsFixed(2)}',
+              '\SAR: ${depositedAmount.toStringAsFixed(2)}', // Use the fetched amount here
               Icon(
                 Icons.account_balance_wallet,
                 color: Colors.orange[800],
@@ -170,9 +197,7 @@ class _WalletState extends State<Wallet> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.orangeAccent,
-              ),
+              child: CircularProgressIndicator(color: Colors.orangeAccent),
             );
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -296,18 +321,10 @@ class _WalletState extends State<Wallet> {
                       child: Text(
                         'View Details',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange[800],
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 9.0,
-                          horizontal: 26.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.white,
+                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),

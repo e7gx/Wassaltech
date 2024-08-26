@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wassaltech_app/model/service/api_services.dart';
+import 'package:wassaltech_app/model/reviews_model.dart';
 import 'package:intl/intl.dart';
 
 class ReviewDetailPage extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wassaltech_app/model/service/api_services.dart';
+import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:intl/intl.dart';
 
 class OfferDetailsPage extends StatelessWidget {
