@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}الصفحة الرئيسية - وَصّلْتِك{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div dir="rtl" class="text-black relative container px-4 m-6 mx-auto mt-8 md:mt-20">
+<h1 class="font-bold text-2xl">
+    سياسة الإلغاء 
+</h1>
+
+<div>
+    
+    <p>نحن في "وصلتك" نحرص على تقديم أفضل تجربة لعملائنا، لذا نود توضيح سياسة الإلغاء الخاصة بنا لضمان الشفافية والراحة لجميع الأطراف المعنية:</p>
+    <ul>
+        <li><strong>إذا قام العميل بإلغاء العرض بعد 24 ساعة من القبول:</strong> سيتم استرداد المبلغ بالكامل.</li>
+        <li><strong>إذا قام العميل بإلغاء العرض في أقل من 24 ساعة وأكثر من 12 ساعة:</strong> سيتم استرداد نصف المبلغ.</li>
+        <li><strong>إذا قام العميل بإلغاء العرض في أقل من 12 ساعة:</strong> لن يتم استرداد أي مبلغ.</li>
+    </ul>
+    <p>نحن نقدر تفهمك ونتطلع إلى تقديم أفضل الخدمات لك دائماً. إذا كان لديك أي استفسارات أخرى، لا تتردد في التواصل معنا.</p>
+</div>
+</div>
+{% endblock %}
