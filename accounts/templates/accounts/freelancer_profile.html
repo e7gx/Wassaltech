@@ -7,23 +7,23 @@
         <div class="container mx-auto px-4 py-8">
             <!-- Header Section -->
             <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
-                <div class="bg-gradient-to-l from-orange-500 to-orange-600 p-6 sm:p-10">
+                <div class="bg-gradient-to-r from-orange-600 to-orange-400 p-6 sm:p-10">
                     <div class="flex flex-col sm:flex-row items-center justify-between">
                         <div class="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
                             <img src="{{ user.account.avatar.url }}" alt="الصورة الرمزية"
-                                 class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 sm:mb-0 sm:ml-6">
+                                 class="w-28 h-28 rounded-full border-4 border-white shadow-lg mb-4 sm:mb-0 sm:ml-6">
                             <div class="text-center sm:text-right">
-                                <h1 class="text-3xl font-bold text-white mb-2">{{ user.first_name }} {{ user.last_name }}</h1>
-                                <p class="text-xl text-white opacity-90">مزود خدمة</p>
+                                <h1 class="text-4xl font-bold text-white mb-2">{{ user.first_name }} {{ user.last_name }}</h1>
+                                <p class="text-2xl text-white opacity-90">مزود خدمة محترف</p>
                             </div>
                         </div>
-                        <div class="text-center sm:text-right">
-                            <p class="text-xl font-semibold text-white">التقييم</p>
-                            <p class="text-2xl font-bold text-white">
+                        <div class="text-center sm:text-right bg-white bg-opacity-20 p-4 rounded-lg">
+                            <p class="text-xl font-semibold text-white">تقييم الخدمة</p>
+                            <p class="text-3xl font-bold text-white">
                                 {% if rating %}
                                     {{ rating }} /5.0 ⭐️
                                 {% else %}
-                                    لم يتم التقييم بعد
+                                    جديد
                                 {% endif %}
                             </p>
                         </div>
@@ -31,130 +31,96 @@
                 </div>
             </div>
 
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المعلقة</h3>
-                    <p class="text-3xl font-bold text-orange-600">
-                        {% if total_amount_pending_deposit %}
-                            {{ total_amount_pending_deposit }} $
-                        {% else %}
-                            0 $
-                        {% endif %}
-                    </p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">تجهيز المبالغ المعلقة </h3>
-                    <p class="text-3xl font-bold text-orange-600"></p>
-                    <form action="{% url 'orders:process_payments' %}" method="post">
-                        {% csrf_token %}
-                        <button class="bg-orange-500 py-2 px-8 rounded-full" type="submit">Process Payments</button>
-                    </form>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المحولة</h3>
-                    <p class="text-3xl font-bold text-orange-600">
-                        {% if total_amount_deposited %}
-                            {{ total_amount_deposited }} $
-                        {% else %}
-                            0 $
-                        {% endif %}
-                    </p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">تحويل المبالغ المعلقة</h3>
-                    <p class="text-3xl font-bold text-orange-600">
-                    <form action="{% url 'orders:deposit_payments' %}" method="post">
-                        {% csrf_token %}
-                        <button class="bg-orange-500 py-2 px-8 rounded-full" type="submit">Deposit Payments</button>
-                    </form>
-                    </p>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">الطلبات المكتملة</h3>
-                    <p class="text-3xl font-bold text-green-600">{{ orders_completed }}</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6 text-center transition duration-300 ease-in-out transform hover:scale-105">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">الطلبات قيد العمل</h3>
-                    <p class="text-3xl font-bold text-blue-600">{{ orders_in_progress }}</p>
-                </div>
-            </div>
-
             <!-- Main Content -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Right Column (changed from Left) -->
+                <!-- Left Column -->
+                <div>
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">معلومات الاعتماد</h2>
+                        <p class="mb-3"><span class="font-semibold text-gray-700">رقم الشهادة:</span> {{ user.freelancer.certificate_id }}</p>
+                        <p class="mb-3"><span class="font-semibold text-gray-700">تاريخ انتهاء الصلاحية:</span> {{ user.freelancer.certificate_expiration|date:"Y-m-d" }}</p>
+                        <p class="mb-4"><span class="font-semibold text-gray-700">حالة التحقق:</span>
+                            {% if user.freelancer.is_verified %}
+                                <span class="px-3 py-1 rounded-full text-sm text-white bg-green-500 mr-2">معتمد</span>
+                            {% else %}
+                                <span class="px-3 py-1 rounded-full text-sm text-white bg-red-500 mr-2">قيد المراجعة</span>
+                            {% endif %}
+                        </p>
+                        <div class="mt-4">
+                            <p class="font-semibold text-gray-700 mb-2">صورة الشهادة:</p>
+                            <img src="{{ user.freelancer.certificate_image.url }}" alt="الشهادة"
+                                 class="rounded-lg shadow-lg w-full object-cover transition duration-300 hover:scale-105">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Column -->
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">معلومات المستخدم</h2>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">الملف الشخصي</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <p class="mb-2"><span
-                                        class="font-semibold text-gray-700">اسم المستخدم:</span> {{ user.username }}</p>
-                                <p class="mb-2"><span
-                                        class="font-semibold text-gray-700">الاسم الكامل:</span> {{ user.first_name }} {{ user.last_name }}
-                                </p>
-                                <p class="mb-2"><span class="font-semibold text-gray-700">البريد الإلكتروني:</span> <a
-                                        href="mailto:{{ user.email }}"
-                                        class="text-orange-600 hover:text-orange-800">{{ user.email }}</a></p>
+                                <p class="mb-2"><span class="font-semibold text-gray-700">اسم المستخدم:</span> {{ user.username }}</p>
+                                <p class="mb-2"><span class="font-semibold text-gray-700">الاسم الكامل:</span> {{ user.first_name }} {{ user.last_name }}</p>
+                                <p class="mb-2"><span class="font-semibold text-gray-700">البريد الإلكتروني:</span> <a href="mailto:{{ user.email }}" class="text-orange-600 hover:text-orange-800">{{ user.email }}</a></p>
                             </div>
                             <div>
-                                <p class="mb-2"><span class="font-semibold text-gray-700">رقم الهاتف:</span> <a
-                                        href="tel:{{ user.account.phone_number }}"
-                                        class="text-orange-600 hover:text-orange-800">{{ user.account.phone_number }}</a>
-                                </p>
-                                <p class="mb-2"><span
-                                        class="font-semibold text-gray-700">العنوان:</span> {{ user.account.address }}
-                                </p>
-                                <p class="mb-2"><span
-                                        class="font-semibold text-gray-700">تاريخ إنشاء الحساب:</span> {{ user.date_joined|date:"Y-m-d" }}
-                                </p>
+                                <p class="mb-2"><span class="font-semibold text-gray-700">رقم الهاتف:</span> <a href="tel:{{ user.account.phone_number }}" class="text-orange-600 hover:text-orange-800">{{ user.account.phone_number }}</a></p>
+                                <p class="mb-2"><span class="font-semibold text-gray-700">العنوان:</span> {{ user.account.address }}</p>
+                                <p class="mb-2"><span class="font-semibold text-gray-700">تاريخ الانضمام:</span> {{ user.date_joined|date:"Y-m-d" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">إحصائيات الأداء</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-orange-100 rounded-lg p-4 text-center transition duration-300 hover:bg-orange-200">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">الطلبات المكتملة</h3>
+                                <p class="text-3xl font-bold text-green-600">{{ orders_completed }}</p>
+                            </div>
+                            <div class="bg-orange-100 rounded-lg p-4 text-center transition duration-300 hover:bg-orange-200">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">الطلبات الجارية</h3>
+                                <p class="text-3xl font-bold text-blue-600">{{ orders_in_progress }}</p>
+                            </div>
+                            <div class="bg-orange-100 rounded-lg p-4 text-center transition duration-300 hover:bg-orange-200">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">إجمالي العروض</h3>
+                                <p class="text-3xl font-bold text-orange-600">{{ orders_count }}</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">الإحصائيات</h2>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">الأداء المالي</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="bg-gray-100 rounded-lg p-4">
-                                <h3 class="text-lg font-semibold text-gray-700 mb-2">القسم الأكثر صيانة</h3>
-                                <p class="text-xl font-bold text-orange-600">
-                                    {% if best_catgorie %}
-                                        {{ best_catgorie }}
+                            <div class="bg-gray-100 rounded-lg p-4 text-center">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المعلقة</h3>
+                                <p class="text-3xl font-bold text-orange-600">
+                                    {% if total_amount_pending_deposit %}
+                                        {{ total_amount_pending_deposit }} $
                                     {% else %}
-                                        لم يتم التحديد
+                                        0 $
                                     {% endif %}
                                 </p>
+                                <form action="{% url 'orders:process_payments' %}" method="post" class="mt-2">
+                                    {% csrf_token %}
+                                    <button class="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-full transition duration-300" type="submit">معالجة الدفعات</button>
+                                </form>
                             </div>
-                            <div class="bg-gray-100 rounded-lg p-4">
-                                <h3 class="text-lg font-semibold text-gray-700 mb-2">مجموع العروض المقدمة</h3>
-                                <p class="text-xl font-bold text-orange-600">{{ orders_count }}</p>
+                            <div class="bg-gray-100 rounded-lg p-4 text-center">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المحولة</h3>
+                                <p class="text-3xl font-bold text-green-600">
+                                    {% if total_amount_deposited %}
+                                        {{ total_amount_deposited }} $
+                                    {% else %}
+                                        0 $
+                                    {% endif %}
+                                </p>
+                                <form action="{% url 'orders:deposit_payments' %}" method="post" class="mt-2">
+                                    {% csrf_token %}
+                                    <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full transition duration-300" type="submit">تحويل الدفعات</button>
+                                </form>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Left Column (changed from Right) -->
-                <div>
-                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">موثوقية مزود الخدمة</h2>
-                        <p class="mb-2"><span
-                                class="font-semibold text-gray-700">رقم الشهادة:</span> {{ user.freelancer.certificate_id }}
-                        </p>
-                        <p class="mb-2"><span
-                                class="font-semibold text-gray-700">تاريخ انتهاء الشهادة:</span> {{ user.freelancer.certificate_expiration|date:"Y-m-d" }}
-                        </p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">حالة التحقق:</span>
-                            {% if user.freelancer.is_verified %}
-                                <span class="px-2 py-1 rounded-full text-xs text-white bg-green-500 mr-2">تم التحقق</span>
-                            {% else %}
-                                <span class="px-2 py-1 rounded-full text-xs text-white bg-red-500 mr-2">لم يتم التحقق</span>
-                            {% endif %}
-                        </p>
-                        <div class="mt-4">
-                            <p class="font-semibold text-gray-700 mb-2">الشهادة:</p>
-                            <img src="{{ user.freelancer.certificate_image.url }}" alt="الشهادة"
-                                 class="rounded-lg shadow-lg w-full object-cover">
                         </div>
                     </div>
                 </div>

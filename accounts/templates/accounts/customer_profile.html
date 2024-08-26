@@ -3,6 +3,49 @@
 {% block title %}الملف الشخصي للعميل - {{ user.first_name }}{% endblock %}
 
 {% block content %}
+
+<style>
+    
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none; /* يبدأ مخفيًا */
+        justify-content: center;
+        align-items: center;
+    }
+
+    
+    .popup-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        width: 80%;
+        max-width: 400px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    
+    .close-btn {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .edit-profile {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 1rem;
+      }
+</style>
+
 <div class="bg-gray-100 min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
         <!-- Header Section -->
@@ -53,10 +96,101 @@
 
         <!-- Edit Button -->
         <div class="text-center">
-            <a href="" class="inline-block bg-orange-600 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-orange-700 transition-colors duration-300 text-lg font-semibold">
+            <button  onclick="showPopup()" class="inline-block bg-orange-600 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-orange-700 transition-colors duration-300 text-lg font-semibold">
                 تعديل الملف الشخصي
-            </a>
+            </button>
         </div>
     </div>
+
+    <div id="popup" class="popup-overlay">
+        <div class="popup-content" style="color: black;">
+            <h2 class="font-bold">تعديل الملف الشخصي </h2>
+            
+            <div>
+                <form id="signupForm" action="{% url 'accounts:Edit_Profile' user.id %}" method="post" enctype="multipart/form-data"
+                class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="signup" value="signup" />
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div class="col-span-2">
+                        <label for="signup-username" class="block text-sm font-medium text-gray-700 text-right">اسم المستخدم</label>
+                        <input id="signup-username" name="username" type="text" placeholder="أدخل اسم المستخدم" value="{{ user.username }}"
+                               class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                               focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                               transition duration-300 text-right"
+                               required>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700 text-right">البريد الإلكتروني</label>
+                        <input id="email" name="email" type="email" placeholder="أدخل البريد الإلكتروني" value="{{ user.email }}"
+                               class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                               focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                               transition duration-300 text-right"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 text-right">الإسم الأول</label>
+                        <input id="first_name" name="first_name" placeholder="أدخل الإسم الأول" value="{{ user.first_name }} "
+                               class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                               focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                               transition duration-300 text-right"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 text-right">الإسم الثاني</label>
+                        <input id="last_name" name="last_name" placeholder="أدخل اسم العائلة" value="{{ user.last_name }}"
+                               class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                               focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                               transition duration-300 text-right"
+                               required>
+                    </div>
+
+
+                    <div>
+                        <label for="phone_number" class="block text-sm font-medium text-gray-700 text-right">رقم الهاتف</label>
+                        <input id="phone_number" name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" value="{{ user.account.phone_number }}"
+                               class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                               focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                               transition duration-300 text-right"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 text-right">العنوان</label>
+                        <input id="address" name="address" type="text" placeholder="أدخل العنوان" value="{{ user.account.address }}" 
+                               class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                               focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
+                               transition duration-300 text-right"
+                               required>
+                    </div>
+
+                   
+                </div>
+                <div class="edit-profile">
+                <button class=" w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-300">
+                    تحديث الملف الشخصي 
+                </button>
+                <a class="close-btn" onclick="closePopup()">إغلاق</a>
+            </div>
+            </form>
+            </div>
+            
+        </div>
+    </div>
+    
+        <script>
+            function showPopup() {
+                document.getElementById("popup").style.display = "flex";
+            }
+    
+            function closePopup() {
+                document.getElementById("popup").style.display = "none";
+            }
+        </script>
+    
 </div>
 {% endblock %}

@@ -218,3 +218,21 @@ def freelancer_profile(request, freelancer_id):
 
 def inbox(request):
     return render(request, 'accounts/inbox.html')
+
+@login_required
+def Edit_Profile(request , user_id):
+    if request.method == 'POST':
+        user = User.objects.get(pk = user_id)
+        account = Account.objects.get(user = user)
+        user.first_name = request.POST.get('first_name' , user.first_name)
+        user.last_name = request.POST.get('last_namr' , user.last_name)
+        user.email = request.POST.get('email' , user.email)
+        user.username = request.POST.get('username', user.username)
+        account.phone_number = request.POST.get('phone_number' , account.phone_number)
+        account.address = request.POST.get('address' , account.address)
+        user.save()
+        account.save()
+        return redirect('accounts:customer_view_profile')
+    return redirect('accounts:customer_view_profile')
+        
+        
