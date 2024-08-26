@@ -20,7 +20,7 @@
                         <p class="text-xl font-semibold text-white">التقييم</p>
                         <p class="text-2xl font-bold text-white">
                             {% if rating %}
-                                {{rating}} /5.0 ⭐️
+                            {{ rating|floatformat:2 }} /5.0 ⭐️
                             {% else %}
                                 لم يتم التقييم بعد
                             {% endif %}
