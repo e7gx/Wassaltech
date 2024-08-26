@@ -245,7 +245,7 @@ def end_order(request, order_id):
         else:
             return redirect('orders:freelancer_orders')
 
-    return render(request, 'some_template.html', {'order': order, 'offer': offer})
+    return render(request, 'orders/order_detail.html', {'order': order, 'offer': offer})
 
 
 

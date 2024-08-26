@@ -36,6 +36,7 @@ def list_offers(request):
 
 
 
+
 @api.get("/users/count", response=Dict[str, int])
 def get_user_count(request):
     user_count = Account.objects.count()

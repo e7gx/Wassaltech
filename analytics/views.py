@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum, Avg, Q
@@ -152,11 +152,45 @@ def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
     else:
         return redirect('main:index')
     
+
+from .forms import PaymentFilterForm
+
 @login_required
 def admin_payment(request):
+    Payment.process_payments()
     if request.user.is_superuser:
+        form = PaymentFilterForm(request.GET or None)
         payments = Payment.objects.all()
-        context = {'payments': payments}
+
+        # Apply filters
+        if form.is_valid():
+            status = form.cleaned_data.get('status')
+            if status:
+                payments = payments.filter(status=status)
+
+        context = {
+            'payments': payments,
+            'form': form,
+        }
         return render(request, 'analytics/admin_payment.html', context)
+    else:
+        return redirect('main:index')
+    
+@login_required
+def admin_deposit(request):
+    if request.user.is_superuser:
+        Payment.deposit_payments()
+        return redirect('analytics:admin_payment')
+    else:
+        return redirect('main:index')
+    
+    
+#! We need to check this , Update the deposit status of the current payment to 'Deposited' for one order only not all of them
+@login_required
+def admin_deposit_payment(request, pk):
+    if request.user.is_superuser:
+        payment = get_object_or_404(Payment, pk=pk)
+        payment.deposit_payments()  
+        return redirect('analytics:admin_payment')
     else:
         return redirect('main:index')
