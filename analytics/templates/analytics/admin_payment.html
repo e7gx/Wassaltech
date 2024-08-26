@@ -6,28 +6,28 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-orange-700">عمليات الدفع</h1>
         </div>
+        <div class="p-4 my-4">
+            <a href=""
+                class="bg-teal-700 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors duration-200">إضافة
+                عملية دفع</a>
+        </div>
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="overflow-x-auto">
-                <div class="p-4 my-4">
-                    <a href=""
-                        class="bg-teal-700 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors duration-200">إضافة
-                        عملية دفع</a>
-                </div>
 
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm text-right rtl:text-right text-gray-500">
                     <thead class="bg-orange-100">
                         <tr>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">رقم الطلب</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">المبلغ</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">العملة</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">الحالة</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">تاريخ الإنشاء</th>
-                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider">تحرير</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">رقم الطلب</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">المبلغ</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">العملة</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">الحالة</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">تاريخ الإنشاء</th>
+                            <th class="px-6 py-3 text-xs font-medium text-orange-700 uppercase tracking-wider text-center">تحرير</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         {% for payment in payments %}
-                            <tr class="hover:bg-orange-50 transition-colors duration-200">
+                            <tr class="hover:bg-orange-50 transition-colors duration-200 text-center">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ payment.id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ payment.amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ payment.currency }}</td>
