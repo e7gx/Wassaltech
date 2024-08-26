@@ -46,8 +46,7 @@ class Freelancer(models.Model):
         Returns:
             int: The count of offers in the 'Completed' stage.
         """
-        completion_count = self.offer_set.filter(stage='Completed').count() or 0
-        return completion_count
+        return self.offer_set.filter(stage='Completed').count() or 0
 
     def get_cancellation_count(self) -> int:
         """
@@ -56,8 +55,7 @@ class Freelancer(models.Model):
         Returns:
             int: The count of offers in the 'Cancelled' stage.
         """
-        cancellation_count = self.offer_set.filter(stage='Cancelled').count() or 0
-        return cancellation_count
+        return self.offer_set.filter(stage='Cancelled').count() or 0
 
     def get_completion_rate(self) -> float:
         """
@@ -69,10 +67,14 @@ class Freelancer(models.Model):
         Returns:
             float: The completion rate of the freelancer.
         """
-        if self.offer_set.filter(Q(stage='Completed') | Q(stage='Cancelled')).exists() is False:
-            return 1
-        completion_rate = self.get_completion_count() / (self.get_completion_count() + self.get_cancellation_count())
-        return completion_rate
+        completed_count = self.get_completion_count()
+        cancelled_count = self.get_cancellation_count()
+        total_count = completed_count + cancelled_count
+
+        if total_count == 0:
+            return 1.0  # Default to 1 (100%) if there are no completed or cancelled offers
+
+        return completed_count / total_count
 
     def get_timely_completion_count(self) -> int:
         """
@@ -81,8 +83,7 @@ class Freelancer(models.Model):
         Returns:
             int: The count of offers completed on time.
         """
-        timely_completion_count = self.offer_set.filter(stage='Completed', complete_on_time=True).count()
-        return timely_completion_count
+        return self.offer_set.filter(stage='Completed', complete_on_time=True).count() or 0
 
     def get_success_rate(self) -> float:
         """
@@ -94,10 +95,12 @@ class Freelancer(models.Model):
         Returns:
             float: The success rate of the freelancer.
         """
-        if self.offer_set.filter(stage='Completed').exists() is False:
-            return 1
-        success_rate = self.get_timely_completion_count() / self.get_completion_count()
-        return success_rate
+        completed_count = self.get_completion_count()
+        if completed_count == 0:
+            return 1.0  # Default to 1 (100%) if there are no completed offers
+
+        timely_completed_count = self.get_timely_completion_count()
+        return timely_completed_count / completed_count
 
     def get_freelancer_rating(self) -> float:
         """
@@ -109,12 +112,15 @@ class Freelancer(models.Model):
         Returns:
             float: The average rating of the freelancer.
         """
-        if self.offer_set.filter(stage='Completed').exists() is False:
-            return 1
-        average_rating = self.offer_set.annotate(rating=F('review__rating')).aggregate(avg_rating=Avg('rating'))[
-            'avg_rating']
-        freelancer_rating = average_rating / 5
-        return freelancer_rating
+        average_rating = (self.offer_set
+        .filter(stage='Completed')
+        .annotate(rating=F('review__rating'))
+        .aggregate(avg_rating=Avg('rating'))['avg_rating'])
+
+        if average_rating is None:
+            return 1.0  # Default to 1 if there are no completed offers or no ratings
+
+        return average_rating / 5.0
 
     def update_internal_rating(self) -> None:
         """
@@ -130,5 +136,9 @@ class Freelancer(models.Model):
         Returns:
             None
         """
-        self.internal_rating = 0.3 * self.get_completion_rate() + 0.4 * self.get_success_rate() + 0.3 * self.get_freelancer_rating()
+        self.internal_rating = (
+                0.3 * self.get_completion_rate() +
+                0.4 * self.get_success_rate() +
+                0.3 * self.get_freelancer_rating()
+        ) * 10.0
         self.save()

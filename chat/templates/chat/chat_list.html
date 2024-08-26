@@ -6,22 +6,38 @@
     <h1 class="text-4xl font-bold mb-8 text-center text-orange-900">الدردشات</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for chat in chats %}
-            <div class="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition duration-300 border border-gray-200">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">
-                        {% if user.account.user_type == 'Customer' %}
-                            {{ chat.freelancer.user.first_name }} {{ chat.freelancer.user.last_name }}
-                        {% else %}
-                            {{ chat.user.user.first_name }} {{ chat.user.user.last_name }}
+            <div class="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition duration-300 border border-gray-200 relative">
+                <div class="absolute top-0 right-0 mt-2 mr-2">
+                    {% with last_message=chat.message_set.last %}
+                        {% if last_message and last_message.is_unread %}
+                            <span class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">جديد</span>
                         {% endif %}
-                    </h2>
-                    <span class="text-sm text-gray-500">
-                        {% with last_message=chat.message_set.last %}
-                            {% if last_message %}
-                                {{ last_message.timestamp|date:"j F Y" }}
+                    {% endwith %}
+                </div>
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-gray-300 mr-4 flex items-center justify-center text-gray-600 font-bold text-xl">
+                        {% if user.account.user_type == 'Customer' %}
+                            {{ chat.freelancer.user.first_name|first }}
+                        {% else %}
+                            {{ chat.user.user.first_name|first }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            {% if user.account.user_type == 'Customer' %}
+                                {{ chat.freelancer.user.first_name }} {{ chat.freelancer.user.last_name }}
+                            {% else %}
+                                {{ chat.user.user.first_name }} {{ chat.user.user.last_name }}
                             {% endif %}
-                        {% endwith %}
-                    </span>
+                        </h2>
+                        <span class="text-sm text-gray-500">
+                            {% with last_message=chat.message_set.last %}
+                                {% if last_message %}
+                                    {{ last_message.timestamp|date:"j F Y" }}
+                                {% endif %}
+                            {% endwith %}
+                        </span>
+                    </div>
                 </div>
                 <p class="text-gray-600 mb-4 h-12 overflow-hidden">
                     {% with last_message=chat.message_set.last %}
@@ -35,12 +51,12 @@
                 <a href="{% url 'chat:get_chat' chat.id %}" class="block w-full text-center bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition duration-300">فتح الدردشة</a>
             </div>
         {% empty %}
-            <div class="col-span-3 text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <div class="col-span-3 text-center py-12 bg-white shadow-md rounded-lg">
+                <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">لا توجد دردشات</h3>
-                <p class="mt-1 text-sm text-gray-500">ابدأ محادثة جديدة للتواصل مع الآخرين.</p>
+                <h3 class="mt-4 text-xl font-medium text-gray-900">لا توجد دردشات</h3>
+                <p class="mt-2 text-lg text-gray-500">ابدأ محادثة جديدة للتواصل مع الآخرين.</p>
             </div>
         {% endfor %}
     </div>
