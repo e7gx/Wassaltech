@@ -11,8 +11,10 @@
             <h2 class="text-xl font-semibold text-center text-gray-700">الطلبات</h2>
             <p class="text-center text-gray-500">عدد الطلبات: {{ orders_count }}</p>
             <div class="mt-4">
+                <p class="text-sm text-gray-600">مفتوحة: {{ orders_open }}</p>
                 <p class="text-sm text-gray-600">قيد التنفيذ: {{ orders_in_progress }}</p>
                 <p class="text-sm text-gray-600">مكتملة: {{ orders_closed }}</p>
+                <p class="text-sm text-gray-600">محذوفة: {{ orders_discarded }}</p>
             </div>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
@@ -26,10 +28,11 @@
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold text-center text-gray-700">المالية</h2>
-            <p class="text-center text-gray-500">إجمالي المحفظة: {{ total_wallet|default:"0" }} ريال</p>
+            <p class="text-center text-gray-500">قيمة المعاملات المالية: {{ total_money_flow|default:"0" }} ريال</p>
             <div class="mt-4">
-                <p class="text-sm text-gray-600">إجمالي الأسعار: {{ total_amount_deposited|default:"0" }} ريال</p>
-                <p class="text-sm text-gray-600">إجمالي المبالغ المستردة: {{ total_refund_deposited|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">الأرباح: {{ wallet|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">إيداعات مزودي الخدمة: {{ freelancer_wallet|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">المبالغ المستردة للعملاء: {{ customer_wallet|default:"0" }} ريال</p>
             </div>
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
@@ -60,8 +63,6 @@
         <div class="mt-4 text-center">
             <p class="text-lg text-gray-700">أفضل فئة: {{ best_catgorie|default:"غير متوفر" }}</p>
             <p class="text-lg text-gray-700">متوسط التقييم: {{ rating|default:"0"|floatformat:2 }} / 5</p>
-            <p class="text-lg text-gray-700">حالة التذكرة الأكثر شيوعًا: {{ ticket_status_count|default:"غير متوفر" }}</p>
-            <p class="text-lg text-gray-700">الفئة الأكثر شيوعًا للتذاكر: {{ most_category_tickets|default:"غير متوفر" }}</p>
         </div>
     </div>
 </div>
