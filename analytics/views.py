@@ -8,6 +8,7 @@ from django.db.models import Count, Sum, Avg, Q
 from django.contrib import messages
 
 from accounts.models import Account, Freelancer
+from analytics.forms import PaymentFilterForm
 from payments.models import Payment
 from support.models import Ticket
 from orders.models import Order, Offer
@@ -131,64 +132,65 @@ def admin_check_freelancers(request):
 
 @login_required
 def customer_profile(request, pk):
-    try:
-        customer_profile = Account.objects.get(pk=pk)
-    except Account.DoesNotExist:
-        return redirect('main:index')
-    
-    if request.user.is_superuser or request.user.account == customer_profile:
-        return render(request, 'analytics/admin_view_customer_profile.html', {'customer_profile': customer_profile})
-    else:
-        return redirect('main:index')
+    if request.user.is_superuser:
+        try:
+            customer_profile = Account.objects.get(pk=pk)
+        except Account.DoesNotExist:
+            return redirect('main:index')
+        
+        if request.user.is_superuser or request.user.account == customer_profile:
+            return render(request, 'analytics/admin_view_customer_profile.html', {'customer_profile': customer_profile})
+        else:
+            return redirect('main:index')
     
     
 @login_required
 def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
-    try:
-        freelancer = Freelancer.objects.get(pk=pk)
-    except Freelancer.DoesNotExist:
-        return redirect('main:index')
+    if request.user.is_superuser:
+        try:
+            freelancer = Freelancer.objects.get(pk=pk)
+        except Freelancer.DoesNotExist:
+            return redirect('main:index')
+        
+        if request.user.is_superuser or request.user.account == freelancer.user:
+            if request.method == 'POST':
+                is_verified = request.POST.get('is_verified', 'False') == 'True'
+                certificate_expiration = request.POST.get('certificate_expiration') 
+
+                freelancer.is_verified = is_verified
+                freelancer.certificate_expiration = certificate_expiration
+                freelancer.save()
+
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('analytics:edit_freelancer_profile', pk=freelancer.pk)
+
+            return render(request, 'analytics/edit_freelancer_info.html', {'freelancer': freelancer})
+        else:
+            return redirect('main:index')
     
-    if request.user.is_superuser or request.user.account == freelancer.user:
-        if request.method == 'POST':
-            is_verified = request.POST.get('is_verified', 'False') == 'True'
-            certificate_expiration = request.POST.get('certificate_expiration') 
 
-            freelancer.is_verified = is_verified
-            freelancer.certificate_expiration = certificate_expiration
-            freelancer.save()
-
-            messages.success(request, 'Profile updated successfully!')
-            return redirect('analytics:edit_freelancer_profile', pk=freelancer.pk)
-
-        return render(request, 'analytics/edit_freelancer_info.html', {'freelancer': freelancer})
-    else:
-        return redirect('main:index')
-    
-
-from .forms import PaymentFilterForm
 
 @login_required
 def admin_payment(request):
-    Payment.process_payments()
     if request.user.is_superuser:
-        form = PaymentFilterForm(request.GET or None)
-        payments = Payment.objects.all()
+        Payment.process_payments()
+        if request.user.is_superuser:
+            form = PaymentFilterForm(request.GET or None)
+            payments = Payment.objects.all()
+            
+            if form.is_valid():
+                status = form.cleaned_data.get('status')
+                if status:
+                    payments = payments.filter(status=status)
 
-        # Apply filters
-        if form.is_valid():
-            status = form.cleaned_data.get('status')
-            if status:
-                payments = payments.filter(status=status)
-
-        context = {
-            'payments': payments,
-            'form': form,
-        }
-        return render(request, 'analytics/admin_payment.html', context)
-    else:
-        return redirect('main:index')
-    
+            context = {
+                'payments': payments,
+                'form': form,
+            }
+            return render(request, 'analytics/admin_payment.html', context)
+        else:
+            return redirect('main:index')
+        
 @login_required
 def admin_deposit(request):
     if request.user.is_superuser:
@@ -198,7 +200,6 @@ def admin_deposit(request):
         return redirect('main:index')
     
     
-#! We need to check this , Update the deposit status of the current payment to 'Deposited' for one order only not all of them
 @login_required
 def admin_deposit_payment(request, pk):
     if request.user.is_superuser:

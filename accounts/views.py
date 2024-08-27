@@ -126,6 +126,7 @@ def logout_view(request):
 
 @login_required
 def freelancer_view_profile(request):
+    
     """
     View function to display the profile of a freelancer user.
 
@@ -140,6 +141,7 @@ def freelancer_view_profile(request):
     Returns:
         HttpResponse: The response object containing the rendered profile page or a redirect.
     """
+    
     if request.user.is_authenticated:
         if request.user.account.user_type == 'Freelancer':
             total_amount_pending_deposit = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
@@ -216,6 +218,7 @@ def freelancer_profile(request, freelancer_id):
     }
     return render(request, 'accounts/customer_view_freelancer.html', context)
 
+@login_required
 def inbox(request):
     return render(request, 'accounts/inbox.html')
 
