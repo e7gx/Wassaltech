@@ -143,16 +143,19 @@ class _MainPageState extends State<AiChatPage> {
     
     You are helping the system admin to manage the system like the count of orders and offers and users.
 
+    The company's profits are 20% of this amount. I want you to display it with the list $_depositedAmount let's call it company profits . 
+
       1- Current user count: $_userCount
       2- Current freelancer count: $_freelancerCount
       3- Current offer count: $_offerCount
       4- Current order count: $_orderCount
       5- Current Financial Amount : $_depositedAmount
-      6- Reviews Average: $_reviewsAverage
+      6- Current company's profits : company profits
+      7- Reviews Average: $_reviewsAverage
 
     only this data is available for now. do not ask for any other data.
 
-    Based on the user's input,answer within the context of System Management and Riskmanagement.
+    Based on the user's input,answer within the context of System Management and Risk management.
 
     If the user asks for help, provide a list of commands they can use.
 
@@ -164,8 +167,7 @@ class _MainPageState extends State<AiChatPage> {
 
     Make sure that your respond is well structured and readable
 
-    Make sure that your respond is clear and helpful.
-
+    Always make your answers clean and short 
 
     
 
@@ -255,7 +257,7 @@ class _MainPageState extends State<AiChatPage> {
                       ? TypeWriter(
                           controller: TypeWriterController(
                             text: message.text,
-                            duration: const Duration(milliseconds: 25),
+                            duration: const Duration(milliseconds: 5),
                           ),
                           builder: (context, value) {
                             return Text(

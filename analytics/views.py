@@ -44,10 +44,10 @@ def admin_dashboard(request):
             'total_amount']
         total_refund_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_refund_amount=Sum('refund_amount'))[
             'total_refund_amount']
-        total_money_flow = total_amount_deposited + total_refund_deposited
-        wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-        freelancer_wallet = total_amount_deposited - wallet
-        customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        total_money_flow = total_amount_deposited + total_refund_deposited if total_amount_deposited and total_refund_deposited else 0
+        wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP) if total_amount_deposited else 0
+        freelancer_wallet = total_amount_deposited - wallet if total_amount_deposited else 0
+        customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP) if total_refund_deposited else 0
 
         tickets_count = Ticket.objects.all().count()
         ticket_status_count = Ticket.objects.values('ticket_status').annotate(Count('ticket_status')).order_by('-ticket_status__count').first()
