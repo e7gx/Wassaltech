@@ -147,7 +147,7 @@ class _MainPageState extends State<AiChatPage> {
       2- Current freelancer count: $_freelancerCount
       3- Current offer count: $_offerCount
       4- Current order count: $_orderCount
-      5- totalPrice: $_depositedAmount
+      5- Current Financial Amount : $_depositedAmount
       6- Reviews Average: $_reviewsAverage
 
     only this data is available for now. do not ask for any other data.
@@ -179,7 +179,7 @@ class _MainPageState extends State<AiChatPage> {
         "messages": [
           {"role": "user", "content": promptMessage}
         ],
-        "max_tokens": 1000,
+        "max_tokens": 500,
       };
 
       final response = await http.post(

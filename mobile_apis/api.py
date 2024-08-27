@@ -32,10 +32,7 @@ def login(request, data: LoginSchema):
 
 @api.get("/offers/", response=List[OfferSchema])
 def list_offers(request):
-    return Offer.objects.filter(stage="Closed", order__status="Completed").all() #! check this query
-
-
-
+    return Offer.objects.filter(stage="Closed", order__status="Completed").all() 
 
 @api.get("/users/count", response=Dict[str, int])
 def get_user_count(request):
