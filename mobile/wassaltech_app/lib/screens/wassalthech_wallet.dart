@@ -11,7 +11,7 @@ class Wallet extends StatefulWidget {
   Wallet({
     super.key,
     required this.offersFuture,
-    required this.totalPrice,
+    required this.totalPrice, required List<Offer> offers,
   });
 
   @override
@@ -163,15 +163,24 @@ class _WalletState extends State<Wallet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16.0),
-            // _buildSummaryTile(
-            //   'Financial transactions',
-            //   '\SAR: ${depositedAmount.toStringAsFixed(2)}',
-            //   Icon(
-            //     Icons.account_balance_wallet,
-            //     color: Colors.orange[800],
-            //     size: 24.0,
-            //   ),
-            // ),
+            _buildSummaryTile(
+              'Financial transactions',
+              '\SAR: ${depositedAmount.toStringAsFixed(2)}',
+              Icon(
+                Icons.account_balance_wallet,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
+            _buildSummaryTile(
+              'Wassaltech Profits',
+              '\SAR: ${(depositedAmount * 0.2).toStringAsFixed(2)}',
+              Icon(
+                Icons.monetization_on_sharp,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
             const SizedBox(height: 8.0),
             _buildSummaryTile(
               'Total Orders',

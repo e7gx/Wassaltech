@@ -165,11 +165,7 @@ class _MainPageState extends State<AiChatPage> {
 
     make sure to provide the best answer for the user's question.
 
-    Make sure that your respond is well structured and readable
-
-    Always make your answers clean and short 
-
-    
+    Make sure that your respond is well structured and readable.
 
     """;
 
