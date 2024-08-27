@@ -90,7 +90,8 @@
     </div>
     <!--pagination-->
 {%if orders%}
-<div class="font-black">
+{% if orders.has_other_pages %}
+<div class="text-center">
     {% if orders.has_previous %}
     <div class="d-flex gap-1">
         <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
@@ -106,6 +107,7 @@
         <a href="?page={{orders.paginator.num_pages}}" class="btn btn-my"> &rang;&rang;</a>
     </div> 
     {% endif %}
+    {%endif%}
   </div>
   {%endif%}
   

@@ -17,7 +17,7 @@
                 
                 <div>
                     <label for="id_date" class="block text-sm font-medium text-gray-700">التاريخ</label>
-                    <input type="date" name="date" id="id_date"
+                    <input type="date" name="date" id="id_date" value='{{date}}'
                         class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
                 </div>
                 <div>
@@ -26,7 +26,7 @@
                         class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
                         <option value="" selected>اختر الحالة</option>
                         {% for value, label in statuses %}
-                        <option value="{{ value }}">{{ label }}</option>
+                        <option value="{{ value }}" {% if value == status %} selected{% endif %} >{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -92,7 +92,8 @@
     </div>
         <!--pagination-->
 {%if offers%}
-<div class="font-black">
+{% if offers.has_other_pages %}
+<div class="text-center ">
     {% if offers.has_previous %}
     <div class="d-flex gap-1">
         <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
@@ -110,5 +111,6 @@
     {% endif %}
   </div>
   {%endif%}
+  {% endif %}
 </div>
 {% endblock %}

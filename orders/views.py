@@ -467,6 +467,8 @@ def freelancer_offers(request):
             offer = Offer.objects.filter(filters).order_by('-created_at')
             return render(request, 'orders/freelancer_offers.html', {
                 'offers': offer,
+                'date':date,
+                'status':status,
                 'statuses': statuses
             })    
         return render(request, 'orders/freelancer_offers.html', {'offers': OfferList,
