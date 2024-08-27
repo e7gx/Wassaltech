@@ -66,5 +66,25 @@
             </div>
         {% endif %}
     </div>
+        <!--pagination-->
+{%if offers%}
+<div class="font-black">
+    {% if offers.has_previous %}
+    <div class="d-flex gap-1">
+        <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
+        <a href="?page={{offers.previous_page_number}}" class="btn btn-my">&lang; </a>
+    </div>  
+    {% endif %}
+    <div class="current d-flex align-items-center text-black" >
+        Page {{offers.number}} of {{offers.paginator.num_pages}}
+    </div>
+    {% if offers.has_next %}
+    <div class="d-flex gap-1">
+        <a href="?page={{offers.next_page_number}}" class="btn btn-my"> &rang;</a>
+        <a href="?page={{offers.paginator.num_pages}}" class="btn btn-my"> &rang;&rang;</a>
+    </div> 
+    {% endif %}
+  </div>
+  {%endif%}
 </div>
 {% endblock %}

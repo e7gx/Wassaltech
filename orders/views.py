@@ -14,7 +14,7 @@ from .models import Order, OrderImage, OrderVideo, Offer
 from accounts.models import Account
 from datetime import datetime
 from django.urls import reverse
-
+from django.core.paginator import Paginator
 
 ########################################################################################################################
 # ORDER CRUD
@@ -81,11 +81,15 @@ def customer_orders(request):
     """
 
     orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress'])
+    page_number = request.GET.get('page', 1)
+    select_order = Paginator(orders , 10)
+    view_order = select_order.get_page(page_number)
+    pagination = True
     for order in orders:
         pending_offers = Offer.objects.filter(order=order, stage='Pending').count()
         order.pending_offers = pending_offers
 
-    return render(request, 'orders/customer_orders.html', {'orders': orders})
+    return render(request, 'orders/customer_orders.html', {'orders': view_order })
 
 
 # CUSTOMER READ
@@ -112,7 +116,10 @@ def order_history(request):
             orders = Order.objects.filter(Q(assigned_to=user.freelancer) & Q(status='Closed')).order_by('-created_at')
         else:
             orders = []
-        return render(request, 'orders/order_history.html', {'orders': orders})
+        page_number = request.GET.get('page', 1)
+        get_orders = Paginator(orders , 6)
+        OrdersList = get_orders.get_page(page_number)
+        return render(request, 'orders/order_history.html', {'orders': OrdersList})
     else:
         messages.error(request, 'You do not have the necessary permissions to view order history.')
         return redirect('main:index')
@@ -136,7 +143,10 @@ def freelancer_orders(request):
 
     freelancer = request.user.freelancer
     orders = Order.objects.filter(status='Open').exclude(Q(offer__freelancer=freelancer) & Q(offer__stage='Pending'))
-    return render(request, 'orders/freelancer_orders.html', {'orders': orders})
+    page_number = request.GET.get('page', 1)
+    get_order = Paginator(orders , 6)
+    OrderList = get_order.get_page(page_number)
+    return render(request, 'orders/freelancer_orders.html', {'orders': OrderList})
 
 
 # MUTUAL READ
@@ -397,7 +407,10 @@ def freelancer_offers(request):
 
     if hasattr(request.user, 'freelancer'):
         offers = Offer.objects.filter(freelancer=request.user.freelancer)
-        return render(request, 'orders/freelancer_offers.html', {'offers': offers})
+        page_number = request.GET.get('page', 1)
+        get_offers = Paginator(offers , 6)
+        OfferList = get_offers.get_page(page_number)
+        return render(request, 'orders/freelancer_offers.html', {'offers': OfferList})
     else:
         messages.error(request, "You do not have permission to view offers.")
         return redirect('main:index')
