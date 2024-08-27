@@ -9,11 +9,12 @@ from accounts.decorators import user_type_required
 from reviews.models import Review
 from .forms import OrderForm, OfferForm
 from reviews.forms import ReviewForm
-from .models import Order, OrderImage, OrderVideo, Offer
+from .models import Order, OrderImage, OrderVideo, Offer , Category
 from accounts.models import Account
 from datetime import datetime
 from django.urls import reverse
 from django.core.paginator import Paginator
+from .models import categories , order_statuses , offer_stages
 
 ########################################################################################################################
 # ORDER CRUD
@@ -78,17 +79,37 @@ def customer_orders(request):
     Returns:
         HttpResponse: The response object containing the rendered customer orders page.
     """
-
     orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress'])
     page_number = request.GET.get('page', 1)
     select_order = Paginator(orders , 10)
     view_order = select_order.get_page(page_number)
-    pagination = True
+    categoriesd= categories
+    statuses = order_statuses
+    if request.method == "POST":
+        status = request.POST.get('status')
+        date = request.POST.get('date')
+        category = request.POST.get('category')
+
+        filters = Q()
+        if category:
+            filters &= Q(category=category)
+        if status:
+            filters &= Q(status=status)
+        if date:
+            filters &= Q(created_at=date)
+
+        orders = Order.objects.filter(filters).order_by('-created_at')
+        return render(request, 'orders/customer_orders.html', {
+            'orders': orders,
+            'categories': categoriesd,
+            'statuses': statuses
+        })    
+  
     for order in orders:
         pending_offers = Offer.objects.filter(order=order, stage='Pending').count()
         order.pending_offers = pending_offers
 
-    return render(request, 'orders/customer_orders.html', {'orders': view_order })
+    return render(request, 'orders/customer_orders.html', {'orders': view_order , 'categories':categoriesd , "statuses":statuses})
 
 
 # CUSTOMER READ
@@ -118,6 +139,27 @@ def order_history(request):
         page_number = request.GET.get('page', 1)
         get_orders = Paginator(orders , 6)
         OrdersList = get_orders.get_page(page_number)
+        categoriesd= categories
+        statuses = order_statuses
+        if request.method == "POST":
+            status = request.POST.get('status')
+            date = request.POST.get('date')
+            category = request.POST.get('category')
+
+            filters = Q()
+            if category:
+                filters &= Q(category=category)
+            if status:
+                filters &= Q(status=status)
+            if date:
+                filters &= Q(created_at=date)
+
+            orders = Order.objects.filter(filters).order_by('-created_at')
+            return render(request, 'orders/order_history.html', {
+                'orders': OrdersList,
+                'categories': categoriesd,
+                'statuses': statuses
+            })    
         return render(request, 'orders/order_history.html', {'orders': OrdersList})
     else:
         messages.error(request, 'You do not have the necessary permissions to view order history.')
@@ -409,7 +451,27 @@ def freelancer_offers(request):
         page_number = request.GET.get('page', 1)
         get_offers = Paginator(offers , 6)
         OfferList = get_offers.get_page(page_number)
-        return render(request, 'orders/freelancer_offers.html', {'offers': OfferList})
+        categoriesd= categories
+        statuses = offer_stages
+        if request.method == "POST":
+            status = request.POST.get('status')
+            date = request.POST.get('date')
+            
+
+            filters = Q()
+            if status:
+                filters &= Q(stage=status)
+            if date:
+                filters &= Q(created_at=date)
+
+            offer = Offer.objects.filter(filters).order_by('-created_at')
+            return render(request, 'orders/freelancer_offers.html', {
+                'offers': offer,
+                'statuses': statuses
+            })    
+        return render(request, 'orders/freelancer_offers.html', {'offers': OfferList,
+
+                'statuses': statuses})
     else:
         messages.error(request, "You do not have permission to view offers.")
         return redirect('main:index')
