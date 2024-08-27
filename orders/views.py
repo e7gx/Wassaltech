@@ -1,7 +1,6 @@
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseForbidden
 from notifications.views import NotificationService as sendemail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -241,7 +240,7 @@ def end_order(request, order_id):
                         offer.complete_on_time = True
                     
                     offer.save()
-                    # offer.freelancer.update_internal_rating()
+                    offer.freelancer.update_internal_rating()
                     messages.success(request, 'You have successfully submitted the review and closed the order.')
                 else:
                     messages.error(request, 'Rating is required to close the order.')
@@ -328,9 +327,9 @@ def create_offer(request, order_id):
     freelancer = request.user.freelancer
     ##################
     # Only verified freelancers should be able to make offers
-    # if not freelancer.is_verified:
-    #     messages.error(request, "Your account is not verified yet. You can't make offers.")
-    #     return redirect('accounts:profile')
+    if not freelancer.is_verified:
+        messages.error(request, "Your account is not verified yet. You can't make offers.")
+        return redirect('accounts:profile')
     ##################
     # Should allow freelancers to submit another offer if their offer gets rejected
     if Offer.objects.filter(order=order, stage='Pending', freelancer=freelancer).exists():
@@ -349,7 +348,7 @@ def create_offer(request, order_id):
 
             messages.success(request, "Your offer has been submitted successfully.")
 
-            return redirect('orders:freelancer_orders')
+            return redirect('orders:order_detail', order_id=order.id,)
         else:
             messages.error(request, "There was an error submitting your offer. Please check the form and try again.")
     else:
@@ -379,8 +378,8 @@ def order_offers(request, order_id):
     order = get_object_or_404(Order, id=order_id, customer=request.user.account)
 
     order_images = OrderImage.objects.filter(order=order)  # Get all images for the order
-    offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user')
-    # offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user').order_by('-freelancer__internal_rating')
+    # offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user')
+    offers = Offer.objects.filter(order=order, stage="Pending").select_related('freelancer', 'freelancer__user').order_by('-freelancer__internal_rating')
 
     context = {
         'order': order,
@@ -462,7 +461,7 @@ def accept_offer(request, offer_id):
             except Exception as e:
                 print(e)
     else:
-        return HttpResponseForbidden("You don't have permission to accept this offer.")
+        return messages.error(request, "You don't have permission to accept this offer.")
 
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -502,7 +501,7 @@ def customer_cancel_offer(request, offer_id):
             except Exception as e:
                 print(e)
     else:
-        return HttpResponseForbidden("You don't have permission to cancel this offer.")
+        return messages.error(request, "You don't have permission to cancel this offer.")
 
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -552,7 +551,7 @@ def freelancer_cancel_offer(request, offer_id):
             except Exception as e:
                 print(e)
     else:
-        return HttpResponseForbidden("You don't have permission to cancel this offer.")
+        return messages.error(request, "You don't have permission to cancel this offer.")
 
     return redirect('orders:freelancer_offers')
 
@@ -585,8 +584,7 @@ def freelancer_discard_offer(request, offer_id):
         else:
             messages.error(request, 'This offer cannot be discarded.')
     else:
-        # please change it
-        return HttpResponseForbidden("You don't have permission to discard this offer.")
+        return messages.error(request, "You don't have permission to discard this offer.")
 
     return redirect('orders:freelancer_orders')
 

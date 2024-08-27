@@ -10,7 +10,7 @@ def user_avatar_path(instance, filename):
 
 
 class Account(models.Model):
-    avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default_profile.png', blank=True)
+    avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default_profile.png', null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, unique=True)
     address = models.CharField(max_length=255)
@@ -27,7 +27,7 @@ def user_certificate_path(instance, filename):
 
 class Freelancer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    certificate_id = models.CharField(max_length=100)
+    certificate_id = models.CharField(max_length=100, unique=True)
     certificate_expiration = models.DateField(blank=True, null=True)
     certificate_image = models.ImageField(upload_to=user_certificate_path)
     internal_rating = models.FloatField(default=10, validators=[MinValueValidator(0), MaxValueValidator(10)])
