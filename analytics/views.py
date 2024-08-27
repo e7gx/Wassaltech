@@ -1,3 +1,6 @@
+from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
+
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -15,9 +18,11 @@ from reviews.models import Review
 def admin_dashboard(request):
     Payment.process_payments()
     if request.user.is_superuser:
+        orders_open = Order.objects.filter(status='Open').count()
         orders_in_progress = Order.objects.filter(status='In Progress').count()
         orders_closed = Order.objects.filter(status='Closed').count()
-        best_catgorie = Order.objects.filter(status='Completed').values('category').annotate(Count('category')).order_by('-category__count').first()
+        orders_discarded = Order.objects.filter(status='Discarded').count()
+        best_catgorie = Order.objects.filter(status='Closed').values('category').annotate(Count('category')).order_by('-category__count').first()
         if best_catgorie is not None:
             best_catgorie = best_catgorie['category']
         rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
@@ -30,14 +35,18 @@ def admin_dashboard(request):
         total_freelancers = Account.objects.all().filter(user_type='Freelancer').count()
         total_admins = Account.objects.all().filter(user_type='Admin').count()
 
-        total_amount_pending_deposit = Payment.objects.filter(Q(status='Processing') | Q(status='Processed')).aggregate(
-            total_amount=Sum('amount'))['total_amount']
+        # total_amount_pending_deposit = Payment.objects.filter(Q(status='Processing') | Q(status='Processed')).aggregate(
+        #     total_amount=Sum('amount'))['total_amount']
+        # total_refund_pending_deposit = Payment.objects.filter(Q(status='Processing') | Q(status='Processed')).aggregate(
+        #     total_refund_amount=Sum('refund_amount'))['total_refund_amount']
         total_amount_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_amount=Sum('amount'))[
             'total_amount']
-        total_refund_pending_deposit = Payment.objects.filter(Q(status='Processing') | Q(status='Processed')).aggregate(
-            total_refund_amount=Sum('refund_amount'))['total_refund_amount']
         total_refund_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_refund_amount=Sum('refund_amount'))[
             'total_refund_amount']
+        total_money_flow = total_amount_deposited + total_refund_deposited
+        wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        freelancer_wallet = total_amount_deposited - wallet
+        customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
         tickets_count = Ticket.objects.all().count()
         ticket_status_count = Ticket.objects.values('ticket_status').annotate(Count('ticket_status')).order_by('-ticket_status__count').first()
@@ -53,8 +62,10 @@ def admin_dashboard(request):
             most_category_tickets = most_category_tickets['ticket_category']
 
         context = {
+            'orders_open': orders_open,
             'orders_in_progress': orders_in_progress,
             'orders_closed': orders_closed,
+            'orders_discarded': orders_discarded,
             'best_catgorie': best_catgorie,
             'rating': rating,
             'orders_count': orders_count,
@@ -62,10 +73,12 @@ def admin_dashboard(request):
             'total_customers': total_customers,
             'total_freelancers': total_freelancers,
             'total_admins': total_admins,
-            'total_amount_pending_deposit': total_amount_pending_deposit,  # Not used in template
-            'total_amount_deposited': total_amount_deposited,
-            'total_refund_pending_deposit': total_refund_pending_deposit,  # Not used in template
-            'total_refund_deposited': total_refund_deposited,
+            # 'total_amount_deposited': total_amount_deposited,
+            # 'total_refund_deposited': total_refund_deposited,
+            'total_money_flow': total_money_flow,
+            'wallet': wallet,
+            'freelancer_wallet': freelancer_wallet,
+            'customer_wallet': customer_wallet,
             'tickets_count': tickets_count,
             'ticket_status_count': ticket_status_count,
             'tickets_completed': tickets_completed,
@@ -190,7 +203,10 @@ def admin_deposit(request):
 def admin_deposit_payment(request, pk):
     if request.user.is_superuser:
         payment = get_object_or_404(Payment, pk=pk)
-        payment.deposit_payments()  
+        if payment.status == 'Processed':
+            payment.status = 'Deposited'
+            payment.deposit_date = datetime.now()
+            payment.save()
         return redirect('analytics:admin_payment')
     else:
         return redirect('main:index')
