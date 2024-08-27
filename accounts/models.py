@@ -10,7 +10,7 @@ def user_avatar_path(instance, filename):
 
 
 class Account(models.Model):
-    avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default_profile.png', null=True, blank=True)
+    avatar = models.ImageField(upload_to=user_avatar_path, default='images/default_profile.png', null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, unique=True)
     address = models.CharField(max_length=255)
