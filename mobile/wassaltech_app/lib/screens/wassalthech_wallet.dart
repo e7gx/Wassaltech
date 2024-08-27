@@ -95,12 +95,13 @@ class _WalletState extends State<Wallet> {
                                 children: [
                                   const SizedBox(height: 16.0),
                                   Text(
-                                    'Summary',
+                                    'Orders & Reviews',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 28,
+                                      fontFamily: 'Cairo',
                                       fontWeight: FontWeight.bold,
                                       color: Colors.orange[800],
+                                      fontSize: 28.0,
                                     ),
                                   ),
                                   const SizedBox(height: 16.0),
@@ -141,15 +142,15 @@ class _WalletState extends State<Wallet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16.0),
-            _buildSummaryTile(
-              'Wassaltech Wallet',
-              '\SAR: ${depositedAmount.toStringAsFixed(2)}',
-              Icon(
-                Icons.account_balance_wallet,
-                color: Colors.orange[800],
-                size: 24.0,
-              ),
-            ),
+            // _buildSummaryTile(
+            //   'Financial transactions',
+            //   '\SAR: ${depositedAmount.toStringAsFixed(2)}',
+            //   Icon(
+            //     Icons.account_balance_wallet,
+            //     color: Colors.orange[800],
+            //     size: 24.0,
+            //   ),
+            // ),
             const SizedBox(height: 8.0),
             _buildSummaryTile(
               'Total Orders',
