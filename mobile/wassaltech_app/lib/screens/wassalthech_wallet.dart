@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:wassaltech_app/model/offer_model.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
 import 'offer_details_page.dart';
@@ -10,7 +11,7 @@ class Wallet extends StatefulWidget {
   Wallet({
     super.key,
     required this.offersFuture,
-    required this.totalPrice,
+    required this.totalPrice, required List<Offer> offers,
   });
 
   @override
@@ -72,7 +73,22 @@ class _WalletState extends State<Wallet> {
                         );
                       } else if (reviewsSnapshot.hasError) {
                         return Center(
-                            child: Text('Error: ${reviewsSnapshot.error}'));
+                            child: Column(
+                          children: [
+                            Center(
+                              child: Lottie.asset(
+                                'assets/animation/x.json',
+                                width: 200,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text('Opss Something went wrong'),
+                            ),
+                          ],
+                        ));
                       } else {
                         final reviewsCount = reviewsSnapshot.data!;
                         return FutureBuilder<double>(
@@ -86,8 +102,13 @@ class _WalletState extends State<Wallet> {
                               );
                             } else if (depositedSnapshot.hasError) {
                               return Center(
-                                  child: Text(
-                                      'Error: ${depositedSnapshot.error}'));
+                                child: Lottie.asset(
+                                  'assets/animation/x.json',
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
                             } else {
                               final depositedAmount = depositedSnapshot.data!;
                               return Column(
@@ -142,15 +163,24 @@ class _WalletState extends State<Wallet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16.0),
-            // _buildSummaryTile(
-            //   'Financial transactions',
-            //   '\SAR: ${depositedAmount.toStringAsFixed(2)}',
-            //   Icon(
-            //     Icons.account_balance_wallet,
-            //     color: Colors.orange[800],
-            //     size: 24.0,
-            //   ),
-            // ),
+            _buildSummaryTile(
+              'Financial transactions',
+              '\SAR: ${depositedAmount.toStringAsFixed(2)}',
+              Icon(
+                Icons.account_balance_wallet,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
+            _buildSummaryTile(
+              'Wassaltech Profits',
+              '\SAR: ${(depositedAmount * 0.2).toStringAsFixed(2)}',
+              Icon(
+                Icons.monetization_on_sharp,
+                color: Colors.orange[800],
+                size: 24.0,
+              ),
+            ),
             const SizedBox(height: 8.0),
             _buildSummaryTile(
               'Total Orders',
@@ -190,9 +220,41 @@ class _WalletState extends State<Wallet> {
               child: CircularProgressIndicator(color: Colors.orangeAccent),
             );
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Column(
+              children: [
+                Center(
+                  child: Lottie.asset(
+                    'assets/animation/x.json',
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Opss Something went wrong'),
+                ),
+              ],
+            );
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-            return Center(child: Text('No offers available'));
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Lottie.asset(
+                    'assets/animation/x.json',
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Opss Something went wrong'),
+                ),
+              ],
+            );
           } else if (snapshot.hasData) {
             final offers = snapshot.data!;
             return SizedBox(
