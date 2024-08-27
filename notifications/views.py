@@ -12,13 +12,14 @@ class NotificationService:
 
     @staticmethod
     def send_email(subject, template_name, context, recipient_list):
-        page_html = render_to_string(template_name , context)
-        from_email = settings.EMAIL_HOST_USER
-        to_email = recipient_list
+      print("hello world")
+        # page_html = render_to_string(template_name , context)
+        # from_email = settings.EMAIL_HOST_USER
+        # to_email = recipient_list
 
-        email_message = EmailMultiAlternatives(subject, '', from_email, [to_email])
-        email_message.attach_alternative(page_html, "text/html")  
-        email_message.send()
+        # email_message = EmailMultiAlternatives(subject, '', from_email, [to_email])
+        # email_message.attach_alternative(page_html, "text/html")  
+        # email_message.send()
 
     @staticmethod
     def notify_new_chat(user , order , freelancer):

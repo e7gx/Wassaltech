@@ -39,7 +39,7 @@ def create_order(request):
     """
 
     if request.method == 'POST':
-        form = OrderForm(request.POST)
+        form = OrderForm(request.POST, request.FILES)
         if form.is_valid():
             order = form.save(commit=False)
             order.customer = request.user.account
@@ -49,7 +49,7 @@ def create_order(request):
             for file in files:
                 OrderImage.objects.create(order=order, image=file)
 
-            video = form.cleaned_data.get('video')
+            video = request.FILES.get('video')
             if video:
                 OrderVideo.objects.create(order=order, video=video)
 
@@ -157,6 +157,8 @@ def order_detail(request, order_id):
     offer = Offer.objects.filter(order=order, stage='Accepted').first()
     pending_offers = Offer.objects.filter(order=order, stage='Pending')
     order_images = OrderImage.objects.filter(order=order)
+    order_video = OrderVideo.objects.filter(order=order).first()
+    
     review_form = None
 
     if request.user == order.customer and not order.customer_completed:
@@ -168,6 +170,7 @@ def order_detail(request, order_id):
         'pending_offers': pending_offers,
         'review_form': review_form,
         'order_images': order_images,
+        'order_video': order_video,
     }
     return render(request, 'orders/order_detail.html', context)
 

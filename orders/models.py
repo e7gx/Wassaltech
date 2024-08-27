@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, FileExtensionValidator, MaxValueValidator
 from django.db import models
 from accounts.models import Account, Freelancer
 
@@ -76,7 +76,13 @@ class OrderImage(models.Model):
 
 class OrderVideo(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
-    video = models.FileField(upload_to='order_videos/')
+    video = models.FileField(
+        upload_to='order_videos/',
+        validators=[
+            FileExtensionValidator(allowed_extensions=['mp4', 'avi', 'mov']),
+            MaxValueValidator(52428800)  # 50MB in bytes
+        ]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
