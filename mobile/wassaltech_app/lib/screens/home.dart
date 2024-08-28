@@ -299,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onTabChange: _onTabChange,
           tabs: const [
             GButton(
-              icon: Icons.date_range_sharp,
+              icon: Icons.insert_chart_rounded,
               text: 'Offers',
               iconColor: Colors.white,
               iconActiveColor: Colors.orangeAccent,
