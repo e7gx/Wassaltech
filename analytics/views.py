@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP, ROUND_DOWN
 
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpRequest, HttpResponse
@@ -169,26 +169,27 @@ def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 def admin_payment(request):
+    Payment.process_payments()
     if request.user.is_superuser:
-        Payment.process_payments()
-        if request.user.is_superuser:
-            form = PaymentFilterForm(request.GET or None)
-            payments = Payment.objects.all()   
-            if form.is_valid():
-                status = form.cleaned_data.get('status')
-                if status:
-                    payments = payments.filter(status=status)
+        form = PaymentFilterForm(request.GET or None)
+        payments = Payment.objects.all()
+        if form.is_valid():
+            status = form.cleaned_data.get('status')
+            if status:
+                payments = payments.filter(status=status)
+        for payment in payments:
+            payment.commission = (payment.amount * Decimal('0.10')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+            payment.freelancer_amount = (payment.amount * Decimal('0.90')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
-            context = {
-                'payments': payments,
-                'form': form,
-            }
-            return render(request, 'analytics/admin_payment.html', context)
-        else:
-            return redirect('main:index')
-        
-    
-    
+        context = {
+            'payments': payments,
+            'form': form,
+        }
+        return render(request, 'analytics/admin_payment.html', context)
+    else:
+        return redirect('main:index')
+
+
 @login_required
 def admin_deposit_payment(request, pk):
     if request.user.is_superuser:

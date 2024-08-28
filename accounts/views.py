@@ -181,7 +181,7 @@ def freelancer_view_profile(request):
 
 
             context = {
-                
+
                 'freelancer_wallet_pending': freelancer_wallet_pending,
                 'freelancer_wallet': freelancer_wallet,
                 'orders_in_progress': orders_in_progress,
