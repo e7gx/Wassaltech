@@ -1,8 +1,8 @@
 {% extends 'main/base.html' %}
-{% load static %}
+
 {% block content %}
         {% if messages %}
-            <div class=" container mx-auto px-4 py-8">
+            <div class="container mx-auto px-4 py-8">
                     {% for message in messages %}
                         <div class="bg-{{ message.tags }}-100 border-t-4 border-{{ message.tags }}-500 rounded-b text-{{ message.tags }}-900 px-4 py-3 shadow-md mb-4" role="alert">
                             <div class="flex">
@@ -15,8 +15,8 @@
                     {% endfor %}
                 </div>
         {% endif %}
-<div class="form-page flex justify-center flex-wrap items-center" dir="rtl">
-    <div class="form-container w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
+<div class="form-page max-w-3xl flex justify-center flex-wrap items-center" dir="rtl">
+    <div class="form-container w-full max-w-2xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="bg-orange-600 text-white py-4 px-6">
             <h1 class="text-center text-2xl font-bold">
                 تسجيل الدخول كموفر خدمة
@@ -80,7 +80,7 @@
                                    required>
                         </div>
 
-                        <div class="sm:col-span-1">
+                        <div>
                             <label for="first_name" class="block text-sm font-medium text-gray-700">الإسم الأول</label>
                             <input id="first_name" name="first_name" placeholder="أدخل الإسم الأول" 
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
@@ -89,7 +89,7 @@
                                    required>
                         </div>
 
-                        <div class="sm:col-span-1">
+                        <div>
                             <label for="last_name" class="block text-sm font-medium text-gray-700">الإسم الثاني</label>
                             <input id="last_name" name="last_name" placeholder="أدخل اسم العائلة" 
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
@@ -98,7 +98,7 @@
                                    required>
                         </div>
 
-                        <div class="sm:col-span-1">
+                        <div>
                             <label for="pass" class="block text-sm font-medium text-gray-700">كلمة المرور</label>
                             <input id="pass" name="password" type="password" placeholder="أدخل كلمة المرور"
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
@@ -107,7 +107,7 @@
                                    required>
                         </div>
 
-                        <div class="sm:col-span-1">
+                        <div>
                             <label for="confirmpass" class="block text-sm font-medium text-gray-700">تأكيد كلمة المرور</label>
                             <input id="confirmpass" type="password" placeholder="أعد إدخال كلمة المرور"
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
@@ -116,7 +116,7 @@
                                    required>
                         </div>
 
-                        <div class="sm:col-span-1">
+                        <div>
                             <label for="phone_number" class="block text-sm font-medium text-gray-700">رقم الهاتف</label>
                             <input id="phone_number" name="phone_number" type="tel" placeholder="أدخل رقم الهاتف" 
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
@@ -125,7 +125,7 @@
                                    required>
                         </div>
 
-                        <div class="sm:col-span-1">
+                        <div>
                             <label for="address" class="block text-sm font-medium text-gray-700">العنوان</label>
                             <input id="address" name="address" type="text" placeholder="أدخل العنوان" 
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
@@ -136,27 +136,26 @@
 
                         <div class="col-span-2">
                             <label for="certificate_id" class="block text-sm font-medium text-gray-700">رقم الشهادة</label>
-                            <input id="certificate_id" name="certificate_id" type="text" placeholder="أدخل رقم الشهادة" 
+                            <input id="certificate_id" name="certificate_id" type="text" placeholder="أدخل رقم الشهادة"
                                    class="text-black mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
                                    focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500
                                    transition duration-300 text-right"
                                    required>
                         </div>
 
-                        <div class="col-span-2 sm:col-span-1">
+                        <div>
                             <label for="certificate_image" class="block text-sm font-medium text-gray-700">صورة الشهادة</label>
-                            <input id="certificate_image" name="certificate_image" type="file" 
+                            <input id="certificate_image" name="certificate_image" type="file" required
                                    class="mt-1 block w-full px-3 py-2 text-sm text-gray-700
                                    file:mr-4 file:py-2 file:px-4
                                    file:rounded-md file:border-0
                                    file:text-sm file:font-semibold
                                    file:bg-orange-50 file:text-orange-700
                                    hover:file:bg-orange-100
-                                   transition duration-300"
-                                   required>
+                                   transition duration-300">
                         </div>
 
-                        <div class="col-span-2 sm:col-span-1">
+                        <div>
                             <label for="avatar" class="block text-sm font-medium text-gray-700">الصورة الشخصية</label>
                             <input id="avatar" name="avatar" type="file" accept="image/*"
                                    class="mt-1 block w-full px-3 py-2 text-sm text-gray-700
@@ -165,9 +164,7 @@
                                    file:text-sm file:font-semibold
                                    file:bg-orange-50 file:text-orange-700
                                    hover:file:bg-orange-100
-                                   transition duration-300"
-                                   
-                                   >
+                                   transition duration-300">
                         </div>
                     </div>
 

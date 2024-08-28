@@ -25,12 +25,26 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                        {% else %}
-                            <p class="text-gray-600 mb-4">لا توجد صور متاحة لهذا الطلب.</p>
+                        {% endif %}
+                        {% if order_video %}
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">الفيديو:</h3>
+                                <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                                    <video controls class="w-full h-full object-cover">
+                                        <source src="{{ order_video.video.url }}" type="video/mp4">
+                                        <source src="{{ order_video.video.url }}" type="video/webm">
+                                        <source src="{{ order_video.video.url }}" type="video/ogg">
+                                        متصفحك لا يدعم عرض الفيديو.
+                                    </video>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if not order_images and not order_video %}
+                            <p class="text-gray-600 mb-4">لا توجد وسائط متاحة لهذا الطلب.</p>
                         {% endif %}
                     </div>
                     <div>
-                        <p class="text-gray-700"><span class="font-semibold text-gray-700">الفئة:</span> {{ order.category }}</p>
+                        <p class="text-gray-700 mb-2"><span class="font-semibold text-gray-700">الفئة:</span> {{ order.category }}</p>
                         <p class="text-gray-700"><span class="font-semibold text-gray-700">الوصف:</span> {{ order.issue_description }}</p>
                     </div>
                 </div>
@@ -41,7 +55,11 @@
                 {% for field in form %}
                     <div class="space-y-2">
                         <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-                        {{ field|add_class:"text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right" }}
+                        {% if field.name == 'description' %}
+                            {{ field|add_class:"text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right resize-none" }}
+                        {% else %}
+                            {{ field|add_class:"text-black w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right" }}
+                        {% endif %}
                         {% if field.help_text %}
                             <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
                         {% endif %}

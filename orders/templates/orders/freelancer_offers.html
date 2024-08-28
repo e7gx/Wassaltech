@@ -3,27 +3,26 @@
 {% block title %}عروضي{% endblock %}
 
 {% block content %}
-<div class=" min-h-screen" dir="rtl">
+<div class="min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-orange-700">عروضي</h1>
-            <a href="{% url 'orders:freelancer_orders' %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+            <h1 class="text-4xl font-bold text-orange-700">عروضي</h1>
+            <a href="{% url 'orders:freelancer_orders' %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
                 عرض الطلبات المتاحة
             </a>
         </div>
-        <form action="{% url 'orders:freelancer_offers' %}" method="post" class="space-y-2">
+        <form action="{% url 'orders:freelancer_offers' %}" method="post" class="bg-white shadow-md rounded-lg p-6 mb-8">
             {% csrf_token %}
-            <div class="flex items-center space-x-5">
-                
-                <div>
-                    <label for="id_date" class="block text-sm font-medium text-gray-700">التاريخ</label>
+            <div class="flex flex-wrap -mx-3 mb-4">
+                <div class="w-full md:w-1/2 px-3 mb-4 md:mb-0">
+                    <label for="id_date" class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
                     <input type="date" name="date" id="id_date" value='{{date}}'
-                        class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
+                        class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300 text-right">
                 </div>
-                <div>
-                    <label for="id_status" class="block text-sm font-medium text-gray-700">الحالة</label>
+                <div class="w-full md:w-1/2 px-3">
+                    <label for="id_status" class="block text-sm font-medium text-gray-700 mb-2">الحالة</label>
                     <select name="status" id="id_status"
-                        class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
+                        class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300 text-right">
                         <option value="" selected>اختر الحالة</option>
                         {% for value, label in statuses %}
                         <option value="{{ value }}" {% if value == status %} selected{% endif %} >{{ label }}</option>
@@ -31,23 +30,23 @@
                     </select>
                 </div>
             </div>
-            <div>
+            <div class="flex justify-center">
                 <button type="submit"
-                    class="mt-4 bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition duration-300">تطبيق الفلاتر</button>
+                    class="w-1/2 bg-orange-500 text-white py-3 px-4 rounded-full hover:bg-orange-600 transition duration-300 shadow-md">تطبيق الفلاتر</button>
             </div>
         </form>
         {% if offers %}
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-orange-100">
                             <tr>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">رقم العرض</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">رقم الطلب</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">السعر</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الحالة</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">التاريخ المقترح</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الإجراءات</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-orange-800 uppercase tracking-wider">رقم العرض</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-orange-800 uppercase tracking-wider">رقم الطلب</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-orange-800 uppercase tracking-wider">السعر</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-orange-800 uppercase tracking-wider">الحالة</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-orange-800 uppercase tracking-wider">التاريخ المقترح</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-orange-800 uppercase tracking-wider">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -58,22 +57,22 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${{ offer.price }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         {% if offer.stage == 'Pending' %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                                 {{ offer.stage }}
                                             </span>
                                         {% elif offer.stage == 'Accepted' %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                 {{ offer.stage }}
                                             </span>
                                         {% else %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                                 {{ offer.stage }}
                                             </span>
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ offer.proposed_service_date|date:"d/m/Y" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="{% url 'orders:order_detail' offer.order.id %}" class="text-orange-600 hover:text-orange-900 transition-colors duration-200">عرض الطلب</a>
+                                        <a href="{% url 'orders:order_detail' offer.order.id %}" class="text-orange-600 hover:text-orange-900 transition-colors duration-200 bg-orange-100 hover:bg-orange-200 px-3 py-2 rounded-full">عرض الطلب</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -82,35 +81,30 @@
                 </div>
             </div>
         {% else %}
-            <div class="bg-white shadow-md rounded-lg p-6 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="bg-white shadow-lg rounded-lg p-8 flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-orange-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p class="text-lg text-gray-700">لم تقم بتقديم أي عروض حتى الآن.</p>
+                <p class="text-xl text-gray-700">لم تقم بتقديم أي عروض حتى الآن.</p>
             </div>
         {% endif %}
     </div>
-        <!--pagination-->
-{%if offers%}
-{% if offers.has_other_pages %}
-<div class="text-center ">
-    {% if offers.has_previous %}
-    <div class="d-flex gap-1">
-        <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
-        <a href="?page={{offers.previous_page_number}}" class="btn btn-my">&lang; </a>
-    </div>  
+    {% if offers %}
+        {% if offers.has_other_pages %}
+            <div class="flex justify-center items-center space-x-2 mt-8">
+                {% if offers.has_previous %}
+                    <a href="?page=1" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&lang;&lang;</a>
+                    <a href="?page={{offers.previous_page_number}}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&lang;</a>
+                {% endif %}
+                <span class="px-4 py-2 bg-orange-200 text-orange-800 rounded-md">
+                    الصفحة {{offers.number}} من {{offers.paginator.num_pages}}
+                </span>
+                {% if offers.has_next %}
+                    <a href="?page={{offers.next_page_number}}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&rang;</a>
+                    <a href="?page={{offers.paginator.num_pages}}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&rang;&rang;</a>
+                {% endif %}
+            </div>
+        {% endif %}
     {% endif %}
-    <div class="current d-flex align-items-center text-black" >
-        Page {{offers.number}} of {{offers.paginator.num_pages}}
-    </div>
-    {% if offers.has_next %}
-    <div class="d-flex gap-1">
-        <a href="?page={{offers.next_page_number}}" class="btn btn-my"> &rang;</a>
-        <a href="?page={{offers.paginator.num_pages}}" class="btn btn-my"> &rang;&rang;</a>
-    </div> 
-    {% endif %}
-  </div>
-  {%endif%}
-  {% endif %}
 </div>
 {% endblock %}
