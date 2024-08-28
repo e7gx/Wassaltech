@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Q, Count
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from notifications.views import NotificationService as sendemail
 from django.contrib import messages
@@ -15,6 +16,8 @@ from datetime import datetime
 from django.urls import reverse
 from django.core.paginator import Paginator
 from .models import categories , order_statuses , offer_stages
+from django.utils import timezone
+
 
 ########################################################################################################################
 # ORDER CRUD
@@ -80,13 +83,19 @@ def customer_orders(request):
         HttpResponse: The response object containing the rendered customer orders page.
     """
 
-    orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress']).annotate(
+    orders = Order.objects.filter(
+        customer=request.user.account,
+        status__in=['Open', 'In Progress']
+    ).annotate(
         pending_offers_count=Count('offer', filter=Q(offer__stage='Pending'))
     )
+
+    if not orders:
+        messages.info(request, 'You have no orders.')
     return render(request, 'orders/customer_orders.html', {'orders': orders})
 
 
-# CUSTOMER READ
+
 @login_required
 def order_history(request):
     """
@@ -137,7 +146,10 @@ def freelancer_orders(request):
 
     freelancer = request.user.freelancer
     orders = Order.objects.filter(status='Open').exclude(Q(offer__freelancer=freelancer) & Q(offer__stage='Pending'))
-    return render(request, 'orders/freelancer_orders.html', {'orders': orders})
+    page_number = request.GET.get('page', 1)
+    get_order = Paginator(orders , 6)
+    OrderList = get_order.get_page(page_number)
+    return render(request, 'orders/freelancer_orders.html', {'orders': OrderList})
 
 
 # MUTUAL READ
@@ -183,7 +195,6 @@ def order_detail(request, order_id):
 # ORDER UPDATE
 ########################################################################################################################
 # MUTUAL UPDATE
-from django.utils import timezone
 
 @login_required
 def end_order(request, order_id):
@@ -401,7 +412,32 @@ def freelancer_offers(request):
 
     if hasattr(request.user, 'freelancer'):
         offers = Offer.objects.filter(Q(freelancer=request.user.freelancer) & (Q(stage="Pending") | Q(stage="Accepted")))
-        return render(request, 'orders/freelancer_offers.html', {'offers': offers})
+        page_number = request.GET.get('page', 1)
+        get_offers = Paginator(offers , 6)
+        OfferList = get_offers.get_page(page_number)
+        categoriesd= categories
+        statuses = offer_stages
+        if request.method == "POST":
+            status = request.POST.get('status')
+            date = request.POST.get('date')
+            
+
+            filters = Q()
+            if status:
+                filters &= Q(stage=status)
+            if date:
+                filters &= Q(created_at=date)
+
+            offer = Offer.objects.filter(filters).order_by('-created_at')
+            return render(request, 'orders/freelancer_offers.html', {
+                'offers': offer,
+                'date':date,
+                'status':status,
+                'statuses': statuses
+            })    
+        return render(request, 'orders/freelancer_offers.html', {'offers': OfferList,
+
+                'statuses': statuses})
     else:
         messages.error(request, "You do not have permission to view offers.")
         return redirect('main:index')
@@ -580,6 +616,17 @@ def freelancer_discard_offer(request, offer_id):
 
     return redirect('orders:freelancer_orders')
 
+
+@login_required
+def process_payments(request):
+    Payment.process_payments()
+    return redirect('accounts:profile')
+
+
+@login_required
+def deposit_payments(request):
+    Payment.deposit_payments()
+    return redirect('accounts:profile')
 
 
 # ! edit this function redirect to the order detail page after payment

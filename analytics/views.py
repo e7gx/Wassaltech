@@ -30,21 +30,24 @@ def admin_dashboard(request):
         orders_count = Order.objects.all().count()
         total_users = Account.objects.all().count()
 
+     
         total_customers = Account.objects.all().filter(user_type='Customer').count()
         total_freelancers = Account.objects.all().filter(user_type='Freelancer').count()
         total_admins = Account.objects.all().filter(user_type='Admin').count()
 
+       
         total_amount_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_amount=Sum('amount'))[
             'total_amount']
         total_refund_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_refund_amount=Sum('refund_amount'))[
             'total_refund_amount']
+        
         total_amount_deposited = Decimal(total_amount_deposited or 0)
         total_refund_deposited = Decimal(total_refund_deposited or 0)
-        cash_flow = total_amount_deposited + total_refund_deposited
-        commissions = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-        freelancer_wallet = total_amount_deposited - commissions
+        total_money_flow = total_amount_deposited + total_refund_deposited
+        wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        freelancer_wallet = total_amount_deposited - wallet
         customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-
+        
         tickets_count = Ticket.objects.all().count()
         ticket_status_count = Ticket.objects.values('ticket_status').annotate(Count('ticket_status')).order_by('-ticket_status__count').first()
         if ticket_status_count is not None:
@@ -71,8 +74,8 @@ def admin_dashboard(request):
             'total_freelancers': total_freelancers,
             'total_admins': total_admins,
 
-            'cash_flow': cash_flow,
-            'commissions': commissions,
+            'total_money_flow': total_money_flow,
+            'wallet': wallet,
             'freelancer_wallet': freelancer_wallet,
             'customer_wallet': customer_wallet,
             'tickets_count': tickets_count,
@@ -137,7 +140,7 @@ def customer_profile(request, pk):
         else:
             return redirect('main:index')
     
-
+ 
 @login_required
 def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
     if request.user.is_superuser:
