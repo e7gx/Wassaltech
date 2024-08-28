@@ -127,71 +127,66 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.attach_money,
+                  const SizedBox(height: 2),
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.attach_money,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Total Offers: ',
+                          style: TextStyle(
                             color: Colors.orange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
                           ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Total Offers: ',
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
+                        ),
+                        Text(
+                          '$offersCount',
+                          style: const TextStyle(
+                            color: Colors.orange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
                           ),
-                          Text(
-                            '$offersCount',
-                            style: const TextStyle(
-                              color: Colors.orange,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.work,
-                              color: Colors.deepOrangeAccent),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Total Orders: ',
-                            style: TextStyle(
-                              color: Colors.deepOrangeAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
+                  const SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.work, color: Colors.deepOrangeAccent),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Total Orders: ',
+                          style: TextStyle(
+                            color: Colors.deepOrangeAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
                           ),
-                          Text(
-                            '$ordersCount',
-                            style: const TextStyle(
-                              color: Colors.deepOrangeAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
+                        ),
+                        Text(
+                          '$ordersCount',
+                          style: const TextStyle(
+                            color: Colors.deepOrangeAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Expanded(
                     child: ListView.builder(
                       itemCount: offers.length,
@@ -201,14 +196,30 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
                           elevation: 4.0,
                           child: ListTile(
-                            title: Text('Offer ID: ${offer.id}'),
-                            subtitle: Text('Price: \$${offer.price}'),
+                            title: Text(
+                              'Offer ID: ${offer.id}',
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.bold,
+                                // fontSize: 24,
+                                color: Colors.orange,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Price: \$${offer.price}',
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.bold,
+                                // fontSize: 24,
+                                color: Colors.teal,
+                              ),
+                            ),
                             trailing: Text(
                               offer.stage,
                               style: TextStyle(
-                                color: offer.stage == 'Accepted'
+                                color: offer.stage == 'Completed'
                                     ? Colors.green
-                                    : Colors.yellow,
+                                    : Colors.red,
                                 fontWeight: offer.stage == 'Accepted'
                                     ? FontWeight.bold
                                     : FontWeight.normal,

@@ -4,22 +4,21 @@
 
 {% block content %}
 {% if messages %}
-<div class=" container mx-auto px-4 py-8">
-        {% for message in messages %}
-            <div class="bg-{{ message.tags }}-100 border-t-4 border-{{ message.tags }}-500 rounded-b text-{{ message.tags }}-900 px-4 py-3 shadow-md mb-4" role="alert">
-                <div class="flex">
-                    <div>
-                        <p class="font-bold text-orange-700">{{ message.tags }}</p>
-                        <p class="text-sm  text-orange-700">{{ message }}</p>
-                    </div>
-                </div>
+<div class="container mx-auto px-4 py-8">
+    {% for message in messages %}
+    <div class="bg-{{ message.tags }}-100 border-t-4 border-{{ message.tags }}-500 rounded-b text-{{ message.tags }}-900 px-4 py-3 shadow-md mb-4" role="alert">
+        <div class="flex">
+            <div>
+                <p class="font-bold text-orange-700">{{ message.tags }}</p>
+                <p class="text-sm  text-orange-700">{{ message }}</p>
             </div>
-        {% endfor %}
+        </div>
     </div>
+    {% endfor %}
+</div>
 {% endif %}
-<div class=" min-h-screen" dir="rtl">
-  <div class="-z-1 inset-0 absolute">
-  </div>
+<div class="min-h-screen" dir="rtl">
+    <div class="-z-1 inset-0 absolute"></div>
     <div class="container mx-auto px-4 py-8">
         {% if offer %}
         <div class="flex justify-between items-center mb-6">
@@ -33,13 +32,22 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Order Information -->
             <div class="{% if offer %}lg:col-span-2{% else %}lg:col-span-3{% endif %}">
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6 transform hover:scale-105 transition-transform duration-300 ease-in-out">
                     <h2 class="text-2xl font-semibold text-orange-900 mb-4 border-b pb-2">معلومات الطلب</h2>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-6">
                         <div>
-
-                            <p class="mb-2 text-black"><span class="font-semibold text-orange-600">الفئة:</span> {{ order.category }}</p>
-                            <p class="mb-2 text-black"><span class="font-semibold text-orange-600">تاريخ الإنشاء:</span> {{ order.created_at|date:"d M, Y" }}</p>
+                            <div class="font-medium text-black mb-2">
+                                <span class="font-semibold text-orange-600">اسم العميل:</span>
+                                {{ order.customer.user.username }}
+                            </div>
+                            <div class="font-medium text-orange-500 mb-2">
+                                <span class="font-semibold text-orange-600">رقم التواصل:</span>
+                                <a href="tel:{{ order.customer.phone_number }}" class="hover:underline">{{ order.customer.phone_number }}</a>
+                            </div>
+                            <div class="font-medium text-black mb-2">
+                                <span class="font-semibold text-orange-600">العنوان:</span>
+                                {{ order.customer.address }}
+                            </div>
                         </div>
                         <div>
                             <p class="mb-2 text-black">
@@ -49,157 +57,147 @@
                                 {% elif order.status == 'In Progress' %}bg-blue-100 text-blue-800
                                 {% elif order.status == 'Closed' %}bg-green-100 text-green-800
                                 {% else %}bg-red-100 text-red-800{% endif %}">
-                                {{ order.status }}
+                                    {{ order.status }}
                                 </span>
                             </p>
-
+                            <p class="mb-2 text-black"><span class="font-semibold text-orange-600">الفئة:</span> {{ order.category }}</p>
+                            <p class="mb-2 text-black"><span class="font-semibold text-orange-600">تاريخ الإنشاء:</span> {{ order.created_at|date:"d M, Y" }}</p>
                         </div>
                     </div>
-                    <p class="mt-4 text-black"><span class="font-semibold text-orange-600">الوصف:</span> {{ order.issue_description }}</p>
-                </div>
-
-                <!-- Order Media -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300">
-                    <h3 class="text-2xl font-semibold text-orange-600 mb-4 border-b pb-2">الوسائط المرفقة</h3>
-                    
-                    {% if order_images or order_video %}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {% if order_images %}
-                                <div>
-                                    <h4 class="text-lg font-semibold text-orange-600 mb-3">الصور:</h4>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        {% for image in order_images %}
-                                        <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-110">
-                                            <img src="{{ image.image.url }}" alt="صورة الطلب" class="w-full h-40 object-cover">
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                            
-                            {% if order_video %}
-                                <div>
-                                    <h4 class="text-lg font-semibold text-orange-600 mb-3">الفيديو:</h4>
-                                    <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
-                                        <video controls class="w-full h-full object-cover">
-                                            <source src="{{ order_video.video.url }}" type="video/mp4">
-                                            <source src="{{ order_video.video.url }}" type="video/webm">
-                                            <source src="{{ order_video.video.url }}" type="video/ogg">
-                                            متصفحك لا يدعم عرض الفيديو.
-                                        </video>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <p class="text-gray-600">لا توجد وسائط مرفقة لهذا الطلب.</p>
-                    {% endif %}
+                    <p class="mt-4 text-black"><span class="font-semibold text-2xl text-orange-600">الوصف:</span> {{ order.issue_description }}</p>
                 </div>
             </div>
 
-            <!-- Sidebar -->
-            {% if offer %}
-            <div class="lg:col-span-1">
-                <!-- Accepted Offer -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300">
-                    <h2 class="text-2xl font-semibold text-orange-600 mb-4 border-b pb-2">العرض المقبول</h2>
-                    <p class="mb-2 text-black"><span class="font-semibold text-orange-600">المستقل:</span> {{ offer.freelancer.user.username }}</p>
-                    <p class="mb-2 text-black"><span class="font-semibold text-orange-600">السعر:</span> ${{ offer.price }}</p>
-                    <p class="mb-2 text-black"><span class="font-semibold text-orange-600">تاريخ الخدمة المقترح:</span> {{ offer.proposed_service_date|date:"d M, Y" }}</p>
-                    <p class="mt-4 text-black"><span class="font-semibold text-orange-600">الوصف:</span> {{ offer.description }}</p>
-                </div>
-                {% endif %}
-
-                <!-- Action Buttons -->
-                <!-- <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300"> -->
-                    {% if order %}
-                        {% if order.status == 'In Progress' %}
-                            {% if user.account.user_type == 'Customer' and order.customer == user.account and not order.customer_completed %}
-                                {% if order.freelancer_completed %}
-                                    <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4" onclick="showReviewModal()">إتمام الطلب</button>
-                                {% else %}
-                                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-                                        <p>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إتمامه.</p>
-                                    </div>
-                                {% endif %}
-                            {% elif user.account.user_type == 'Freelancer' and order.assigned_to == user.freelancer and not order.freelancer_completed %}
-                                <form method="post" action="{% url 'orders:end_order' order.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4">إتمام الطلب</button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-
-                    {% if order %}
-                        {% if user.account.user_type == "Customer" and order.customer == user.account %}
-                            {% if order.status == "Open" %}
-                                <form action="{% url 'orders:customer_discard_order' order.id %}" method="post" class="mb-2">
-                                    {% csrf_token %}
-                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out w-full">حذف الطلب</button>
-                                </form>
-                    {% elif order.status == "In Progress" %}
-                        <form action="{% url 'orders:customer_cancel_offer' offer.id %}" method="post" class="mb-2">
-                            {% csrf_token %}
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض</button>
-                        </form>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-            {% if user.account.user_type == "Freelancer" %}
-                {% if offer %}
-                    {% if offer.freelancer == user.freelancer %}
-                        <form action="{% url 'orders:freelancer_cancel_offer' offer.id %}" method="post" class="mb-2">
-                            {% csrf_token %}
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض</button>
-                        </form>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-            {% if pending_offers %}
-                {% for pending_offer in pending_offers %}
-                    {% if pending_offer.freelancer == user.freelancer %}
-                        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                            <h2 class="text-2xl font-semibold text-orange-600 mb-4">حالة العرض: قيد الانتظار</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <p class="font-semibold text-gray-700"><span
-                                        class="font-semibold text-gray-700">المستقل:</span> {{ pending_offer.freelancer.user.username }}
-                                </p>
-                                <p class="font-semibold text-gray-700"><span
-                                        class="font-semibold text-gray-700">السعر:</span>
-                                    ${{ pending_offer.price }}</p>
-                                <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">تاريخ الخدمة المقترح:</span> {{ pending_offer.proposed_service_date|date:"d M, Y" }}
-                                </p>
+            <!-- Order Media -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-2xl font-semibold text-orange-600 mb-4 border-b pb-2">الوسائط المرفقة</h3>
+                {% if order_images or order_video %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% if order_images %}
+                    <div>
+                        <h4 class="text-lg font-semibold text-orange-600 mb-3">الصور:</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            {% for image in order_images %}
+                            <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-110">
+                                <img src="{{ image.image.url }}" alt="صورة الطلب" class="w-full h-40 object-cover">
                             </div>
-                            <p class="font-semibold text-gray-700 mt-4"><span
-                                    class="font-semibold text-gray-700">الوصف:</span> {{ pending_offer.description }}</p>
+                            {% endfor %}
                         </div>
-
-                        <form method="post" action="{% url 'orders:freelancer_discard_offer' pending_offer.id %}">
-                        {% csrf_token %}
-                            <button type="submit"
-                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
-                                حذف العرض
-                            </button>
-                        </form>
+                    </div>
                     {% endif %}
-                {% endfor %}
-            {% endif %}
-                <!-- </div> -->
+                    {% if order_video %}
+                    <div>
+                        <h4 class="text-lg font-semibold text-orange-600 mb-3">الفيديو:</h4>
+                        <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                            <video controls class="w-full h-full object-cover">
+                                <source src="{{ order_video.video.url }}" type="video/mp4">
+                                <source src="{{ order_video.video.url }}" type="video/webm">
+                                <source src="{{ order_video.video.url }}" type="video/ogg">
+                                متصفحك لا يدعم عرض الفيديو.
+                            </video>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-gray-600">لا توجد وسائط مرفقة لهذا الطلب.</p>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Navigation Buttons -->
-        <div class="mt-8 flex justify-between">
-            {% if user.account.user_type == 'Customer' and order.status == 'Open' %}
-                <a href="{% url 'orders:order_offers' order.id %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">عرض العروض</a>
+        <!-- Sidebar -->
+        {% if offer %}
+        <div class="lg:col-span-1">
+            <!-- Accepted Offer -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300">
+                <h2 class="text-2xl font-semibold text-orange-600 mb-4 border-b pb-2">العرض المقبول</h2>
+                <p class="mb-2 text-black"><span class="font-semibold text-orange-600">المستقل:</span> {{ offer.freelancer.user.username }}</p>
+                <p class="mb-2 text-black"><span class="font-semibold text-orange-600">رقم التواصل:</span> <a href="tel:{{ offer.freelancer.user.account.phone_number }}" class="hover:text-orange-500">{{ offer.freelancer.user.account.phone_number }}</a></p>
+                <p class="mb-2 text-black"><span class="font-semibold text-orange-600">السعر:</span> ${{ offer.price }}</p>
+                <p class="mb-2 text-black"><span class="font-semibold text-orange-600">تاريخ الخدمة المقترح:</span> {{ offer.proposed_service_date|date:"d M, Y" }}</p>
+                <p class="mb-2 text-black"><span class="font-semibold text-orange-600">تاريخ االزيارة:</span> {{ offer.appointment|date:"d M, Y" }}</p>
+                <p class="mt-4 text-black"><span class="font-semibold text-orange-600">الوصف:</span> {{ offer.description }}</p>
+            </div>
             {% endif %}
-            {% if user.account.user_type == 'Customer' %}
-                <a href="{% url 'orders:customer_orders' %}" class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">العودة إلى طلباتي</a>
+
+            <!-- Action Buttons -->
+            {% if order %}
+            {% if order.status == 'In Progress' %}
+            {% if user.account.user_type == 'Customer' and order.customer == user.account and not order.customer_completed %}
+            {% if order.freelancer_completed %}
+            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4" onclick="showReviewModal()">إتمام الطلب</button>
             {% else %}
-                <a href="{% url 'orders:freelancer_orders' %}" class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">العودة إلى الطلبات المتاحة</a>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+                <p>يجب أن يكمل المستقل الطلب قبل أن تتمكن من إتمامه.</p>
+            </div>
             {% endif %}
-        </
+            {% elif user.account.user_type == 'Freelancer' and order.assigned_to == user.freelancer and not order.freelancer_completed %}
+            <form method="post" action="{% url 'orders:end_order' order.id %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out mb-4">إتمام الطلب</button>
+            </form>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% if order %}
+            {% if user.account.user_type == "Customer" and order.customer == user.account %}
+            {% if order.status == "Open" %}
+            <form action="{% url 'orders:customer_discard_order' order.id %}" method="post" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out w-full">حذف الطلب</button>
+            </form>
+            {% elif order.status == "In Progress" %}
+            <form action="{% url 'orders:customer_cancel_offer' offer.id %}" method="post" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض</button>
+            </form>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% if user.account.user_type == "Freelancer" %}
+            {% if offer %}
+            {% if offer.freelancer == user.freelancer %}
+            <form action="{% url 'orders:freelancer_cancel_offer' offer.id %}" method="post" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">إلغاء العرض</button>
+            </form>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% if pending_offers %}
+            {% for pending_offer in pending_offers %}
+            {% if pending_offer.freelancer == user.freelancer %}
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-semibold text-orange-600 mb-4">حالة العرض: قيد الانتظار</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">المستقل:</span> {{ pending_offer.freelancer.user.username }}</p>
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">السعر:</span> ${{ pending_offer.price }}</p>
+                    <p class="font-semibold text-gray-700"><span class="font-semibold text-gray-700">تاريخ الخدمة المقترح:</span> {{ pending_offer.proposed_service_date|date:"d M, Y" }}</p>
+                </div>
+                <p class="font-semibold text-gray-700 mt-4"><span class="font-semibold text-gray-700">الوصف:</span> {{ pending_offer.description }}</p>
+            </div>
+            <form method="post" action="{% url 'orders:freelancer_discard_offer' pending_offer.id %}">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">حذف العرض</button>
+            </form>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="mt-8 flex justify-between">
+        {% if user.account.user_type == 'Customer' and order.status == 'Open' %}
+        <a href="{% url 'orders:order_offers' order.id %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">عرض العروض</a>
+        {% endif %}
+        {% if user.account.user_type == 'Customer' %}
+        <a href="{% url 'orders:customer_orders' %}" class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">العودة إلى طلباتي</a>
+        {% else %}
+        <a href="{% url 'orders:freelancer_orders' %}" class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">العودة إلى الطلبات المتاحة</a>
+        {% endif %}
+    </div>
 </div>
 
 <!-- Review Modal -->
@@ -215,7 +213,7 @@
                     <div class="flex justify-center bg-white p-3 rounded-full shadow-inner">
                         <input type="hidden" name="rating" id="rating" value="0">
                         {% for i in '12345' %}
-                            <span class="star cursor-pointer text-2xl sm:text-3xl md:text-4xl text-orange-400 hover:text-orange-600 transition-all duration-300 transform hover:scale-110" data-value="{{ forloop.counter }}">&#9734;</span>
+                        <span class="star cursor-pointer text-2xl sm:text-3xl md:text-4xl text-orange-400 hover:text-orange-600 transition-all duration-300 transform hover:scale-110" data-value="{{ forloop.counter }}">&#9734;</span>
                         {% endfor %}
                     </div>
                 </div>
