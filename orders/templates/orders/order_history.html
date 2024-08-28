@@ -6,8 +6,8 @@
 <div class="min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
     {% if request.user.account.user_type == 'Customer' %}
-        {% if orders %}
         <h1 class="text-3xl font-bold text-orange-700 mb-8">سجل الطلبات</h1>
+        {% if orders %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -56,8 +56,8 @@
         {% endif %}
     {% endif %}
     {% if request.user.account.user_type == 'Freelancer' %}
-        {% if offers %}
         <h1 class="text-3xl font-bold text-orange-700 mb-8">سجل العروض</h1>
+        {% if offers %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
