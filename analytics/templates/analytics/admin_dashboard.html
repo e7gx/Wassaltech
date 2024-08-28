@@ -67,6 +67,12 @@
     </div>
 </div>
 
+<style>
+
+    h1{
+        color: #6fff68;
+    }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Order Status Chart
@@ -74,11 +80,12 @@
     var orderStatusChart = new Chart(orderStatusCtx, {
         type: 'pie',
         data: {
-            labels: ['قيد التنفيذ', 'مكتملة'],
+            labels: [ "الطلبات المحذوفة" ,'قيد التنفيذ' ,'الطلبات المفتوحة','مكتملة' ],
             datasets: [{
-                data: [{{ orders_in_progress }}, {{ orders_closed }}],
-                backgroundColor: ['#FF6384', '#36A2EB'],
-                borderColor: ['#FF6384', '#36A2EB'],
+                data: [{{ orders_discarded }} , {{ orders_open }},{{ orders_in_progress }},{{ orders_closed }} ],
+                backgroundColor: ['#FF6384',  '#FF9F40', '#4BC0C0', '#9966FF', '#FFCD56'],
+                borderColor: ['#FF6384', '#FF9F40', '#4BC0C0', '#9966FF', '#FFCD56'],
+                
                 borderWidth: 1
             }]
         },
