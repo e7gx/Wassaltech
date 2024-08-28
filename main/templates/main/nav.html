@@ -32,9 +32,9 @@
             <div x-data="{ open: false }" class="relative">
               <button @click="open = !open" @click.away="open = false" class="flex items-center">
                 {% if user.account.avatar %}
-                <img class="w-10 h-10 rounded-full" src="{{ user.account.avatar.url }}" alt="User Avatar">
+                <img class="w-10 h-10 rounded-full object-cover" src="{{ user.account.avatar.url }}" alt="User Avatar">
             {% else %}
-                <img class="w-10 h-10 rounded-full" src="{% static 'images/default_profile.png' %}" alt="Default Avatar">
+                <img class="w-10 h-10 rounded-full object-cover" src="{% static 'images/default_profile.png' %}" alt="Default Avatar">
             {% endif %}    
               </button>
               <div x-show="open" 
