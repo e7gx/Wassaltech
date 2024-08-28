@@ -27,37 +27,23 @@ def admin_dashboard(request):
         if best_catgorie is not None:
             best_catgorie = best_catgorie['category']
         rating = Review.objects.aggregate(Avg('rating'))['rating__avg']
-        orders_count = Offer.objects.all().count()
+        orders_count = Order.objects.all().count()
         total_users = Account.objects.all().count()
 
-        # wallet = Offer.objects.filter(stage="Accepted", order__status="Completed").all()
-        # total_wallet = wallet.aggregate(Sum('price'))['price__sum']#! we need to check the wallet of the Project Wassaltech
         total_customers = Account.objects.all().filter(user_type='Customer').count()
         total_freelancers = Account.objects.all().filter(user_type='Freelancer').count()
         total_admins = Account.objects.all().filter(user_type='Admin').count()
 
-        # total_amount_pending_deposit = Payment.objects.filter(Q(status='Processing') | Q(status='Processed')).aggregate(
-        #     total_amount=Sum('amount'))['total_amount']
-        # total_refund_pending_deposit = Payment.objects.filter(Q(status='Processing') | Q(status='Processed')).aggregate(
-        #     total_refund_amount=Sum('refund_amount'))['total_refund_amount']
         total_amount_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_amount=Sum('amount'))[
             'total_amount']
         total_refund_deposited = Payment.objects.filter(Q(status='Deposited')).aggregate(total_refund_amount=Sum('refund_amount'))[
             'total_refund_amount']
         total_amount_deposited = Decimal(total_amount_deposited or 0)
         total_refund_deposited = Decimal(total_refund_deposited or 0)
-
-        # Calculate total money flow
         total_money_flow = total_amount_deposited + total_refund_deposited
-
-        # Calculate wallets
         wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
         freelancer_wallet = total_amount_deposited - wallet
         customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-        # total_money_flow = total_amount_deposited + total_refund_deposited if total_amount_deposited and total_refund_deposited else 0
-        # wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP) if total_amount_deposited else 0
-        # freelancer_wallet = total_amount_deposited - wallet if total_amount_deposited else 0
-        # customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP) if total_refund_deposited else 0
 
         tickets_count = Ticket.objects.all().count()
         ticket_status_count = Ticket.objects.values('ticket_status').annotate(Count('ticket_status')).order_by('-ticket_status__count').first()
