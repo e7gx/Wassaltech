@@ -70,8 +70,7 @@ def admin_dashboard(request):
             'total_customers': total_customers,
             'total_freelancers': total_freelancers,
             'total_admins': total_admins,
-            # 'total_amount_deposited': total_amount_deposited,
-            # 'total_refund_deposited': total_refund_deposited,
+
             'total_money_flow': total_money_flow,
             'wallet': wallet,
             'freelancer_wallet': freelancer_wallet,
@@ -83,7 +82,6 @@ def admin_dashboard(request):
             'tickets_open': tickets_open,
             'most_category_tickets': most_category_tickets,
             'user': request.user,
-        #     'total_wallet': total_wallet,  # Why?
         }
         return render(request, 'analytics/admin_dashboard.html', context)
     else:
@@ -139,7 +137,7 @@ def customer_profile(request, pk):
         else:
             return redirect('main:index')
     
-    
+
 @login_required
 def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
     if request.user.is_superuser:

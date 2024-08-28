@@ -60,5 +60,25 @@
             </div>
         {% endfor %}
     </div>
+    <!--pagination-->
+{%if chats%}
+<div class="font-black">
+    {% if chats.has_previous %}
+    <div class="d-flex gap-1">
+        <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
+        <a href="?page={{chats.previous_page_number}}" class="btn btn-my">&lang; </a>
+    </div>  
+    {% endif %}
+    <div class="current d-flex align-items-center text-black" >
+        Page {{chats.number}} of {{chats.paginator.num_pages}}
+    </div>
+    {% if chats.has_next %}
+    <div class="d-flex gap-1">
+        <a href="?page={{chats.next_page_number}}" class="btn btn-my"> &rang;</a>
+        <a href="?page={{chats.paginator.num_pages}}" class="btn btn-my"> &rang;&rang;</a>
+    </div> 
+    {% endif %}
+  </div>
+  {%endif%}
 </div>
 {% endblock %}

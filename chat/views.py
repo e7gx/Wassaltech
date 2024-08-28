@@ -6,6 +6,7 @@ from notifications.views import NotificationService as sendemail
 from accounts.models import Freelancer, Account
 from django.http import JsonResponse, HttpResponseBadRequest
 import json
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
@@ -42,6 +43,7 @@ def create_chat(request , id_order):
     
     get_chat = Chat(user = get_user , freelancer = get_freelancer)
     get_chat.save()
+    sendemail.notify_new_chat(get_user , get_order , get_freelancer)
     
     return redirect(reverse('chat:get_chat', kwargs={'chat_id': get_chat.id}) )
 
@@ -70,5 +72,8 @@ def chat_list(request):
         chats = Chat.objects.filter(freelancer=request.user.freelancer)
     else:
         chats = []
+    page_number = request.GET.get('page', 1)
+    get_chats = Paginator(chats , 6)
+    ChatList = get_chats.get_page(page_number)
     
-    return render(request, 'chat/chat_list.html', {'chats': chats})
+    return render(request, 'chat/chat_list.html', {'chats': ChatList})

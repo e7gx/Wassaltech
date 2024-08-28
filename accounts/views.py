@@ -1,5 +1,3 @@
-from decimal import Decimal, ROUND_HALF_UP
-
 from django.db import transaction, IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -14,8 +12,7 @@ from .forms import FreelancerSignUpForm
 from .models import Account, Freelancer
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError 
-
-
+from decimal import Decimal, ROUND_HALF_UP
 
 def customer_account(request):
     if request.user.is_authenticated:
@@ -47,39 +44,41 @@ def customer_account(request):
             address = request.POST.get('address')
             avatar = request.FILES.get('avatar')
 
-            try:
-                with transaction.atomic():
-                    user = User.objects.create_user(
-                        username=username,
-                        email=email,
-                        password=password,
-                        first_name=first_name,
-                        last_name=last_name
-                    )
-                    Account.objects.create(
-                        user=user,
-                        phone_number=phone_number,
-                        address=address,
-                        user_type='Customer',
-                        avatar=avatar
-                    )
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'This email address is already in use.')
+            else:
+                try:
+                    with transaction.atomic():
+                        user = User.objects.create_user(
+                            username=username,
+                            email=email,
+                            password=password,
+                            first_name=first_name,
+                            last_name=last_name
+                        )
+                        Account.objects.create(
+                            user=user,
+                            phone_number=phone_number,
+                            address=address,
+                            user_type='Customer',
+                            avatar=avatar
+                        )
 
-                login(request, user)
-                messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your account has been created successfully.')
-                return redirect('main:index')
-            except ValidationError as e:
-                # Handle unique Email validation error without changing the model we need to change this leater,
-                for field, errors in e.message_dict.items():
-                    for error in errors:
-                        messages.error(request, f"{field}: {error}")
-            except IntegrityError:
-                messages.error(request, 'Account creation failed. Please try a different username or phone number.')
+                        login(request, user)
+                        messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your account has been created successfully.')
+                        return redirect('main:index')
+                
+                except ValidationError as e:
+                    for field, errors in e.message_dict.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
+                except IntegrityError:
+                    messages.error(request, 'Account creation failed. Please try a different username or phone number.')
 
     return render(request, 'accounts/customer_account.html')
 
 
 def freelancer_account(request):
-    form = FreelancerSignUpForm()
     if request.user.is_authenticated:
         if request.user.is_superuser:
             messages.info(request, 'You are already logged in as an admin.')
@@ -87,6 +86,8 @@ def freelancer_account(request):
         else:
             messages.info(request, 'You are already logged in.')
             return redirect('main:index')
+
+    form = FreelancerSignUpForm()
 
     if request.method == 'POST':
         if 'login' in request.POST:
@@ -109,20 +110,24 @@ def freelancer_account(request):
 
         elif 'signup' in request.POST:
             form = FreelancerSignUpForm(request.POST, request.FILES)
-            if form.is_valid():
-                try:
-                    with transaction.atomic():
-                        user = form.save()
-                        login(request, user)
-                        messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your freelancer account has been created successfully.')
-                except IntegrityError:
-                    messages.error(request, 'Account creation failed. Please try a different username or phone number.')
+            
+            email = request.POST.get('email')
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'This email address is already in use.')
             else:
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        messages.error(request, f"{field}: {error}")
-    else:
-        form = FreelancerSignUpForm()
+                if form.is_valid():
+                    try:
+                        with transaction.atomic():
+                            user = form.save()
+                            login(request, user)
+                            messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your freelancer account has been created successfully.')
+                            return redirect('main:index')
+                    except IntegrityError:
+                        messages.error(request, 'Account creation failed. Please try a different username or phone number.')
+                else:
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            messages.error(request, f"{field}: {error}")
 
     return render(request, 'accounts/freelancer_account.html', {'form': form})
 
@@ -176,6 +181,7 @@ def freelancer_view_profile(request):
 
 
             context = {
+
                 'freelancer_wallet_pending': freelancer_wallet_pending,
                 'freelancer_wallet': freelancer_wallet,
                 'orders_in_progress': orders_in_progress,

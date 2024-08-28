@@ -221,20 +221,50 @@
 </div>
 
 <!-- Messages -->
-<div class="container mx-auto px-4 mt-6">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="message message-{{ message.tags }} flex items-center justify-between" x-data="{ show: true }" x-show="show">
-                <p>{{ message }}</p>
-                <button @click="show = false" class="text-white hover:text-gray-200 transition-colors duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        {% endfor %}
-    {% endif %}
-</div>
+{% if messages %}
+  <div id="notification-container" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 z-50 w-full max-w-md">
+    <div class="space-y-2">
+      {% for message in messages %}
+        {% if message.tags == 'success' %}
+          <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative animate-slide-in-down" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% elif message.tags == 'error' %}
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative animate-slide-in-down" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% elif message.tags == 'warning' %}
+          <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative animate-slide-in-down" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% elif message.tags == 'info' %}
+          <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative animate-slide-in-down" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% else %}
+          <div class="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-3 rounded relative animate-slide-in-down" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    setTimeout(function() {
+      document.getElementById('notification-container').classList.add('hidden');
+    }, 4000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const notifications = document.querySelectorAll('.animate-slide-in-down');
+      notifications.forEach(notification => {
+        notification.classList.add('animate__animated', 'animate__slideInDown');
+      });
+    });
+  </script>
+{% endif %}
+
+
 
 <!-- Main content wrapper -->
 <div id="barba-wrapper" class="flex-grow">
@@ -243,8 +273,11 @@
     </div>
 </div>
 
+
 <!-- Footer -->
 {% include "main/footer.html" %}
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -267,6 +300,7 @@
         });
     });
 </script>
+
 
 {% block extra_scripts %}{% endblock %}
 </body>

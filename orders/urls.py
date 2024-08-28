@@ -22,3 +22,5 @@ urlpatterns = [
     path('export-pdf-from-html/<int:order_id>/', views.export_pdf_from_html, name='export_pdf_from_html'),
 
 ]
+
+

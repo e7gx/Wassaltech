@@ -9,11 +9,12 @@ from accounts.decorators import user_type_required
 from reviews.models import Review
 from .forms import OrderForm, OfferForm
 from reviews.forms import ReviewForm
-from .models import Order, OrderImage, OrderVideo, Offer
+from .models import Order, OrderImage, OrderVideo, Offer , Category
 from accounts.models import Account
 from datetime import datetime
 from django.urls import reverse
-
+from django.core.paginator import Paginator
+from .models import categories , order_statuses , offer_stages
 
 ########################################################################################################################
 # ORDER CRUD

@@ -37,6 +37,7 @@
                     <h2 class="text-2xl font-semibold text-orange-900 mb-4 border-b pb-2">معلومات الطلب</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
+
                             <p class="mb-2 text-black"><span class="font-semibold text-orange-600">الفئة:</span> {{ order.category }}</p>
                             <p class="mb-2 text-black"><span class="font-semibold text-orange-600">تاريخ الإنشاء:</span> {{ order.created_at|date:"d M, Y" }}</p>
                         </div>
@@ -51,6 +52,7 @@
                                 {{ order.status }}
                                 </span>
                             </p>
+
                         </div>
                     </div>
                     <p class="mt-4 text-black"><span class="font-semibold text-orange-600">الوصف:</span> {{ order.issue_description }}</p>
@@ -109,7 +111,7 @@
                 {% endif %}
 
                 <!-- Action Buttons -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300">
+                <!-- <div class="bg-white rounded-lg shadow-md p-6 mb-6 transform hover:scale-105 transition-all duration-300"> -->
                     {% if order %}
                         {% if order.status == 'In Progress' %}
                             {% if user.account.user_type == 'Customer' and order.customer == user.account and not order.customer_completed %}
@@ -183,7 +185,7 @@
                     {% endif %}
                 {% endfor %}
             {% endif %}
-                </div>
+                <!-- </div> -->
             </div>
         </div>
 
