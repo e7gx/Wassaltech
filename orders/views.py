@@ -102,7 +102,10 @@ def customer_orders(request):
         return render(request, 'orders/customer_orders.html', {
             'orders': orders,
             'categories': categoriesd,
-            'statuses': statuses
+            'statuses': statuses,
+            'status':status,
+            'date':date,
+            'category':category
         })    
   
     for order in orders:
@@ -158,9 +161,13 @@ def order_history(request):
             return render(request, 'orders/order_history.html', {
                 'orders': OrdersList,
                 'categories': categoriesd,
-                'statuses': statuses
+                'statuses': statuses,
+                'status':status,
+                'date':date,
+                'category':category
             })    
-        return render(request, 'orders/order_history.html', {'orders': OrdersList})
+        return render(request, 'orders/order_history.html', {'orders': OrdersList , 'categories': categoriesd,
+                'statuses': statuses})
     else:
         messages.error(request, 'You do not have the necessary permissions to view order history.')
         return redirect('main:index')
