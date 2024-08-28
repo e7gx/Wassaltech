@@ -224,26 +224,6 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-start space-y-4 sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
-            {% csrf_token %}
-
-            <div class="p-6 rounded-lg">
-                <h4 class="text-xl font-semibold text-orange-600 mb-4">تقييم الخدمة</h4>
-                <div class="mb-6">
-                    <label for="rating" class="block text-gray-700 mb-2 text-lg">التقييم:</label>
-                    <div class="flex justify-center bg-white p-3 rounded-full shadow-inner">
-                        <input type="hidden" name="rating" id="rating" value="0">
-                        {% for i in '12345' %}
-                            <span class="star cursor-pointer text-2xl sm:text-3xl md:text-4xl text-orange-400 hover:text-orange-600 transition-all duration-300 transform hover:scale-110" data-value="{{ forloop.counter }}">&#9734;</span>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label for="comment" class="block text-gray-700 mb-2 text-lg">التعليق:</label>
-                    <textarea name="comment" id="comment" rows="4" class="block w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 resize-none"></textarea>
-                </div>
-
-                <div class="flex flex-col sm:flex-row justify-start space-y-4 sm:space-y-0 sm:space-x-4 rtl:space-x-reverse">
                     <button type="button"
                             class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 w-full sm:w-auto text-sm sm:text-base"
                             onclick="closeReviewModal()">إلغاء
