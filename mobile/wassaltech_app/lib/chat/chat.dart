@@ -149,7 +149,7 @@ class _MainPageState extends State<AiChatPage> {
       3- Current offer count: $_offerCount
       4- Current order count: $_orderCount
       5- Current Financial Amount : $_depositedAmount
-      6- Current company's profits : The company's profits are 20% of this amount. I want you to display it with the list $_depositedAmount let's call it company profits. EXAMPLE OF THE RESPONSE : DEPOSITED_AMOUNT = 10000, COMPANY PROFIT : 2000 Just like that. DO NOT EVER MENTION THE 20% JUST WRITE THE NUMBER TO THE USER
+      6- Current company's profits : The company's profits are 10% of this amount. I want you to display it with the list $_depositedAmount let's call it company profits. EXAMPLE OF THE RESPONSE : DEPOSITED_AMOUNT = 10000, COMPANY PROFIT : 2000 Just like that. DO NOT EVER MENTION THE 20% JUST WRITE THE NUMBER TO THE USER
 
       7- Reviews Average: $_reviewsAverage
 
@@ -239,7 +239,7 @@ class _MainPageState extends State<AiChatPage> {
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
+                    color: Colors.orange.withOpacity(0.3),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -254,7 +254,7 @@ class _MainPageState extends State<AiChatPage> {
                         color: Colors.black,
                         fontSize: 15,
                         fontFamily: 'Cairo',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ),
                     )
                   : isLatestMessage
@@ -268,9 +268,9 @@ class _MainPageState extends State<AiChatPage> {
                               value.text,
                               style: const TextStyle(
                                 color: Colors.black,
-                                fontSize: 15,
+                                fontSize: 14,
                                 fontFamily: 'Cairo',
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.normal,
                               ),
                             );
                           },
@@ -281,7 +281,7 @@ class _MainPageState extends State<AiChatPage> {
                             color: Colors.black,
                             fontSize: 15,
                             fontFamily: 'Cairo',
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.normal,
                           ),
                         ),
             ),

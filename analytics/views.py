@@ -173,8 +173,7 @@ def admin_payment(request):
         Payment.process_payments()
         if request.user.is_superuser:
             form = PaymentFilterForm(request.GET or None)
-            payments = Payment.objects.all()
-            
+            payments = Payment.objects.all()   
             if form.is_valid():
                 status = form.cleaned_data.get('status')
                 if status:

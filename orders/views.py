@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Q, Count
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from notifications.views import NotificationService as sendemail
 from django.contrib import messages
@@ -15,6 +16,8 @@ from datetime import datetime
 from django.urls import reverse
 from django.core.paginator import Paginator
 from .models import categories , order_statuses , offer_stages
+from django.utils import timezone
+
 
 ########################################################################################################################
 # ORDER CRUD
@@ -79,40 +82,17 @@ def customer_orders(request):
     Returns:
         HttpResponse: The response object containing the rendered customer orders page.
     """
-    orders = Order.objects.filter(customer=request.user.account, status__in=['Open', 'In Progress'])
-    page_number = request.GET.get('page', 1)
-    select_order = Paginator(orders , 10)
-    view_order = select_order.get_page(page_number)
-    categoriesd= categories
-    statuses = order_statuses
-    if request.method == "POST":
-        status = request.POST.get('status')
-        date = request.POST.get('date')
-        category = request.POST.get('category')
 
-        filters = Q()
-        if category:
-            filters &= Q(category=category)
-        if status:
-            filters &= Q(status=status)
-        if date:
-            filters &= Q(created_at=date)
+    orders = Order.objects.filter(
+        customer=request.user.account,
+        status__in=['Open', 'In Progress']
+    ).annotate(
+        pending_offers_count=Count('offer', filter=Q(offer__stage='Pending'))
+    )
 
-        orders = Order.objects.filter(filters).order_by('-created_at')
-        return render(request, 'orders/customer_orders.html', {
-            'orders': orders,
-            'categories': categoriesd,
-            'statuses': statuses,
-            'status':status,
-            'date':date,
-            'category':category
-        })    
-  
-    for order in orders:
-        pending_offers = Offer.objects.filter(order=order, stage='Pending').count()
-        order.pending_offers = pending_offers
-
-    return render(request, 'orders/customer_orders.html', {'orders': view_order , 'categories':categoriesd , "statuses":statuses})
+    if not orders:
+        messages.info(request, 'You have no orders.')
+    return render(request, 'orders/customer_orders.html', {'orders': orders})
 
 
 
@@ -215,7 +195,6 @@ def order_detail(request, order_id):
 # ORDER UPDATE
 ########################################################################################################################
 # MUTUAL UPDATE
-from django.utils import timezone
 
 @login_required
 def end_order(request, order_id):
