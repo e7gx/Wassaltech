@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q, Avg, F
+from django.core.exceptions import ValidationError 
 
 
 # Create your models here.
@@ -19,10 +20,18 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.user.username} | {self.user.first_name} {self.user.last_name}"
-
+    def clean(self):
+        if User.objects.filter(email=self.user.email).exclude(pk=self.user.pk).exists():
+            raise ValidationError({'email': 'This email address is already in use.'})
+        
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 def user_certificate_path(instance, filename):
     return f'certificates/{instance.user.username}/{filename}'
+
+    
 
 
 class Freelancer(models.Model):
