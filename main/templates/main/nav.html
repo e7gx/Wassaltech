@@ -1,3 +1,4 @@
+{% load static %}
 <nav class="relative py-4 bg-white shadow-md z-50">
   <div class="container px-4 mx-auto">
     <div class="flex items-center justify-between">
@@ -34,7 +35,11 @@
       <!-- User avatar and dropdown -->
       <div x-data="{ open: false }" class="relative">
         <button @click="open = !open" @click.away="open = false" class="flex items-center">
-          <img src="{{ user.account.profile_picture.url|default:'/static/images/default-avatar.png' }}" alt="{{ user.first_name }} {{ user.last_name }}" class="w-10 h-10 rounded-full object-cover">
+          {% if user.account.avatar %}
+          <img class="w-10 h-10 rounded-full" src="{{ user.account.avatar.url }}" alt="User Avatar">
+      {% else %}
+          <img class="w-10 h-10 rounded-full" src="{% static 'images/default_profile.png' %}" alt="Default Avatar">
+      {% endif %}    
         </button>
         <div x-show="open" 
              x-transition:enter="transition ease-out duration-200"
