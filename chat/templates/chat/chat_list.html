@@ -6,7 +6,7 @@
     <h1 class="text-4xl font-bold mb-8 text-center text-orange-900">الدردشات</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for chat in chats %}
-            <div class="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition duration-300 border border-gray-200 relative">
+            <div class="shadow-md rounded-lg p-6 hover:shadow-lg transition duration-300 border border-gray-200 relative">
                 <div class="absolute top-0 right-0 mt-2 mr-2">
                     {% with last_message=chat.message_set.last %}
                         {% if last_message and last_message.is_unread %}
@@ -51,7 +51,7 @@
                 <a href="{% url 'chat:get_chat' chat.id %}" class="block w-full text-center bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition duration-300">فتح الدردشة</a>
             </div>
         {% empty %}
-            <div class="col-span-3 text-center py-12 bg-white shadow-md rounded-lg">
+            <div class="col-span-3 text-center py-12 rounded-lg">
                 <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
@@ -62,23 +62,23 @@
     </div>
     <!--pagination-->
 {%if chats%}
-<div class="font-black">
+<div class="flex justify-center items-center space-x-4 font-bold text-gray-800 mt-8">
     {% if chats.has_previous %}
-    <div class="d-flex gap-1">
-        <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
-        <a href="?page={{chats.previous_page_number}}" class="btn btn-my">&lang; </a>
+    <div class="flex space-x-2">
+        <a href="?page=1" class="px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&lang;&lang;</a>
+        <a href="?page={{chats.previous_page_number}}" class="px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&lang;</a>
     </div>  
     {% endif %}
-    <div class="current d-flex align-items-center text-black" >
-        Page {{chats.number}} of {{chats.paginator.num_pages}}
+    <div class="text-center">
+        الصفحة {{chats.number}} من {{chats.paginator.num_pages}}
     </div>
     {% if chats.has_next %}
-    <div class="d-flex gap-1">
-        <a href="?page={{chats.next_page_number}}" class="btn btn-my"> &rang;</a>
-        <a href="?page={{chats.paginator.num_pages}}" class="btn btn-my"> &rang;&rang;</a>
+    <div class="flex space-x-2">
+        <a href="?page={{chats.next_page_number}}" class="px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&rang;</a>
+        <a href="?page={{chats.paginator.num_pages}}" class="px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300">&rang;&rang;</a>
     </div> 
     {% endif %}
-  </div>
+</div>
   {%endif%}
 </div>
 {% endblock %}

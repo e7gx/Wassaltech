@@ -16,8 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Add Barba.js -->
-    <script src="https://unpkg.com/@barba/core"></script>
     <!-- Add GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
     <script>
@@ -103,21 +101,7 @@
         .message-warning {
             @apply bg-yellow-500;
         }
-        /* Page transition styles */
-        .fade-enter {
-            opacity: 0;
-        }
-        .fade-enter-active {
-            opacity: 1;
-            transition: opacity 300ms ease-in;
-        }
-        .fade-exit {
-            opacity: 1;
-        }
-        .fade-exit-active {
-            opacity: 0;
-            transition: opacity 300ms ease-in;
-        }
+        
     </style>
 
     {% block extra_head %}{% endblock %}
@@ -268,9 +252,11 @@
 
 
 <!-- Main content wrapper -->
-<div id="barba-wrapper" class="flex-grow">
-    <div class=" form-page">
-        {% block content %}{% endblock %}
+<div class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div class="rounded-lg overflow-hidden">
+        <div class="p-6 sm:p-8">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 </div>
 
