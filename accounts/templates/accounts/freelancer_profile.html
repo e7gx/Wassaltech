@@ -96,30 +96,30 @@
                             <div class="bg-gray-100 rounded-lg p-4 text-center">
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المعلقة</h3>
                                 <p class="text-3xl font-bold text-orange-600">
-                                    {% if total_amount_pending_deposit %}
-                                        {{ total_amount_pending_deposit }} $
+                                    {% if freelancer_wallet_pending %}
+                                        {{ freelancer_wallet_pending }} $
                                     {% else %}
                                         0 $
                                     {% endif %}
                                 </p>
-                                <form action="{% url 'orders:process_payments' %}" method="post" class="mt-2">
-                                    {% csrf_token %}
-                                    <button class="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-full transition duration-300" type="submit">معالجة الدفعات</button>
-                                </form>
+{#                                <form action="{% url 'orders:process_payments' %}" method="post" class="mt-2">#}
+{#                                    {% csrf_token %}#}
+{#                                    <button class="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-full transition duration-300" type="submit">معالجة الدفعات</button>#}
+{#                                </form>#}
                             </div>
                             <div class="bg-gray-100 rounded-lg p-4 text-center">
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2">المبالغ المحولة</h3>
                                 <p class="text-3xl font-bold text-green-600">
-                                    {% if total_amount_deposited %}
-                                        {{ total_amount_deposited }} $
+                                    {% if freelancer_wallet %}
+                                        {{ freelancer_wallet }} $
                                     {% else %}
                                         0 $
                                     {% endif %}
                                 </p>
-                                <form action="{% url 'orders:deposit_payments' %}" method="post" class="mt-2">
-                                    {% csrf_token %}
-                                    <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full transition duration-300" type="submit">تحويل الدفعات</button>
-                                </form>
+{#                                <form action="{% url 'orders:deposit_payments' %}" method="post" class="mt-2">#}
+{#                                    {% csrf_token %}#}
+{#                                    <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full transition duration-300" type="submit">تحويل الدفعات</button>#}
+{#                                </form>#}
                             </div>
                         </div>
                     </div>

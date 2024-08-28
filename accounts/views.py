@@ -1,3 +1,5 @@
+from decimal import Decimal, ROUND_HALF_UP
+
 from django.db import transaction, IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -146,7 +148,10 @@ def freelancer_view_profile(request):
         if request.user.account.user_type == 'Freelancer':
             total_amount_pending_deposit = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
             total_amount_deposited = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & Q(status='Deposited')).aggregate(total_amount=Sum('amount'))['total_amount']
-
+            total_amount_pending_deposit = Decimal(total_amount_pending_deposit or 0)
+            total_amount_deposited = Decimal(total_amount_deposited or 0)
+            freelancer_wallet_pending = (total_amount_pending_deposit * Decimal(0.9)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+            freelancer_wallet = (total_amount_deposited * Decimal(0.9)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
             orders_in_progress = Order.objects.filter(assigned_to=request.user.freelancer, status='In Progress').count()
             orders_completed = Order.objects.filter(assigned_to=request.user.freelancer, status='Closed').count()
@@ -165,8 +170,8 @@ def freelancer_view_profile(request):
 
 
             context = {
-                'total_amount_pending_deposit': total_amount_pending_deposit,
-                'total_amount_deposited': total_amount_deposited,
+                'freelancer_wallet_pending': freelancer_wallet_pending,
+                'freelancer_wallet': freelancer_wallet,
                 'orders_in_progress': orders_in_progress,
                 'orders_completed': orders_completed,
                 'best_catgorie': best_catgorie,

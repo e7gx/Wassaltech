@@ -5,9 +5,9 @@
 {% block content %}
 <div class="min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-orange-700 mb-8">سجل الطلبات</h1>
-
+    {% if request.user.account.user_type == 'Customer' %}
         {% if orders %}
+        <h1 class="text-3xl font-bold text-orange-700 mb-8">سجل الطلبات</h1>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -28,7 +28,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ order.category }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            {% if order.status == 'Completed' %}bg-green-100 text-green-800
+                                            {% if order.status == 'Closed' %}bg-green-100 text-green-800
                                             {% else %}bg-yellow-100 text-yellow-800{% endif %}">
                                             {{ order.status }}
                                         </span>
@@ -49,11 +49,62 @@
         {% else %}
             <div class="bg-white shadow-md rounded-lg p-6 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <p class="text-lg text-gray-700">لا يوجد لديك أي طلبات مكتملة حتى الآن.</p>
+                <p class="text-lg text-gray-700">لا توجد طلبات سابقة لحسابك.</p>
             </div>
         {% endif %}
+    {% endif %}
+    {% if request.user.account.user_type == 'Freelancer' %}
+        {% if offers %}
+        <h1 class="text-3xl font-bold text-orange-700 mb-8">سجل العروض</h1>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-orange-100">
+                            <tr>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">رقم العرض</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">قيمة العرض</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الحالة</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">تاريخ الإنشاء</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">تاريخ الزيارة</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-orange-700 uppercase tracking-wider">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for offer in offers %}
+                                <tr class="hover:bg-orange-50 transition-colors duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ offer.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${{ offer.price }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            {% if offer.stage == 'Completed' %}bg-green-100 text-green-800
+                                            {% elif offer.stage == 'Declined' %}bg-red-100 text-red-800
+                                            {% elif offer.stage == 'Cancelled' %}bg-blue-100 text-blue-800
+                                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {{ offer.stage }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ offer.created_at|date:"d/m/Y" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ offer.appointment|date:"d/m/Y" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="{% url 'orders:order_detail' offer.order.id %}" class="text-orange-600 hover:text-orange-900 transition-colors duration-200">عرض التفاصيل</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-white shadow-md rounded-lg p-6 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-lg text-gray-700">لا توجد عروض سابقة لحسابك.</p>
+            </div>
+        {% endif %}
+    {% endif %}
     </div>
 </div>
 {% endblock %}
