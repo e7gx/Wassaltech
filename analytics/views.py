@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP, ROUND_DOWN
 
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpRequest, HttpResponse
@@ -40,9 +40,9 @@ def admin_dashboard(request):
             'total_refund_amount']
         total_amount_deposited = Decimal(total_amount_deposited or 0)
         total_refund_deposited = Decimal(total_refund_deposited or 0)
-        total_money_flow = total_amount_deposited + total_refund_deposited
-        wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-        freelancer_wallet = total_amount_deposited - wallet
+        cash_flow = total_amount_deposited + total_refund_deposited
+        commissions = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        freelancer_wallet = total_amount_deposited - commissions
         customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
         tickets_count = Ticket.objects.all().count()
@@ -71,8 +71,8 @@ def admin_dashboard(request):
             'total_freelancers': total_freelancers,
             'total_admins': total_admins,
 
-            'total_money_flow': total_money_flow,
-            'wallet': wallet,
+            'cash_flow': cash_flow,
+            'commissions': commissions,
             'freelancer_wallet': freelancer_wallet,
             'customer_wallet': customer_wallet,
             'tickets_count': tickets_count,
@@ -166,24 +166,25 @@ def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 def admin_payment(request):
+    Payment.process_payments()
     if request.user.is_superuser:
-        Payment.process_payments()
-        if request.user.is_superuser:
-            form = PaymentFilterForm(request.GET or None)
-            payments = Payment.objects.all()
-            
-            if form.is_valid():
-                status = form.cleaned_data.get('status')
-                if status:
-                    payments = payments.filter(status=status)
+        form = PaymentFilterForm(request.GET or None)
+        payments = Payment.objects.all()
+        if form.is_valid():
+            status = form.cleaned_data.get('status')
+            if status:
+                payments = payments.filter(status=status)
+        for payment in payments:
+            payment.commission = (payment.amount * Decimal('0.10')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+            payment.freelancer_amount = (payment.amount * Decimal('0.90')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
-            context = {
-                'payments': payments,
-                'form': form,
-            }
-            return render(request, 'analytics/admin_payment.html', context)
-        else:
-            return redirect('main:index')
+        context = {
+            'payments': payments,
+            'form': form,
+        }
+        return render(request, 'analytics/admin_payment.html', context)
+    else:
+        return redirect('main:index')
 
 
 @login_required

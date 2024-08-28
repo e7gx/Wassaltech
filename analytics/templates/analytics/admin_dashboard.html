@@ -28,9 +28,9 @@
         </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold text-center text-gray-700">المالية</h2>
-            <p class="text-center text-gray-500">قيمة المعاملات المالية: {{ total_money_flow|default:"0" }} ريال</p>
+            <p class="text-center text-gray-500">قيمة المعاملات المالية: {{ cash_flow|default:"0" }} ريال</p>
             <div class="mt-4">
-                <p class="text-sm text-gray-600">الأرباح: {{ wallet|default:"0" }} ريال</p>
+                <p class="text-sm text-gray-600">الأرباح: {{ commisions|default:"0" }} ريال</p>
                 <p class="text-sm text-gray-600">إيداعات مزودي الخدمة: {{ freelancer_wallet|default:"0" }} ريال</p>
                 <p class="text-sm text-gray-600">المبالغ المستردة للعملاء: {{ customer_wallet|default:"0" }} ريال</p>
             </div>
