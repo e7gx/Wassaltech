@@ -123,6 +123,18 @@ Wassaltech (وصّلْتِك) is a proposed platform that aims to connect custom
 - As a Customer, I want to update my contact information so that my profile is accurate.
 - As a User, I want to upload a profile picture so that my account is personalized.
 - As an Admin, I want to manage user roles so that the system functions properly.
+
+## Mobile
+
+- As an Admin, I want to have an AI assistant that generates daily reports and answers complex queries about the system.
+- As an Admin, I want to view a mobile app dashboard that provides quick access to key metrics.
+- As an Admin, I want to see the average review rate.
+- As an Admin, I want to monitor user feedback and ratings through the mobile app.
+- As an Admin, I want to track the number of customers and freelancers on the platform via the mobile app.
+- As an Admin, I want to access order details directly from the mobile app.
+- As an Admin, I want to monitor the platform's cash flow and commissions through the mobile app.
+
+
 ## Project Links
 
 - UML: [Lucid](https://lucid.app/lucidchart/e3f254ac-734a-4691-a522-59df9066c483/edit?invitationId=inv_b17f92fb-3737-45f4-b52d-efef99fbea24)
