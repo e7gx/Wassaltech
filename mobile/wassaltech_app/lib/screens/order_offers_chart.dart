@@ -128,57 +128,68 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.attach_money,
-                        color: Colors.orange,
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.attach_money,
+                            color: Colors.orange,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Total Offers: ',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                          Text(
+                            '$offersCount',
+                            style: const TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Total Offers: ',
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                      Text(
-                        '$offersCount',
-                        style: const TextStyle(
-                          color: Colors.orange,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.work, color: Colors.deepOrangeAccent),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Total Orders: ',
-                        style: TextStyle(
-                          color: Colors.deepOrangeAccent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.work,
+                              color: Colors.deepOrangeAccent),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Total Orders: ',
+                            style: TextStyle(
+                              color: Colors.deepOrangeAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                          Text(
+                            '$ordersCount',
+                            style: const TextStyle(
+                              color: Colors.deepOrangeAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '$ordersCount',
-                        style: const TextStyle(
-                          color: Colors.deepOrangeAccent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Expanded(

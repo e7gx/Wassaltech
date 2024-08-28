@@ -54,11 +54,10 @@ def admin_dashboard(request):
         wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
         freelancer_wallet = total_amount_deposited - wallet
         customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-
-        # total_money_flow = total_amount_deposited + total_refund_deposited
-        # wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-        # freelancer_wallet = total_amount_deposited - wallet
-        # customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        # total_money_flow = total_amount_deposited + total_refund_deposited if total_amount_deposited and total_refund_deposited else 0
+        # wallet = (total_amount_deposited * Decimal(0.1)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP) if total_amount_deposited else 0
+        # freelancer_wallet = total_amount_deposited - wallet if total_amount_deposited else 0
+        # customer_wallet = total_refund_deposited.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP) if total_refund_deposited else 0
 
         tickets_count = Ticket.objects.all().count()
         ticket_status_count = Ticket.objects.values('ticket_status').annotate(Count('ticket_status')).order_by('-ticket_status__count').first()
@@ -114,27 +113,27 @@ def admin_tickets(request):
         return redirect('main:index')
 
 
-#!5555555555555here we stop
+#!5555555555555here we stop 
 @login_required
 def admin_check_customers(request):
-
+    
     if request.user.is_superuser:
         manage_customers = Account.objects.filter(user_type= 'Customer').all()
         context = {'manage_customers': manage_customers}
         return render(request, 'analytics/admin_check_customers.html', context)
     else:
         return redirect('main:index')
-
+    
 @login_required
 def admin_check_freelancers(request):
     if request.user.is_superuser:
         manage_freelancers = Freelancer.objects.all()
-
+        
         context = {
-            'manage_freelancers': manage_freelancers,
+            'manage_freelancers': manage_freelancers, 
             }
-
-
+        
+        
         return render(request, 'analytics/admin_check_freelancers.html', context)
     else:
         return redirect('main:index')
@@ -148,13 +147,13 @@ def customer_profile(request, pk):
             customer_profile = Account.objects.get(pk=pk)
         except Account.DoesNotExist:
             return redirect('main:index')
-
+        
         if request.user.is_superuser or request.user.account == customer_profile:
             return render(request, 'analytics/admin_view_customer_profile.html', {'customer_profile': customer_profile})
         else:
             return redirect('main:index')
-
-
+    
+    
 @login_required
 def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
     if request.user.is_superuser:
@@ -162,11 +161,11 @@ def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
             freelancer = Freelancer.objects.get(pk=pk)
         except Freelancer.DoesNotExist:
             return redirect('main:index')
-
+        
         if request.user.is_superuser or request.user.account == freelancer.user:
             if request.method == 'POST':
                 is_verified = request.POST.get('is_verified', 'False') == 'True'
-                certificate_expiration = request.POST.get('certificate_expiration')
+                certificate_expiration = request.POST.get('certificate_expiration') 
 
                 freelancer.is_verified = is_verified
                 freelancer.certificate_expiration = certificate_expiration
@@ -178,7 +177,7 @@ def edit_freelancer_profile(request: HttpRequest, pk: int) -> HttpResponse:
             return render(request, 'analytics/edit_freelancer_info.html', {'freelancer': freelancer})
         else:
             return redirect('main:index')
-
+    
 
 
 @login_required
@@ -188,7 +187,7 @@ def admin_payment(request):
         if request.user.is_superuser:
             form = PaymentFilterForm(request.GET or None)
             payments = Payment.objects.all()
-
+            
             if form.is_valid():
                 status = form.cleaned_data.get('status')
                 if status:

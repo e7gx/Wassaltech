@@ -13,6 +13,8 @@ from reviews.models import Review
 from .forms import FreelancerSignUpForm
 from .models import Account, Freelancer
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError 
+
 
 
 def customer_account(request):
@@ -65,6 +67,11 @@ def customer_account(request):
                 login(request, user)
                 messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your account has been created successfully.')
                 return redirect('main:index')
+            except ValidationError as e:
+                # Handle unique Email validation error without changing the model we need to change this leater,
+                for field, errors in e.message_dict.items():
+                    for error in errors:
+                        messages.error(request, f"{field}: {error}")
             except IntegrityError:
                 messages.error(request, 'Account creation failed. Please try a different username or phone number.')
 
@@ -108,7 +115,6 @@ def freelancer_account(request):
                         user = form.save()
                         login(request, user)
                         messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your freelancer account has been created successfully.')
-                        return redirect('main:index')
                 except IntegrityError:
                     messages.error(request, 'Account creation failed. Please try a different username or phone number.')
             else:
