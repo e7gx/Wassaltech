@@ -187,14 +187,6 @@ def admin_payment(request):
         else:
             return redirect('main:index')
 
-# @login_required
-# def admin_deposit(request):
-#     if request.user.is_superuser:
-#         Payment.deposit_payments()
-#         return redirect('analytics:admin_payment')
-#     else:
-#         return redirect('main:index')
-
 
 @login_required
 def admin_deposit_payment(request, pk):

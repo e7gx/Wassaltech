@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect, get_object_or_404
-# from notifications.views import NotificationService as sendemail
+from notifications.views import NotificationService as sendemail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from payments.models import Payment
@@ -107,7 +107,6 @@ def order_history(request):
                 Q(customer=user.account) & (Q(status='Closed') | Q(status='Discarded'))).order_by('-created_at')
             offers = []
         elif user.account.user_type == 'Freelancer':
-            # orders = Order.objects.filter(Q(assigned_to=user.freelancer) & Q(status='Closed')).order_by('-created_at')
             orders = []
             offers = Offer.objects.filter(Q(freelancer=user.freelancer) & (Q(stage='Discarded') | Q(stage='Declined') | Q(stage='Cancelled') | Q(stage='Completed'))).order_by('-created_at')
         else:
@@ -338,7 +337,7 @@ def create_offer(request, order_id):
             offer = form.save(commit=False)
             offer.order = order
             offer.freelancer = freelancer
-            # sendemail.notify_new_offer(freelancer, order, price=offer.price)
+            sendemail.notify_new_offer(freelancer, order, price=offer.price)
             offer.save()
 
             messages.success(request, "Your offer has been submitted successfully.")
@@ -449,7 +448,7 @@ def accept_offer(request, offer_id):
 
                 Offer.objects.filter(order=order, stage="Pending").exclude(id=offer_id).update(stage='Declined')
 
-                # sendemail.notify_order_accepted(offer, order)
+                sendemail.notify_order_accepted(offer, order)
             except Exception as e:
                 print(e)
     else:
@@ -489,7 +488,7 @@ def customer_cancel_offer(request, offer_id):
                 order.status = 'Open'
                 order.assigned_to = None
                 order.save()
-                # sendemail.notify_cancel_offer(offer , order)
+                sendemail.notify_cancel_offer(offer , order)
             except Exception as e:
                 print(e)
     else:
@@ -580,17 +579,6 @@ def freelancer_discard_offer(request, offer_id):
 
     return redirect('orders:freelancer_orders')
 
-
-# @login_required
-# def process_payments(request):
-#     Payment.process_payments()
-#     return redirect('accounts:profile')
-#
-#
-# @login_required
-# def deposit_payments(request):
-#     Payment.deposit_payments()
-#     return redirect('accounts:profile')
 
 
 # ! edit this function redirect to the order detail page after payment
