@@ -20,6 +20,7 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.user.username} | {self.user.first_name} {self.user.last_name}"
+    
     def clean(self):
         if User.objects.filter(email=self.user.email).exclude(pk=self.user.pk).exists():
             raise ValidationError({'email': 'This email address is already in use.'})
