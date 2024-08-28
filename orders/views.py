@@ -115,7 +115,7 @@ def customer_orders(request):
     return render(request, 'orders/customer_orders.html', {'orders': view_order , 'categories':categoriesd , "statuses":statuses})
 
 
-# CUSTOMER READ
+
 @login_required
 def order_history(request):
     """
@@ -135,39 +135,14 @@ def order_history(request):
         if user.account.user_type == 'Customer':
             orders = Order.objects.filter(
                 Q(customer=user.account) & (Q(status='Closed') | Q(status='Discarded'))).order_by('-created_at')
+            offers = []
         elif user.account.user_type == 'Freelancer':
-            orders = Order.objects.filter(Q(assigned_to=user.freelancer) & Q(status='Closed')).order_by('-created_at')
+            orders = []
+            offers = Offer.objects.filter(Q(freelancer=user.freelancer) & (Q(stage='Discarded') | Q(stage='Declined') | Q(stage='Cancelled') | Q(stage='Completed'))).order_by('-created_at')
         else:
             orders = []
-        page_number = request.GET.get('page', 1)
-        get_orders = Paginator(orders , 6)
-        OrdersList = get_orders.get_page(page_number)
-        categoriesd= categories
-        statuses = order_statuses
-        if request.method == "POST":
-            status = request.POST.get('status')
-            date = request.POST.get('date')
-            category = request.POST.get('category')
-
-            filters = Q()
-            if category:
-                filters &= Q(category=category)
-            if status:
-                filters &= Q(status=status)
-            if date:
-                filters &= Q(created_at=date)
-
-            orders = Order.objects.filter(filters).order_by('-created_at')
-            return render(request, 'orders/order_history.html', {
-                'orders': OrdersList,
-                'categories': categoriesd,
-                'statuses': statuses,
-                'status':status,
-                'date':date,
-                'category':category
-            })    
-        return render(request, 'orders/order_history.html', {'orders': OrdersList , 'categories': categoriesd,
-                'statuses': statuses})
+            offers = []
+        return render(request, 'orders/order_history.html', {'orders': orders, 'offers': offers})
     else:
         messages.error(request, 'You do not have the necessary permissions to view order history.')
         return redirect('main:index')
@@ -457,7 +432,7 @@ def freelancer_offers(request):
     """
 
     if hasattr(request.user, 'freelancer'):
-        offers = Offer.objects.filter(freelancer=request.user.freelancer)
+        offers = Offer.objects.filter(Q(freelancer=request.user.freelancer) & (Q(stage="Pending") | Q(stage="Accepted")))
         page_number = request.GET.get('page', 1)
         get_offers = Paginator(offers , 6)
         OfferList = get_offers.get_page(page_number)

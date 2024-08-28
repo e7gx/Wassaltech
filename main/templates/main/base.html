@@ -179,7 +179,7 @@
           {% elif user.account.user_type == 'Freelancer' %}
             <li><a class="text-right flex items-center justify-end py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:freelancer_orders' %}"><span class="mr-2">الطلبات المتاحة</span><i class="fas fa-clipboard-list"></i></a></li>
             <li><a class="text-right flex items-center justify-end py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:freelancer_offers' %}"><span class="mr-2">عروضي</span><i class="fas fa-hand-holding-usd"></i></a></li>
-            <li><a class="text-right flex items-center justify-end py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:order_history' %}"><span class="mr-2">سجل الطلبات</span><i class="fas fa-history"></i></a></li>
+            <li><a class="text-right flex items-center justify-end py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'orders:order_history' %}"><span class="mr-2">سجل العروض</span><i class="fas fa-history"></i></a></li>
             <li><a class="text-right flex items-center justify-end py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'accounts:profile' %}"><span class="mr-2">الملف الشخصي</span><i class="fas fa-user-circle"></i></a></li>
             <li><a class="text-right flex items-center justify-end py-4 px-5 text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'chat:chat_list' %}"><span class="mr-2">الدردشة</span><i class="fas fa-comments"></i></a></li>
           {% elif user.account.user_type == 'Admin' %}

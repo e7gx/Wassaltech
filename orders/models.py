@@ -55,12 +55,6 @@ class Order(models.Model):
     customer_completed = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=order_statuses, default='Open')
 
-    def update_status(self):
-        if self.customer_completed and self.freelancer_completed:
-            self.status = 'Completed'
-        elif self.assigned_to and self.status == 'Open':
-            self.status = 'In Progress'
-        self.save()
     def __str__(self):
         if self.status == 'In Progress' or self.status == 'Closed':
             return f"Order #{self.id} by {self.customer} - Assigned to: {self.assigned_to} - Status: {self.status}"
