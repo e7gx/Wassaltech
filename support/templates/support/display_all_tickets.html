@@ -3,10 +3,10 @@
 {% block title %}جميع التذاكر{% endblock %}
 
 {% block content %}
-<div class="bg-gray-100 min-h-screen" dir="rtl">
+<div class="min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-orange-700">جميع التذاكر</h1>
+            <h1 class="text-3xl font-bold text-orange-900">جميع التذاكر</h1>
             <a href="{% url 'support:create_ticket' %}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
                 إنشاء تذكرة
             </a>
@@ -44,9 +44,6 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ ticket.ticket_created_at|date:"d/m/Y H:i" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <a href="{% url 'support:ticket_detail' ticket.pk %}" class="text-orange-600 hover:text-orange-900 transition-colors duration-200 ml-2">عرض</a>
-                                        {% if request.user.is_superuser %}
-                                            <button class="text-red-600 hover:text-red-900 transition-colors duration-200">حذف</button>
-                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}

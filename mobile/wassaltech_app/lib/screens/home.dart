@@ -80,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       Wallet(
+        offers: [],
         offersFuture: fetchAllOffers(),
         totalPrice: _totalPrice,
       ),

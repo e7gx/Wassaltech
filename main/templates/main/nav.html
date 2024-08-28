@@ -1,0 +1,110 @@
+{% load static %}
+<nav class="relative py-4 bg-white shadow-md z-50">
+  <div class="container px-4 mx-auto">
+    <div class="flex items-center justify-between">
+
+     <!-- Action elements -->
+     <div class="hidden lg:flex items-center space-x-4">
+      {% if not user.is_authenticated %}
+      <div x-data="{ open: false }" class="relative">
+        <button @click="open = !open" @click.away="open = false" class="flex items-center px-4 py-2 text-sm font-semibold text-white bg-orange-900 rounded-md hover:bg-orange-800 transition duration-300">
+          <i class="fas fa-sign-in-alt mr-2"></i>
+          <span>الدخول</span>
+        </button>
+        <div x-show="open" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             class="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+          <a href="{% url 'accounts:customer_account' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 transition duration-150 ease-in-out">
+            <i class="fas fa-user mr-2"></i> الدخول كمستخدم
+          </a>
+          <a href="{% url 'accounts:freelancer_account' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 transition duration-150 ease-in-out">
+            <i class="fas fa-user-tie mr-2"></i> الدخول كموفر خدمة
+          </a>
+        </div>
+      </div>
+      {% else %}
+      <!-- Inbox button -->
+      <a href="{% url 'chat:chat_list' %}" class="text-gray-600 hover:text-orange-900 transition-colors duration-300">
+        <i class="fas fa-inbox text-xl"></i>
+      </a>
+      <!-- User avatar and dropdown -->
+      <div x-data="{ open: false }" class="relative">
+        <button @click="open = !open" @click.away="open = false" class="flex items-center">
+          {% if user.account.avatar %}
+          <img class="w-10 h-10 rounded-full" src="{{ user.account.avatar.url }}" alt="User Avatar">
+      {% else %}
+          <img class="w-10 h-10 rounded-full" src="{% static 'images/default_profile.png' %}" alt="Default Avatar">
+      {% endif %}    
+        </button>
+        <div x-show="open" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             class="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+          <div class="text-center px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
+            <p class="font-semibold">{{ user.first_name }} {{ user.last_name }}</p>
+            <p class="text-xs text-gray-500">{{ user.email }}</p>
+          </div>
+          {% if user.account.user_type == 'Customer' %}
+            <a href="{% url 'accounts:customer_view_profile' %}" class="text-right block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 transition duration-150 ease-in-out">
+              <i class="fas fa-user-circle mr-2"></i> الملف الشخصي
+            </a>
+          {% elif user.account.user_type == 'Freelancer' %}
+            <a href="{% url 'accounts:profile' %}" class=" text-right block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 transition duration-150 ease-in-out">
+              <i class="fas fa-user-circle mr-2"></i> الملف الشخصي
+            </a>
+          {% endif %}
+          <form action="{% url 'accounts:logout_view' %}" method="post" class="block">
+            {% csrf_token %}
+            <button type="submit" class="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900 transition duration-150 ease-in-out">
+              <i class="fas fa-sign-out-alt mr-2"></i> تسجيل الخروج
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+      <!-- Navigation elements -->
+      <ul class="hidden lg:flex lg:items-center lg:space-x-8">
+        {% if user.is_authenticated %}
+          {% if user.account.user_type == 'Customer' %}
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:create_order' %}"><i class="fas fa-plus-circle mr-2"></i> إنشاء طلب</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:customer_orders' %}"><i class="fas fa-list-alt mr-2"></i> طلباتي</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}"><i class="fas fa-history mr-2"></i> سجل الطلبات</a></li>
+          {% elif user.account.user_type == 'Freelancer' %}
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_orders' %}"><i class="fas fa-clipboard-list mr-2"></i> الطلبات المتاحة</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_offers' %}"><i class="fas fa-hand-holding-usd mr-2"></i> عروضي</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}"><i class="fas fa-history mr-2"></i> سجل الطلبات</a></li>
+          {% elif user.account.user_type == 'Admin' %}
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:dashboard' %}"><i class="fas fa-tachometer-alt mr-2"></i> لوحة التحكم</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:customers' %}"><i class="fas fa-users mr-2"></i> جميع المستخدمين</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_check_freelancers' %}"><i class="fas fa-user-tie mr-2"></i> جميع مقدمي الخدمة</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_tickets' %}"><i class="fas fa-ticket-alt mr-2"></i> جميع التذاكر</a></li>
+            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_payment' %}"><i class="fas fa-money-bill-wave mr-2"></i> عمليات الدفع</a></li>
+          {% endif %}
+        {% endif %}
+      </ul>
+
+ 
+
+            <!-- Logo -->
+            <a class="inline-block text-5xl text-black font-bold transition-transform duration-300 hover:scale-110 hover:text-orange-900" href="{% url 'main:index' %}">
+              وَصّلْتِك   
+            </a> 
+      <!-- Mobile menu button -->
+      <div class="lg:hidden">
+        <button x-on:click="mobileNavOpen = !mobileNavOpen" class="flex items-center justify-center w-10 h-10 text-orange-900 hover:bg-orange-100 rounded-md transition duration-200">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

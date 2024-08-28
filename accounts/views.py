@@ -11,6 +11,8 @@ from reviews.models import Review
 from .forms import FreelancerSignUpForm
 from .models import Account, Freelancer
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError 
+
 
 
 def customer_account(request):
@@ -63,6 +65,11 @@ def customer_account(request):
                 login(request, user)
                 messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your account has been created successfully.')
                 return redirect('main:index')
+            except ValidationError as e:
+                # Handle unique Email validation error without changing the model we need to change this leater,
+                for field, errors in e.message_dict.items():
+                    for error in errors:
+                        messages.error(request, f"{field}: {error}")
             except IntegrityError:
                 messages.error(request, 'Account creation failed. Please try a different username or phone number.')
 
@@ -106,7 +113,6 @@ def freelancer_account(request):
                         user = form.save()
                         login(request, user)
                         messages.success(request, f'Welcome to Wassaltech, {user.first_name}! Your freelancer account has been created successfully.')
-                        return redirect('main:index')
                 except IntegrityError:
                     messages.error(request, 'Account creation failed. Please try a different username or phone number.')
             else:
@@ -126,6 +132,7 @@ def logout_view(request):
 
 @login_required
 def freelancer_view_profile(request):
+    
     """
     View function to display the profile of a freelancer user.
 
@@ -140,6 +147,7 @@ def freelancer_view_profile(request):
     Returns:
         HttpResponse: The response object containing the rendered profile page or a redirect.
     """
+    
     if request.user.is_authenticated:
         if request.user.account.user_type == 'Freelancer':
             total_amount_pending_deposit = Payment.objects.filter(Q(offer__freelancer=request.user.freelancer) & (Q(status='Processing') | Q(status='Processed'))).aggregate(total_amount=Sum('amount'))['total_amount']
@@ -216,6 +224,7 @@ def freelancer_profile(request, freelancer_id):
     }
     return render(request, 'accounts/customer_view_freelancer.html', context)
 
+@login_required
 def inbox(request):
     return render(request, 'accounts/inbox.html')
 
