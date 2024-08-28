@@ -6,7 +6,40 @@
 <div class="min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-orange-700 mb-8">سجل الطلبات</h1>
-
+        <form action="{% url 'orders:order_history' %}" method="post" class="space-y-2">
+            {% csrf_token %}
+            <div class="flex items-center space-x-5">
+                <div>
+                    <label for="id_category" class="block text-sm font-medium text-gray-700">الفئة</label>
+                    <select name="category" id="id_category"
+                        class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
+                        <option value="" selected>اختر الفئة</option>
+                        {% for value, label in categories %}
+                        <option value="{{ value }}" {% if value == category %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="id_date" class="block text-sm font-medium text-gray-700">التاريخ</label>
+                    <input type="date" name="date" id="id_date" value="{{date}}"
+                        class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
+                </div>
+                <div>
+                    <label for="id_status" class="block text-sm font-medium text-gray-700">الحالة</label>
+                    <select name="status" id="id_status"
+                        class="text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-100 focus:border-orange-300 transition duration-300 text-right">
+                        <option value="" selected>اختر الحالة</option>
+                        {% for value, label in statuses %}
+                        <option value="{{ value }}" {% if value == status %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="submit"
+                    class="mt-4 bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition duration-300">تطبيق الفلاتر</button>
+            </div>
+        </form>
         {% if orders %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="overflow-x-auto">
@@ -55,5 +88,28 @@
             </div>
         {% endif %}
     </div>
+    <!--pagination-->
+{%if orders%}
+{% if orders.has_other_pages %}
+<div class="text-center">
+    {% if orders.has_previous %}
+    <div class="d-flex gap-1">
+        <a href="?page=1" class="btn btn-my">&lang;&lang;</a>
+        <a href="?page={{orders.previous_page_number}}" class="btn btn-my">&lang; </a>
+    </div>  
+    {% endif %}
+    <div class="current d-flex align-items-center text-black" >
+        Page {{orders.number}} of {{orders.paginator.num_pages}}
+    </div>
+    {% if orders.has_next %}
+    <div class="d-flex gap-1">
+        <a href="?page={{orders.next_page_number}}" class="btn btn-my"> &rang;</a>
+        <a href="?page={{orders.paginator.num_pages}}" class="btn btn-my"> &rang;&rang;</a>
+    </div> 
+    {% endif %}
+    {%endif%}
+  </div>
+  {%endif%}
+  
 </div>
 {% endblock %}

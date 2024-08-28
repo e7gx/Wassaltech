@@ -1,5 +1,4 @@
 from django.db import models
-from orders.models import Order
 from accounts.models import Account
 from accounts.models import Freelancer
 
@@ -14,7 +13,7 @@ class Chat(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Chat for Order {self.order} with {self.freelancer}'
+        return f'Chat for Order {self.user} with {self.freelancer}'
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
