@@ -29,7 +29,11 @@ SECRET_KEY = 'django-insecure-@ded6r$@8_x(a5dh=s9504&p9q4itwq35c((po^a22^ffpz^i8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'wassaltech-production.up.railway.app']
+CORS_ALLOWED_ORIGINS = [
+    "https://wassaltech-production.up.railway.app",
+]
+
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  
