@@ -6,26 +6,23 @@
 {% block content %}
 <div class="min-h-screen" dir="rtl">
     <div class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-orange-700">عمليات الدفع</h1>
-            <form method="GET" class="mb-6 p-6 bg-white rounded-lg shadow-lg flex justify-between items-center gap-4 border border-gray-200">
-                <div class="w-full flex flex-col space-y-4">
-                    <div>
-
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">الحالة</label>
-                        <select name="status" id="status" class="block w-32 py-2 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-300 text-gray-700">
+        <div class="flex flex-col items-start">
+            <h1 class="text-3xl font-bold text-right text-orange-700">عمليات الدفع</h1>
+            <form method="GET" class="mb-6 p-6 flex justify-between items-center gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <label for="status" class="text-sm font-medium text-gray-700 ml-2">الحالة:</label>
+                        <select name="status" id="status" class="w-40 ml-4 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-300 text-gray-700">
                             <option value="" class="text-gray-700">جميع الحالات</option>
                             {% for value, label in form.status.field.choices %}
                             <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
-        
-                        <button type="submit" class="text-center w-full bg-orange-700 text-white px-3 py-2 rounded-md hover:bg-orange-600 active:bg-orange-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 shadow-md">
-                            بحث
-                        </button>
-      
-                   
+                    <button type="submit" class="bg-orange-700 m-4 text-white px-6 py-2 rounded-md hover:bg-orange-600 active:bg-orange-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 shadow-md">
+                        بحث
+                    </button>
+                </div>
                 </div>
             </form>
         </div>

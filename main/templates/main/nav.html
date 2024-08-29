@@ -1,4 +1,6 @@
 {% load static %}
+
+{% if not user.account.user_type == 'Admin'%}
 <nav class="relative py-4 bg-white shadow-md z-50">
   <div class="container px-4 mx-auto">
     <div class="flex items-center justify-between">
@@ -86,13 +88,7 @@
             <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_orders' %}"><i class="fas fa-clipboard-list mr-2"></i> الطلبات المتاحة</a></li>
             <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:freelancer_offers' %}"><i class="fas fa-hand-holding-usd mr-2"></i> عروضي</a></li>
             <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'orders:order_history' %}"><i class="fas fa-history mr-2"></i> سجل العروض</a></li>
-          {% elif user.account.user_type == 'Admin' %}
-            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:dashboard' %}"><i class="fas fa-tachometer-alt mr-2"></i> لوحة التحكم</a></li>
-            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:customers' %}"><i class="fas fa-users mr-2"></i> جميع المستخدمين</a></li>
-            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_check_freelancers' %}"><i class="fas fa-user-tie mr-2"></i> جميع مقدمي الخدمة</a></li>
-            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_tickets' %}"><i class="fas fa-ticket-alt mr-2"></i> جميع التذاكر</a></li>
-            <li><a class="flex items-center text-sm text-gray-700 hover:text-orange-900 font-medium" href="{% url 'analytics:admin_payment' %}"><i class="fas fa-money-bill-wave mr-2"></i> عمليات الدفع</a></li>
-          {% endif %}
+         {% endif %}
         {% endif %}
       </ul>
 
@@ -111,3 +107,90 @@
     </div>
   </div>
 </nav>
+
+
+{% else %}
+
+<div x-data="{ sidebarOpen: true }" class="flex min-h-screen z-[1000]" dir="rtl">
+  <!-- Sidebar -->
+  <div :class="{'w-64': sidebarOpen, 'w-20': !sidebarOpen}" class="bg-[#2C2E43] text-white flex flex-col transition-all duration-300 relative">
+      <!-- Admin Profile -->
+      <div class="p-4 border-b border-gray-700">
+          <div class="flex items-center justify-between">
+              <div :class="{'mr-3': sidebarOpen, 'mr-0': !sidebarOpen}">
+                  <p class="font-semibold text-right" :class="{'hidden': !sidebarOpen}">{{ user.username }}</p>
+                  <p class="text-sm text-gray-400 text-right" :class="{'hidden': !sidebarOpen}">المدير</p>
+              </div>
+
+              {% if user.account.avatar %}
+              <img class="w-10 h-10 rounded-full object-cover" src="{{ user.account.avatar.url }}" alt="User Avatar">
+          {% else %}
+              <img class="w-10 h-10 rounded-full object-cover" src="{% static 'images/default_profile.png' %}" alt="Default Avatar">
+          {% endif %}    
+
+          </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-grow">
+          <ul class="mt-6">
+              <li class="px-4 py-2 hover:bg-gray-700">
+                  <a href="{% url 'analytics:dashboard' %}" class="flex items-center py-4 px-5 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition duration-200">
+                      <i class="fas fa-tachometer-alt" :class="{'ml-2': sidebarOpen}"></i>
+                      <span :class="{'hidden': !sidebarOpen}">لوحة التحكم</span>
+                  </a>
+              </li>
+              <li class="px-4 py-2 hover:bg-gray-700">
+                  <a href="{% url 'analytics:customers' %}" class="flex items-center py-4 px-5 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition duration-200">
+                      <i class="fas fa-users" :class="{'ml-2': sidebarOpen}"></i>
+                      <span :class="{'hidden': !sidebarOpen}">جميع المستخدمين</span>
+                  </a>
+              </li>
+              <li class="px-4 py-2 hover:bg-gray-700">
+                  <a href="{% url 'analytics:admin_check_freelancers' %}" class="flex items-center py-4 px-5 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition duration-200">
+                      <i class="fas fa-user-tie" :class="{'ml-2': sidebarOpen}"></i>
+                      <span :class="{'hidden': !sidebarOpen}">جميع مقدمي الخدمة</span>
+                  </a>
+              </li>
+              <li class="px-4 py-2 hover:bg-gray-700">
+                  <a href="{% url 'analytics:admin_tickets' %}" class="flex items-center py-4 px-5 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition duration-200">
+                      <i class="fas fa-ticket-alt" :class="{'ml-2': sidebarOpen}"></i>
+                      <span :class="{'hidden': !sidebarOpen}">جميع التذاكر</span>
+                  </a>
+              </li>
+              <li class="px-4 py-2 hover:bg-gray-700">
+                  <a href="{% url 'analytics:admin_payment' %}" class="flex items-center py-4 px-5 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition duration-200">
+                      <i class="fas fa-money-bill-wave" :class="{'ml-2': sidebarOpen}"></i>
+                      <span :class="{'hidden': !sidebarOpen}">عمليات الدفع</span>
+                  </a>
+              </li>
+          </ul>
+      </nav>
+
+      <!-- Logout Button -->
+      <div class="p-4 mt-auto">
+          <form action="{% url 'accounts:logout_view' %}" method="post" class="text-center">
+              {% csrf_token %}
+              <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-center">
+                  <i class="fas fa-sign-out-alt" :class="{'ml-2': sidebarOpen}"></i>
+                  <span :class="{'hidden': !sidebarOpen}">تسجيل الخروج</span>
+              </button>
+          </form>
+      </div>
+
+      <!-- Toggle Button -->
+      <button @click="sidebarOpen = !sidebarOpen" class="absolute top-0 left-0 mt-4 mr-12 bg-[#2C2E43] text-white p-2 rounded-full">
+          <i :class="{'fa-chevron-right': sidebarOpen, 'fa-chevron-left': !sidebarOpen}" class="fas"></i>
+      </button>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 overflow-y-auto">
+      <!-- Your main content goes here -->
+      {% block content %}
+      {% endblock %}
+  </div>
+</div>
+
+
+{% endif %}

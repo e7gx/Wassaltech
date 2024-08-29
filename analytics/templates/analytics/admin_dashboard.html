@@ -2,72 +2,78 @@
 {% load static %}
 
 {% block content %}
-<div class="container mx-auto p-6" dir="rtl">
-    <h1 class="text-4xl font-bold text-orange-700 mb-8">لوحة المعلومات</h1>
+<div class="flex-1 p-2 sm:p-4 lg:p-6 overflow-y-auto max-w-7xl mx-auto" dir="rtl">
+    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-700 mb-3 sm:mb-4 lg:mb-6">لوحة المعلومات</h1>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-            <h2 class="text-2xl font-bold text-blue-600 mb-4">الطلبات</h2>
-            <p class="text-3xl font-semibold text-gray-700 mb-4">{{ orders_count }}</p>
-            <div class="space-y-2">
-                <p class="flex justify-between text-sm"><span class="text-gray-600">مفتوحة:</span><span class="font-medium text-blue-500">{{ orders_open }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">قيد التنفيذ:</span><span class="font-medium text-yellow-500">{{ orders_in_progress }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">مكتملة:</span><span class="font-medium text-green-500">{{ orders_closed }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">محذوفة:</span><span class="font-medium text-red-500">{{ orders_discarded }}</span></p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+        <div class="bg-white shadow-md rounded-lg p-3 sm:p-4 transition duration-300 ease-in-out hover:shadow-lg">
+            <h2 class="text-lg sm:text-xl font-bold text-blue-600 mb-2">الطلبات</h2>
+            <p class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2">{{ orders_count }}</p>
+            <div class="space-y-1">
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">مفتوحة:</span><span class="font-medium text-blue-500">{{ orders_open }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">قيد التنفيذ:</span><span class="font-medium text-yellow-500">{{ orders_in_progress }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">مكتملة:</span><span class="font-medium text-green-500">{{ orders_closed }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">محذوفة:</span><span class="font-medium text-red-500">{{ orders_discarded }}</span></p>
             </div>
         </div>
-        <div class="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-            <h2 class="text-2xl font-bold text-green-600 mb-4">المستخدمون</h2>
-            <p class="text-3xl font-semibold text-gray-700 mb-4">{{ total_users }}</p>
-            <div class="space-y-2">
-                <p class="flex justify-between text-sm"><span class="text-gray-600">العملاء:</span><span class="font-medium text-green-500">{{ total_customers }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">مقدمي الخدمات:</span><span class="font-medium text-blue-500">{{ total_freelancers }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">المشرفون:</span><span class="font-medium text-purple-500">{{ total_admins }}</span></p>
+        <div class="bg-white shadow-md rounded-lg p-3 sm:p-4 transition duration-300 ease-in-out hover:shadow-lg">
+            <h2 class="text-lg sm:text-xl font-bold text-green-600 mb-2">المستخدمون</h2>
+            <p class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2">{{ total_users }}</p>
+            <div class="space-y-1">
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">العملاء:</span><span class="font-medium text-green-500">{{ total_customers }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">مقدمي الخدمات:</span><span class="font-medium text-blue-500">{{ total_freelancers }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">المشرفون:</span><span class="font-medium text-purple-500">{{ total_admins }}</span></p>
             </div>
         </div>
-        <div class="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-            <h2 class="text-2xl font-bold text-yellow-600 mb-4">المالية</h2>
-            <p class="text-3xl font-semibold text-gray-700 mb-4">{{ total_money_flow|default:"0" }} ريال</p>
-            <div class="space-y-2">
-                <p class="flex justify-between text-sm"><span class="text-gray-600">الأرباح:</span><span class="font-medium text-green-500">{{ wallet|default:"0" }} ريال</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">إيداعات مزودي الخدمة:</span><span class="font-medium text-blue-500">{{ freelancer_wallet|default:"0" }} ريال</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">المبالغ المستردة للعملاء:</span><span class="font-medium text-red-500">{{ customer_wallet|default:"0" }} ريال</span></p>
+        <div class="bg-white shadow-md rounded-lg p-3 sm:p-4 transition duration-300 ease-in-out hover:shadow-lg">
+            <h2 class="text-lg sm:text-xl font-bold text-yellow-600 mb-2">المالية</h2>
+            <p class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2">{{ total_money_flow|default:"0" }} ريال</p>
+            <div class="space-y-1">
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">الأرباح:</span><span class="font-medium text-green-500">{{ wallet|default:"0" }} ريال</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">إيداعات مزودي الخدمة:</span><span class="font-medium text-blue-500">{{ freelancer_wallet|default:"0" }} ريال</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">المبالغ المستردة للعملاء:</span><span class="font-medium text-red-500">{{ customer_wallet|default:"0" }} ريال</span></p>
             </div>
         </div>
-        <div class="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-            <h2 class="text-2xl font-bold text-purple-600 mb-4">التذاكر</h2>
-            <p class="text-3xl font-semibold text-gray-700 mb-4">{{ tickets_count }}</p>
-            <div class="space-y-2">
-                <p class="flex justify-between text-sm"><span class="text-gray-600">مفتوحة:</span><span class="font-medium text-blue-500">{{ tickets_open }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">قيد التنفيذ:</span><span class="font-medium text-yellow-500">{{ tickets_in_progress }}</span></p>
-                <p class="flex justify-between text-sm"><span class="text-gray-600">مغلقة:</span><span class="font-medium text-green-500">{{ tickets_completed }}</span></p>
+        <div class="bg-white shadow-md rounded-lg p-3 sm:p-4 transition duration-300 ease-in-out hover:shadow-lg">
+            <h2 class="text-lg sm:text-xl font-bold text-purple-600 mb-2">التذاكر</h2>
+            <p class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2">{{ tickets_count }}</p>
+            <div class="space-y-1">
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">مفتوحة:</span><span class="font-medium text-blue-500">{{ tickets_open }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">قيد التنفيذ:</span><span class="font-medium text-yellow-500">{{ tickets_in_progress }}</span></p>
+                <p class="flex justify-between text-xs sm:text-sm"><span class="text-gray-600">مغلقة:</span><span class="font-medium text-green-500">{{ tickets_completed }}</span></p>
             </div>
         </div>
     </div>
 
     <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-2xl font-bold text-center text-gray-800">توزيع حالة الطلبات</h2>
-            <canvas id="orderStatusChart" class="mt-4"></canvas>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-6">
+        <div class="bg-white shadow-md rounded-lg p-3 sm:p-4">
+            <h2 class="text-lg sm:text-xl font-bold text-center text-gray-800 mb-2">توزيع حالة الطلبات</h2>
+            <div class="w-full h-48 sm:h-56 lg:h-64">
+                <canvas id="orderStatusChart"></canvas>
+            </div>
         </div>
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-2xl font-bold text-center text-gray-800">توزيع المستخدمين</h2>
-            <canvas id="userDistributionChart" class="mt-4"></canvas>
+        <div class="bg-white shadow-md rounded-lg p-3 sm:p-4">
+            <h2 class="text-lg sm:text-xl font-bold text-center text-gray-800 mb-2">توزيع المستخدمين</h2>
+            <div class="w-full h-48 sm:h-56 lg:h-64">
+                <canvas id="userDistributionChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- New Deposited Payments Chart -->
-    <div class="bg-white shadow-lg rounded-lg p-6 mt-10">
-        <h2 class="text-2xl font-bold text-center text-gray-800">المدفوعات المودعة</h2>
-        <canvas id="depositedPaymentsChart" class="mt-4"></canvas>
+    <div class="bg-white shadow-md rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
+        <h2 class="text-lg sm:text-xl font-bold text-center text-gray-800 mb-2">المدفوعات المودعة</h2>
+        <div class="w-full h-48 sm:h-56 lg:h-64">
+            <canvas id="depositedPaymentsChart"></canvas>
+        </div>
     </div>
 
-    <div class="bg-white shadow-lg rounded-lg p-6 mt-10">
-        <h2 class="text-2xl font-bold text-center text-gray-800">معلومات إضافية</h2>
-        <div class="mt-4 text-center">
-            <p class="text-lg text-gray-700">أفضل فئة: {{ best_catgorie|default:"غير متوفر" }}</p>
-            <p class="text-lg text-gray-700">متوسط التقييم: {{ rating|default:"0"|floatformat:2 }} / 5</p>
+    <div class="bg-white shadow-md rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
+        <h2 class="text-lg sm:text-xl font-bold text-center text-gray-800 mb-2">معلومات إضافية</h2>
+        <div class="text-center">
+            <p class="text-sm sm:text-base text-gray-700">أفضل فئة: {{ best_catgorie|default:"غير متوفر" }}</p>
+            <p class="text-sm sm:text-base text-gray-700">متوسط التقييم: {{ rating|default:"0"|floatformat:2 }} / 5</p>
         </div>
     </div>
 </div>
@@ -81,20 +87,26 @@
             labels: ["الطلبات المحذوفة", 'قيد التنفيذ', 'الطلبات المفتوحة', 'مكتملة'],
             datasets: [{
                 data: [{{ orders_discarded }}, {{ orders_in_progress }}, {{ orders_open }}, {{ orders_closed }}],
-                backgroundColor: ['#FF6384', '#FF9F40', '#4BC0C0', '#9966FF', '#FFCD56'],
-                borderColor: ['#FF6384', '#FF9F40', '#4BC0C0', '#9966FF', '#FFCD56'],
+                backgroundColor: ['#FF6384', '#FF9F40', '#4BC0C0', '#9966FF'],
+                borderColor: ['#FF6384', '#FF9F40', '#4BC0C0', '#9966FF'],
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'top'
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12,
+                        font: {
+                            size: 10
+                        }
+                    }
                 },
                 title: {
-                    display: true,
-                    text: 'توزيع حالة الطلبات'
+                    display: false
                 }
             }
         }
@@ -115,66 +127,76 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'top'
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12,
+                        font: {
+                            size: 10
+                        }
+                    }
                 },
                 title: {
-                    display: true,
-                    text: 'توزيع المستخدمين'
+                    display: false
                 }
             }
         }
     });
 
     // Deposited Payments Chart
-    
-        // Parse the JSON string to a JavaScript object
-        var chartData = JSON.parse('{{ chart_data|safe }}');
-        var depositedPaymentsCtx = document.getElementById('depositedPaymentsChart').getContext('2d');
-        var depositedPaymentsChart = new Chart(depositedPaymentsCtx, {
-            type: 'line',
-            data: {
-                labels: chartData.map(item => {
-                    var date = new Date(item.payment_date_str);
-                    return date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
-                }),
-                datasets: [{
-                    label: 'المبلغ المودع',
-                    data: chartData.map(item => parseFloat(item.amount)),
-                    borderColor: '#8884d8',
-                    backgroundColor: 'rgba(136, 132, 216, 0.2)',
-                    borderWidth: 2,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'تاريخ الدفع'
+    var chartData = JSON.parse('{{ chart_data|safe }}');
+    var depositedPaymentsCtx = document.getElementById('depositedPaymentsChart').getContext('2d');
+    var depositedPaymentsChart = new Chart(depositedPaymentsCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.map(item => {
+                var date = new Date(item.payment_date_str);
+                return date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
+            }),
+            datasets: [{
+                label: 'المبلغ المودع',
+                data: chartData.map(item => parseFloat(item.amount)),
+                borderColor: '#8884d8',
+                backgroundColor: 'rgba(136, 132, 216, 0.2)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 5,
+                        font: {
+                            size: 10
                         }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'المبلغ (ريال)'
-                        },
-                        beginAtZero: true
                     }
                 },
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    title: {
-                        display: true,
-                        text: 'المدفوعات المودعة عبر الزمن'
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
                     }
                 }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: false
+                }
             }
-        });
+        }
+    });
 </script>
 {% endblock %}
