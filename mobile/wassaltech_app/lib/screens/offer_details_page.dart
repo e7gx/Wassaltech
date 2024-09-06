@@ -5,13 +5,13 @@ import 'package:intl/intl.dart';
 class OfferDetailsPage extends StatelessWidget {
   final Offer offer;
 
-  const OfferDetailsPage({Key? key, required this.offer}) : super(key: key);
+  const OfferDetailsPage({super.key, required this.offer});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Offer Details',
           style: TextStyle(
             fontSize: 24,
@@ -31,7 +31,7 @@ class OfferDetailsPage extends StatelessWidget {
               height: 325.0,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
-                image: DecorationImage(
+                image: const DecorationImage(
                   image: AssetImage('assets/images/user2.png'),
                   fit: BoxFit.fill,
                 ),
@@ -88,7 +88,7 @@ class OfferDetailsPage extends StatelessWidget {
         ),
         subtitle: Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             color: Colors.black87,
             fontFamily: 'Cairo',

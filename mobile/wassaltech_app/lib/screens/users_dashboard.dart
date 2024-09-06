@@ -65,7 +65,7 @@ class _UsersPageState extends State<UsersPage> {
                             color: const Color(0xFFFFA500),
                             value: userCount.toDouble(),
                             title:
-                                '${userCount} (${(userCount / totalCount * 100).toStringAsFixed(0)}%)',
+                                '$userCount (${(userCount / totalCount * 100).toStringAsFixed(0)}%)',
                             radius: radius,
                             titleStyle: TextStyle(
                               fontSize: fontSize,
@@ -77,7 +77,7 @@ class _UsersPageState extends State<UsersPage> {
                             color: const Color(0xFF5E4F24),
                             value: freelancerCount.toDouble(),
                             title:
-                                '${freelancerCount} (${(freelancerCount / totalCount * 100).toStringAsFixed(0)}%)',
+                                '$freelancerCount (${(freelancerCount / totalCount * 100).toStringAsFixed(0)}%)',
                             radius: radius,
                             titleStyle: TextStyle(
                               fontSize: fontSize,
@@ -137,13 +137,13 @@ class _UsersPageState extends State<UsersPage> {
                         children: [
                           const Icon(
                             Icons.work,
-                            color: const Color(0xFF5E4F24),
+                            color: Color(0xFF5E4F24),
                           ), // Gold color
                           const SizedBox(width: 8),
                           const Text(
                             'Total Freelancers: ',
                             style: TextStyle(
-                              color: const Color(0xFF5E4F24),
+                              color: Color(0xFF5E4F24),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -151,7 +151,7 @@ class _UsersPageState extends State<UsersPage> {
                           Text(
                             '$freelancerCount',
                             style: const TextStyle(
-                              color: const Color(0xFF5E4F24),
+                              color: Color(0xFF5E4F24),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),

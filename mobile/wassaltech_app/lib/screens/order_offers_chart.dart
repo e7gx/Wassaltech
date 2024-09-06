@@ -98,7 +98,7 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                             color: Colors.orange,
                             value: offersCount.toDouble(),
                             title:
-                                '${offersCount} (${(offersCount / totalCount * 100).toStringAsFixed(0)}%)',
+                                '$offersCount (${(offersCount / totalCount * 100).toStringAsFixed(0)}%)',
                             radius: radius,
                             titleStyle: TextStyle(
                               fontSize: fontSize,
@@ -110,7 +110,7 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                             color: Colors.deepOrangeAccent,
                             value: ordersCount.toDouble(),
                             title:
-                                '${ordersCount} (${(ordersCount / totalCount * 100).toStringAsFixed(0)}%)',
+                                '$ordersCount (${(ordersCount / totalCount * 100).toStringAsFixed(0)}%)',
                             radius: radius,
                             titleStyle: TextStyle(
                               fontSize: fontSize,
@@ -198,7 +198,7 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                           child: ListTile(
                             title: Text(
                               'Offer ID: ${offer.id}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontWeight: FontWeight.bold,
                                 // fontSize: 24,
@@ -207,7 +207,7 @@ class _OffersOrdersPageState extends State<OffersOrdersPage> {
                             ),
                             subtitle: Text(
                               'Price: \$${offer.price}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontWeight: FontWeight.bold,
                                 // fontSize: 24,

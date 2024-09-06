@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:wassaltech_app/model/reviews_model.dart';
@@ -47,7 +49,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
               future: _futureReviews,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
                     ),
@@ -65,7 +67,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                           fit: BoxFit.cover,
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        const Text(
                           'Ops! Something went wrong',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -90,7 +92,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                           fit: BoxFit.cover,
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        const Text(
                           'No Reviews Found',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -123,7 +125,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(16.0),
-                          leading: CircleAvatar(
+                          leading: const CircleAvatar(
                             radius: 24,
                             backgroundColor: Colors.orange,
                             child: Icon(

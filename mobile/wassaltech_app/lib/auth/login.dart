@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:wassaltech_app/model/service/api_services.dart';
@@ -96,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Center(
               child: SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxWidth: 400,
                   ),
                   child: Form(
@@ -109,13 +111,13 @@ class _LoginPageState extends State<LoginPage> {
                         Lottie.asset('assets/animation/ppmana.json',
                             width: 300),
                         const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Login to ',
                                 style: TextStyle(
                                   fontSize: 30,
@@ -124,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                                   fontFamily: 'Cairo',
                                 ),
                               ),
-                              const Text(
+                              Text(
                                 'WassalTech',
                                 style: TextStyle(
                                   fontSize: 30,
@@ -148,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: TextFormField(
                                 controller: _usernameController,
                                 cursorColor: Colors.orange.shade700,
-                                style: TextStyle(color: Colors.black87),
+                                style: const TextStyle(color: Colors.black87),
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: Colors.white,
@@ -192,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: TextFormField(
                                 controller: _passwordController,
                                 cursorColor: Colors.orange.shade700,
-                                style: TextStyle(color: Colors.black87),
+                                style: const TextStyle(color: Colors.black87),
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: Colors.white,

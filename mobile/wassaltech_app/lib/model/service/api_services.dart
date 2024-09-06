@@ -119,13 +119,12 @@ Future<double> fetchReviewsAverage() async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      print('API Response Data: $data');
+      // print('API Response Data: $data');
       return (data['rating_avg'] as num).toDouble();
     } else {
       throw Exception('Failed to load reviews average');
     }
   } catch (e) {
-    print('Error: $e');
     return 0.0;
   }
 }

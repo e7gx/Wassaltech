@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
         useMaterial3: true,
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           bodyMedium: TextStyle(fontSize: 16),

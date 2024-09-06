@@ -350,7 +350,7 @@ class _MainPageState extends State<AiChatPage> {
                         ),
                         controller: _textEditingController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(20.0),
+                          contentPadding: const EdgeInsets.all(20.0),
                           hintText: "Say Hi $_firstName ...",
                           border: InputBorder.none,
                         ),

@@ -8,7 +8,7 @@ class Wallet extends StatefulWidget {
   final Future<List<Offer>> offersFuture;
   final double totalPrice;
 
-  Wallet({
+  const Wallet({
     super.key,
     required this.offersFuture,
     required this.totalPrice,
@@ -16,6 +16,7 @@ class Wallet extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _WalletState createState() => _WalletState();
 }
 
@@ -84,8 +85,8 @@ class _WalletState extends State<Wallet> {
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Text('Opss Something went wrong'),
                             ),
                           ],
@@ -166,7 +167,7 @@ class _WalletState extends State<Wallet> {
             const SizedBox(height: 16.0),
             _buildSummaryTile(
               'Cash Flow ',
-              '\SAR: ${depositedAmount.toStringAsFixed(2)}',
+              'SAR: ${depositedAmount.toStringAsFixed(2)}',
               Icon(
                 Icons.account_balance_wallet,
                 color: Colors.orange[800],
@@ -175,7 +176,7 @@ class _WalletState extends State<Wallet> {
             ),
             _buildSummaryTile(
               'Commissions',
-              '\SAR: ${(depositedAmount * 0.10).toStringAsFixed(2)}',
+              'SAR: ${(depositedAmount * 0.10).toStringAsFixed(2)}',
               Icon(
                 Icons.monetization_on_sharp,
                 color: Colors.orange[800],
@@ -231,8 +232,8 @@ class _WalletState extends State<Wallet> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text('Opss Something went wrong'),
                 ),
               ],
@@ -250,8 +251,8 @@ class _WalletState extends State<Wallet> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text('Opss Something went wrong'),
                 ),
               ],
@@ -280,7 +281,7 @@ class _WalletState extends State<Wallet> {
               ),
             );
           } else {
-            return Center(child: Text('No offers available'));
+            return const Center(child: Text('No offers available'));
           }
         },
       ),
@@ -321,13 +322,11 @@ class _WalletState extends State<Wallet> {
             Positioned(
               top: 8.0,
               left: 8.0,
-              child: Container(
-                child: Image.asset(
-                  'assets/images/hhh.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
+              child: Image.asset(
+                'assets/images/hhh.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
               ),
             ),
             Positioned(
@@ -346,7 +345,7 @@ class _WalletState extends State<Wallet> {
                       children: [
                         Text(
                           'Order ID: ${offer.orderId}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -355,7 +354,7 @@ class _WalletState extends State<Wallet> {
                         ),
                         Text(
                           'Price: \$${offer.price}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -377,7 +376,7 @@ class _WalletState extends State<Wallet> {
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.orange[800],
                         backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           vertical: 4.0,
                           horizontal: 16.0,
                         ),

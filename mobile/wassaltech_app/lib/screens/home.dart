@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       Wallet(
-        offers: [],
+        offers: const [],
         offersFuture: fetchAllOffers(),
         totalPrice: _totalPrice,
       ),
@@ -105,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             backgroundImage: AssetImage('assets/images/test.png'),
             radius: 22,
             backgroundColor: Colors.transparent,
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: Colors.black,
       ),
     );
@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.orange,
             ),
             child: Column(
@@ -144,8 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   'assets/images/Wassaltech.png',
                   height: 80,
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'WassalTech | وَصّلْتِك',
                   style: TextStyle(
                     fontFamily: 'Cairo',
@@ -164,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _buildDrawerItem(
             'Offers',
             0,
-            Icon(
+            const Icon(
               Icons.date_range_sharp,
               color: Colors.orange,
             ),
@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _buildDrawerItem(
             'Orders',
             1,
-            Icon(
+            const Icon(
               Icons.shopping_cart,
               color: Colors.orange,
             ),
@@ -186,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
             thickness: 12,
           ),
           ListTile(
-            title: Text(
+            title: const Text(
               'Reviews',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -204,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-            leading: Icon(
+            leading: const Icon(
               Icons.rate_review_sharp,
               color: Colors.orange,
             ),
@@ -216,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _buildDrawerItem(
             'Chat',
             3,
-            Icon(
+            const Icon(
               Icons.memory,
               color: Colors.orange,
             ),
@@ -234,11 +234,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-            leading: Icon(
+            leading: const Icon(
               Icons.logout,
               color: Colors.red,
             ),
-            title: Text(
+            title: const Text(
               'Logout',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -263,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
       title: Text(
         title,
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Cairo',
           fontWeight: FontWeight.bold,
           fontSize: 24,

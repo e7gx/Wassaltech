@@ -33,7 +33,7 @@ class ReviewDetailPage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Container(
             width: double.infinity,
-            constraints: BoxConstraints(maxWidth: 600),
+            constraints: const BoxConstraints(maxWidth: 600),
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -43,7 +43,7 @@ class ReviewDetailPage extends StatelessWidget {
                   color: Colors.black.withOpacity(0.1),
                   spreadRadius: 1,
                   blurRadius: 8,
-                  offset: Offset(0, 4),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -68,7 +68,7 @@ class ReviewDetailPage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.star,
                         color: Colors.orange,
                         size: 40,
